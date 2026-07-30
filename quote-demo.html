@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>每日一句</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", system-ui, sans-serif;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #f6d365, #fda085); color: #4a3528; padding: 24px;
+  }
+  .card {
+    max-width: 440px; text-align: center; padding: 44px 40px; border-radius: 26px;
+    background: rgba(255,255,255,.55); backdrop-filter: blur(12px);
+    box-shadow: 0 18px 50px rgba(180,120,60,.28);
+  }
+  #quote { font-size: 24px; font-weight: 600; line-height: 1.6; min-height: 80px; }
+  .btn {
+    margin-top: 26px; border: none; cursor: pointer; font-size: 15px; font-weight: 600;
+    color: #fff; background: linear-gradient(135deg,#ff9d3c,#ff7a1a);
+    border-radius: 14px; padding: 12px 28px; box-shadow: 0 6px 16px rgba(255,130,30,.4);
+    transition: transform .15s;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: scale(.96); }
+  .tag { font-size: 12px; margin-top: 20px; opacity: .55; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div id="quote">点下面换一句 👇</div>
+    <button class="btn" onclick="pick()">换一句</button>
+    <div class="tag">✨ 一个用来测试发布的小 demo</div>
+  </div>
+<script>
+  const quotes = [
+    '每一个不曾起舞的日子，都是对生命的辜负。',
+    '慢慢来，比较快。',
+    '你不需要很厉害才能开始，但你需要开始才会变厉害。',
+    '种一棵树最好的时间是十年前，其次是现在。',
+    '把简单的事做好，就是不简单。',
+    '允许自己休息，不是偷懒，是为了走得更远。',
+    '答案不会凭空出现，但方向会越走越清晰。',
+    '今天的努力，是幸运的伏笔。'
+  ];
+  function pick(){
+    const q = quotes[Math.floor(Math.random()*quotes.length)];
+    document.getElementById('quote').textContent = q;
+  }
+  pick();
+</script>
+</body>
+</html>
