@@ -84,7 +84,9 @@ else
   echo "✅ 已推送，GitHub Pages 通常 1-2 分钟后生效。"
 fi
 
-# ---- 打印链接（无论是否新发布，都给出可分享链接）----
+# ---- 打印结果（供 App 解析：SOURCE= 原始输入，LINK= 公开链接）----
+echo "SOURCE=$1"
+echo "LINK=$LINK"
 echo ""
 echo "🔗 分享链接："
 echo "   $LINK"
