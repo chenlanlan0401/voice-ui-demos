@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>实时时钟</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", system-ui, sans-serif;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #667eea, #764ba2); color: #fff;
+  }
+  .card {
+    text-align: center; padding: 48px 60px; border-radius: 28px;
+    background: rgba(255,255,255,.12); backdrop-filter: blur(14px);
+    box-shadow: 0 20px 60px rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.2);
+  }
+  #time { font-size: 64px; font-weight: 700; letter-spacing: 2px; font-variant-numeric: tabular-nums; }
+  #date { font-size: 17px; margin-top: 10px; opacity: .85; }
+  .tag { font-size: 12.5px; margin-top: 22px; opacity: .6; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div id="time">--:--:--</div>
+    <div id="date"></div>
+    <div class="tag">🕒 实时更新 · 一个用来测试发布的小 demo</div>
+  </div>
+<script>
+  const t = document.getElementById('time');
+  const d = document.getElementById('date');
+  const week = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+  function tick(){
+    const n = new Date();
+    const p = x => String(x).padStart(2,'0');
+    t.textContent = `${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+    d.textContent = `${n.getFullYear()}年${n.getMonth()+1}月${n.getDate()}日 ${week[n.getDay()]}`;
+  }
+  tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
