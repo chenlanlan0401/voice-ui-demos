@@ -65,27 +65,28 @@ case "$DEST_NAME" in
   *[!\ -~]*) echo "⚠️  文件名含非英文字符，URL 会被转义，建议改用英文名（可作为第二个参数传入）。" ;;
 esac
 
+# 对文件名做 URL 编码（仅处理空格等常见情况的简单版）
+ENC_NAME="${DEST_NAME// /%20}"
+LINK="$PAGES_BASE/$ENC_NAME"
+
 # ---- 复制 + 提交 + 推送 ----
 cp "$SRC" "$REPO_DIR/$DEST_NAME"
 cd "$REPO_DIR"
 git add -A
 
 if git diff --cached --quiet; then
-  echo "ℹ️  内容与线上一致，无需发布。"
-  exit 0
+  echo "ℹ️  内容与线上一致，无需重新发布（链接不变）。"
+else
+  git -c user.email="chenlanlan0401@users.noreply.github.com" \
+      -c user.name="chenlanlan0401" \
+      commit -q -m "发布/更新 $DEST_NAME"
+  git push -q origin main
+  echo "✅ 已推送，GitHub Pages 通常 1-2 分钟后生效。"
 fi
 
-git -c user.email="chenlanlan0401@users.noreply.github.com" \
-    -c user.name="chenlanlan0401" \
-    commit -q -m "发布/更新 $DEST_NAME"
-git push -q origin main
-echo "✅ 已推送，GitHub Pages 通常 1-2 分钟后生效。"
-
-# ---- 打印链接 ----
-# 对文件名做 URL 编码（仅处理空格等常见情况的简单版）
-ENC_NAME="${DEST_NAME// /%20}"
+# ---- 打印链接（无论是否新发布，都给出可分享链接）----
 echo ""
 echo "🔗 分享链接："
-echo "   $PAGES_BASE/$ENC_NAME"
+echo "   $LINK"
 echo ""
-echo "（把上面的链接粘进文档即可，稍等片刻生效）"
+echo "（把上面的链接粘进文档即可）"
