@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>课程底部 · 语音长条样式对比</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: linear-gradient(120deg,#f6e6cf,#f3ddc4); color: #3a3128;
+    min-height: 100vh; padding: 22px 18px 40px; display:flex; flex-direction:column; align-items:center;
+  }
+  .picker { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:18px; }
+  .picker button {
+    border:1.5px solid #e6d4b6; background:#fffdf8; color:#7a6a4e; border-radius:12px;
+    padding:9px 14px; font-size:13px; font-weight:600; cursor:pointer; transition:all .18s;
+  }
+  .picker button.on { background:linear-gradient(135deg,#ff9d3c,#ff7a1a); color:#fff; border-color:transparent; }
+  .desc { font-size:12.5px; color:#8a7a5e; margin-bottom:16px; text-align:center; min-height:18px; max-width:520px; }
+
+  /* 课程白板模拟 */
+  .board {
+    width:100%; max-width:640px; background:linear-gradient(180deg,#fff6e6,#fffdf8 40%);
+    border:5px solid #fff; border-radius:26px; box-shadow:0 20px 50px rgba(150,110,60,.22);
+    padding:22px 26px 30px; position:relative; min-height:380px; overflow:hidden;
+  }
+  .board-title {
+    background:#fff; border-radius:14px; padding:11px; text-align:center;
+    font-size:15px; font-weight:600; color:#4a4030; box-shadow:0 3px 10px rgba(150,110,60,.12);
+    margin-bottom:26px;
+  }
+  .problem { font-size:26px; color:#3a3128; text-align:center; letter-spacing:1px; margin-top:14px; }
+  .ground { position:absolute; left:0; right:0; bottom:0; height:70px;
+    background:linear-gradient(180deg,transparent,#ffe6bf); }
+
+  /* 底部语音条容器 */
+  .bar-slot {
+    position:absolute; left:50%; bottom:20px; transform:translateX(-50%);
+    display:flex; justify-content:center; z-index:2;
+  }
+
+  /* ============ 通用波形 ============ */
+  .wf { display:flex; align-items:center; gap:4px; }
+  .wf span { width:3px; height:9px; border-radius:3px; animation:wf 1.15s ease-in-out infinite; }
+  @keyframes wf { 0%,100%{transform:scaleY(.45);opacity:.7} 50%{transform:scaleY(1);opacity:1} }
+  .bar.active .wf span { animation-duration:.5s; }
+
+  /* 共用:嵌在条内的"我说完了"按钮（圆形停止 / 文字胶囊两种由变体决定） */
+  .done-round {
+    width:44px; height:44px; flex-shrink:0; border:none; cursor:pointer; border-radius:50%;
+    background:linear-gradient(135deg,#ff9d3c,#ff7a1a); box-shadow:0 4px 12px rgba(255,130,30,.5);
+    display:flex; align-items:center; justify-content:center; transition:transform .15s;
+  }
+  .done-round:hover{transform:scale(1.06)} .done-round:active{transform:scale(.93)}
+  .done-round i { width:14px; height:14px; border-radius:4px; background:#fff; }
+
+  .done-pill {
+    flex-shrink:0; border:none; cursor:pointer; border-radius:999px;
+    background:linear-gradient(135deg,#ff9d3c,#ff7a1a); color:#fff; font-size:13px; font-weight:600;
+    padding:9px 16px; box-shadow:0 4px 12px rgba(255,130,30,.45); transition:transform .15s;
+    display:flex; align-items:center; gap:6px;
+  }
+  .done-pill:hover{transform:translateY(-1px)} .done-pill:active{transform:scale(.96)}
+  .done-pill i { width:9px; height:9px; border-radius:3px; background:#fff; }
+
+  @keyframes glow { 0%,100%{opacity:.7} 50%{opacity:.95} }
+
+  /* ============ D. 迷你条 + 外置文字（波形短，右侧文字按钮更亲和） ============ */
+  .bar-mini {
+    display:flex; align-items:center; gap:12px; height:52px; padding:0 6px 0 20px; border-radius:999px;
+    background:linear-gradient(180deg,#3d2822,#241512);
+    box-shadow:0 6px 18px rgba(90,50,30,.3);
+  }
+  .bar-mini .wf span { background:linear-gradient(180deg,#ffe6c7,#ffb47a); height:7px; }
+  .bar-mini .status { font-size:12px; color:#e8d3bf; white-space:nowrap; }
+
+  /* ============ F. 迷你条 + 圆按钮，文案在条下方 ============ */
+  .bar-stack { display:flex; flex-direction:column; align-items:center; gap:9px; }
+  .bar-stack .bar-mini .status { display:none; } /* 条内不再显示状态 */
+  .bar-stack .undertext { font-size:12.5px; color:#7a6a4e; text-align:center; white-space:nowrap; }
+
+  /* ============ G. 与 F 同款深色迷你条，仅把文案放进同一黑框内 ============ */
+  /* 高度锁定与 E（bar-mini 52px）一致，胶囊圆角，两行内容压紧塞入 */
+  .bar-box {
+    height:52px; display:flex; align-items:center; gap:12px;
+    background:linear-gradient(180deg,#3d2822,#241512); border-radius:26px;
+    padding:0 8px 0 20px; box-shadow:0 6px 18px rgba(90,50,30,.3);
+  }
+  /* 左侧：波形 + 文案 竖排；右侧：按钮 */
+  .bar-box .box-col { display:flex; flex-direction:column; align-items:center; gap:3px; }
+  .bar-box .wf span { background:linear-gradient(180deg,#ffe6c7,#ffb47a); height:8px; }
+  .bar-box.active .wf span { animation-duration:.5s; }
+  .bar-box .undertext { font-size:10.5px; line-height:1; color:#e8d3bf; text-align:center; white-space:nowrap; }
+  .bar-box .done-round { width:36px; height:36px; box-shadow:0 3px 9px rgba(255,130,30,.45); }
+  .bar-box .done-round i { width:12px; height:12px; border-radius:3px; }
+
+  /* G 变种：外层暖彩虹光晕（同 A，横向渐变、呼吸不旋转） */
+  .bar-box.glow { position:relative; z-index:0; }
+  .bar-box.glow::before { content:""; position:absolute; inset:-6px; border-radius:32px; z-index:-1;
+    background:linear-gradient(90deg,#ff8a3c,#ffd24a,#8fe36b,#4ad9c4,#5aa9ff,#9b8bff,#ff7ab0);
+    filter:blur(12px); opacity:.85; animation:glow 3.2s ease-in-out infinite; }
+
+  /* G 变种：彩虹描边（同 C，横向渐变静态描边） */
+  .bar-box.edge { position:relative; z-index:0; }
+  .bar-box.edge::before { content:""; position:absolute; inset:0; border-radius:26px; padding:2px; z-index:-1;
+    background:linear-gradient(90deg,#ff8a3c,#ffd24a,#8fe36b,#4ad9c4,#5aa9ff,#9b8bff,#ff7ab0);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; }
+</style>
+</head>
+<body>
+  <div class="picker" id="picker"></div>
+  <div class="desc" id="desc"></div>
+
+  <div class="board">
+    <div class="board-title">脱式计算</div>
+    <div class="problem">8 × ( 4 − 4 ) ÷ 2 + 5</div>
+    <div class="ground"></div>
+    <div class="bar-slot" id="slot"></div>
+  </div>
+
+<script>
+  const wf = (n) => `<div class="wf">` + Array.from({length:n},(_,i)=>
+    `<span style="animation-delay:${(i*0.07).toFixed(2)}s"></span>`).join('') + `</div>`;
+
+  // 中间高、两边低的聚焦波形（参考图那种）
+  const wfTaper = (n) => `<div class="wf">` + Array.from({length:n},(_,i)=>{
+    const d = Math.abs(i-(n-1)/2)/((n-1)/2);       // 0=中心,1=两端
+    const h = (6 + (1-d)*(1-d)*16).toFixed(0);      // 中心约22px,两端约6px
+    return `<span style="height:${h}px;animation-delay:${(i*0.06).toFixed(2)}s"></span>`;
+  }).join('') + `</div>`;
+
+  const VARIANTS = [
+    { key:'mini', name:'A · 迷你条 + 文字按钮', desc:'深色胶囊，波形 + 状态文字同行，右侧橙色"我说完了"文字胶囊。',
+      html:`<div class="bar bar-mini">${wf(9)}<span class="status">在听你说…</span><button class="done-pill"><i></i>我说完了</button></div>` },
+    { key:'mini-round', name:'B · 迷你条 + 圆形按钮', desc:'深色胶囊，波形 + 状态文字同行，右侧橙色圆形停止按钮。',
+      html:`<div class="bar bar-mini">${wf(9)}<span class="status">在听你说…</span><button class="done-round" title="我说完了"><i></i></button></div>` },
+    { key:'stack', name:'C · 迷你条，文案在框外下方', desc:'深色胶囊只放波形 + 圆按钮，状态文案在框外下方居中。',
+      html:`<div class="bar-stack"><div class="bar bar-mini">${wf(9)}<button class="done-round" title="我说完了"><i></i></button></div><div class="undertext">在听你说…</div></div>` },
+    { key:'box', name:'D · 深色框内含文案', desc:'深色胶囊，波形 + 文案竖排在左、圆按钮在右，文案在框内。',
+      html:`<div class="bar bar-box"><div class="box-col">${wf(11)}<div class="undertext">在听你说…</div></div><button class="done-round" title="我说完了"><i></i></button></div>` },
+    { key:'box-glow', name:'E · D + 霓虹光晕', desc:'D 的布局，外加暖彩虹光晕（横向渐变、明暗呼吸、不旋转）。',
+      html:`<div class="bar bar-box glow"><div class="box-col">${wf(11)}<div class="undertext">在听你说…</div></div><button class="done-round" title="我说完了"><i></i></button></div>` },
+    { key:'box-edge', name:'F · D + 彩虹描边', desc:'D 的布局，外加一圈静态彩虹描边（横向渐变）。',
+      html:`<div class="bar bar-box edge"><div class="box-col">${wf(11)}<div class="undertext">在听你说…</div></div><button class="done-round" title="我说完了"><i></i></button></div>` },
+  ];
+
+  const picker = document.getElementById('picker');
+  const desc = document.getElementById('desc');
+  const slot = document.getElementById('slot');
+  let cur = 0;
+
+  picker.innerHTML = VARIANTS.map((v,i)=>
+    `<button class="${i===0?'on':''}" onclick="pick(${i})">${v.name}</button>`).join('');
+
+  function render(){
+    const v = VARIANTS[cur];
+    desc.textContent = v.desc;
+    slot.innerHTML = v.html;
+    picker.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on', i===cur));
+    // 点条内任意"说完了"按钮 → 演示反馈
+    const setStatus = (t)=>{ const s = slot.querySelector('.status'), u = slot.querySelector('.undertext');
+      if(s) s.textContent = t; if(u) u.textContent = t; };
+    slot.querySelectorAll('.done-round,.done-pill').forEach(btn=>
+      btn.onclick = ()=>{ btn.closest('.bar').classList.remove('active'); setStatus('收到啦，交给老师～'); });
+    // 点条身其它区域 = 模拟"检测到在说话"，波形变活跃
+    const bar = slot.querySelector('.bar');
+    bar.addEventListener('click', e=>{
+      if(e.target.closest('.done-round,.done-pill')) return;
+      bar.classList.toggle('active');
+      setStatus(bar.classList.contains('active') ? '嗯嗯，我在听…' : '在听你说…');
+    });
+  }
+  function pick(i){ cur = i; render(); }
+  render();
+</script>
+</body>
+</html>
