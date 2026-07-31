@@ -34,6 +34,14 @@
   .stage-row { display:flex; flex-direction:column; align-items:center; gap:10px; }
   .stage-phase { font-size:12.5px; font-weight:700; color:#ff8a1a; }
   .stage-demo { display:flex; align-items:center; justify-content:center; }
+  /* 问完→开麦：更柔和的待命态——波形更矮更淡、节奏更慢 */
+  .stage-demo.soft .bar-box { background:linear-gradient(180deg,#4a352d,#312019); }
+  .stage-demo.soft .wf span {
+    background:linear-gradient(180deg,#ffe6c7,#e8c3a0); opacity:.6;
+    animation-duration:2.4s; height:6px;
+  }
+  .stage-demo.soft .undertext { color:#d8c4b0; }
+  .stage-demo.soft .done-round { opacity:.9; }
 
   /* 课程白板模拟 */
   .board {
@@ -184,12 +192,12 @@
     return `<div class="bar bar-box"><div class="box-col">${wf(11)}<div class="undertext">${text}</div></div><button class="done-round" title="我说完了"><i></i></button></div>`;
   }
   const STAGES = [
-    { phase:'① 问完 → 开麦', text:'想一想，准备好了再说～' },
+    { phase:'① 问完 → 开麦', text:'想一想，准备好了再说～', soft:true },
     { phase:'② 开麦中', text:'嗯嗯，我在听…' },
     { phase:'③ 开麦 → 闭麦', text:'收到啦，你真棒！' },
   ];
   document.getElementById('stages').innerHTML = STAGES.map(s=>
-    `<div class="stage-row"><div class="stage-phase">${s.phase}</div><div class="stage-demo">${boxDemo(s.text)}</div></div>`).join('');
+    `<div class="stage-row"><div class="stage-phase">${s.phase}</div><div class="stage-demo${s.soft?' soft':''}">${boxDemo(s.text)}</div></div>`).join('');
 
   const stagesWrap = document.querySelector('.stages-wrap');
   function render(){
