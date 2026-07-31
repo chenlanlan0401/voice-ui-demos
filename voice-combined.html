@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI 课程 · 语音交互方案汇总</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC","Microsoft YaHei",system-ui,sans-serif; color:#2b3548;
+    background:#e8edf4; min-height:100vh; display:flex; flex-direction:column;
+  }
+  header {
+    background:#fff; box-shadow:0 2px 12px rgba(60,80,140,.1); padding:16px 20px 0;
+    display:flex; flex-direction:column; align-items:center; position:sticky; top:0; z-index:10;
+  }
+  header h1 { font-size:19px; font-weight:700; margin-bottom:12px; }
+  .subject-tabs { display:flex; gap:10px; }
+  .subject-tabs button {
+    border:none; background:none; padding:10px 26px 14px; font-size:15px; font-weight:700;
+    color:#8a94a8; cursor:pointer; border-bottom:3px solid transparent; transition:all .18s;
+  }
+  .subject-tabs button.on { color:#ff7a1a; border-bottom-color:#ff7a1a; }
+  .frame-wrap { flex:1; position:relative; }
+  iframe { width:100%; height:calc(100vh - 74px); border:none; display:none; background:#eef2f7; }
+  iframe.on { display:block; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>AI 课程 · 语音交互方案汇总</h1>
+    <div class="subject-tabs">
+      <button id="tab-math" class="on" onclick="showSubject('math')">📐 AI 数学课</button>
+      <button id="tab-read" onclick="showSubject('read')">📖 AI 阅读课</button>
+    </div>
+  </header>
+  <div class="frame-wrap">
+    <iframe id="frame-math" class="on" src="https://chenlanlan0401.github.io/voice-ui-demos/voice-bar-styles.html"></iframe>
+    <iframe id="frame-read" src="https://chenlanlan0401.github.io/voice-ui-demos/voice-schemes.html"></iframe>
+  </div>
+<script>
+  function showSubject(s){
+    const isMath = s === 'math';
+    document.getElementById('tab-math').classList.toggle('on', isMath);
+    document.getElementById('tab-read').classList.toggle('on', !isMath);
+    document.getElementById('frame-math').classList.toggle('on', isMath);
+    document.getElementById('frame-read').classList.toggle('on', !isMath);
+  }
+</script>
+</body>
+</html>
