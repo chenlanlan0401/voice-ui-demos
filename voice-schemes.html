@@ -91,9 +91,10 @@
     transform-origin:center; animation:wave .85s ease-in-out infinite; }
   /* 开麦阶段：波动更明显（幅度更大、更快） */
   @keyframes wave { 0%,100%{transform:scaleY(.35);opacity:.75} 50%{transform:scaleY(1.6);opacity:1} }
-  /* 柔和态（问完→开麦）：单独小幅度、更慢、更淡 */
+  /* 小幅波形（问完→开麦 的柔和态 + 开麦→闭麦）：更慢、更淡、更平 */
   @keyframes waveSoft { 0%,100%{transform:scaleY(.4);opacity:.5} 50%{transform:scaleY(.65);opacity:.65} }
-  .cam.soft .view .wf span { animation:waveSoft 2.6s ease-in-out infinite; }
+  .cam.soft .view .wf span,
+  .cam.wavecalm .view .wf span { animation:waveSoft 2.6s ease-in-out infinite; }
   .cam .done { position:relative; z-index:2; width:100%; border:none; cursor:pointer; color:#fff;
     font-size:10.5px; font-weight:700; padding:6px 0; border-radius:10px; margin-top:-14px;
     background:linear-gradient(135deg,#ff9d3c,#ff7a1a); box-shadow:0 3px 9px rgba(255,130,30,.5); white-space:nowrap; }
@@ -126,13 +127,13 @@
       <button class="done-center"><span class="mic">🎤</span>${btn}</button>
     </div>`;
 
-  // 形态二（有摄像头）：camSoft=组件柔和；qAdd；btn=组件按钮文案
-  const sceneB = ({rim, camSoft=false, qAdd='', btn='我说完啦', q}) => `
+  // 形态二（有摄像头）：camSoft=组件整体柔和；waveCalm=仅波形小幅；qAdd；btn=组件按钮文案
+  const sceneB = ({rim, camSoft=false, waveCalm=false, qAdd='', btn='我说完啦', q}) => `
     <div class="screen bg-sea ${rim}">
       ${bubbles}
       <div class="fairy"></div>
       <div class="qbubble">${q}${qAdd?`<span class="add">${qAdd}</span>`:''}</div>
-      <div class="cam ${camSoft?'soft':''}">
+      <div class="cam ${camSoft?'soft':''} ${waveCalm?'wavecalm':''}">
         <div class="view">${wf(9)}</div>
         <button class="done">${btn}</button>
       </div>
@@ -173,16 +174,16 @@
             note:'问完→开麦：迷你条和屏幕四周动效柔和处理，文案展示在对话框中【不着急，准备好了再说】' },
           { scene:()=>sceneB({rim:'rim-on', q:Q_SEA}),
             note:'开麦：动效复用现状，无额外文案透传' },
-          { scene:()=>sceneB({rim:'rim-on', q:Q_SEA}),
-            note:'开麦→闭麦：动效复用现状，无额外文案透传' },
+          { scene:()=>sceneB({rim:'rim-on', waveCalm:true, q:Q_SEA}),
+            note:'开麦→闭麦：动效复用现状，无额外文案透传（迷你条波动小幅）' },
         ]},
         { name:'方案二（按钮文案）', stages:[
           { scene:()=>sceneB({rim:'rim-soft', camSoft:true, q:Q_SEA, btn:'准备好了再说～'}),
             note:'问完→开麦：迷你条和屏幕四周动效柔和处理，按钮文案展示为【准备好了再说～】' },
           { scene:()=>sceneB({rim:'rim-on', q:Q_SEA, btn:'我在听'}),
             note:'开麦：动效复用现状，按钮文案展示为【我在听】' },
-          { scene:()=>sceneB({rim:'rim-on', q:Q_SEA, btn:'我说完啦'}),
-            note:'开麦→闭麦：动效复用现状，按钮文案展示为【我说完啦】' },
+          { scene:()=>sceneB({rim:'rim-on', waveCalm:true, q:Q_SEA, btn:'我说完啦'}),
+            note:'开麦→闭麦：动效复用现状，按钮文案展示为【我说完啦】（迷你条波动小幅）' },
         ], ps:'首次说话后，后续所有非开麦环节均定义为开麦-闭麦环节' },
       ]
     },
