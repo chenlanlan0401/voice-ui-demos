@@ -140,27 +140,27 @@
   const METHODS = [
     { cap:'① 组件旁小提示气泡',
       csub:'气泡浮在摄像头组件左侧、尖角指向它，视线正好在作答区附近。',
-      scene: scene({ camOpts:{viewInner:wf(9)}, extras:`<div class="hint-side">🎤 该你啦～看着气泡读出来吧</div>` }) },
+      scene: scene({ camOpts:{viewInner:wf(9)}, extras:`<div class="hint-side">不着急，准备好了再说～</div>` }) },
 
     { cap:'② 组件正上方文案',
       csub:'紧贴摄像头组件上沿，和组件像一体，不占用画面别处。',
-      scene: scene({ camOpts:{viewInner:wf(9)}, extras:`<div class="hint-top">🎤 该你啦，读出来吧</div>` }) },
+      scene: scene({ camOpts:{viewInner:wf(9)}, extras:`<div class="hint-top">不着急，准备好了再说～</div>` }) },
 
     { cap:'③ 老师问题气泡追加一行',
       csub:'精灵老师在题目后再补一句，最像真人对话，最自然。',
-      scene: scene({ qAdd:'🎤 该你啦～大声读给我听', camOpts:{viewInner:wf(9)} }) },
+      scene: scene({ qAdd:'不着急，准备好了再说～', camOpts:{viewInner:wf(9)} }) },
 
     { cap:'④ 摄像头内占位文字',
-      csub:'没检测到声音时，波形区显示"在听你说…"；一开口才变波形。组件自解释。',
-      scene: scene({ camOpts:{viewInner:`<div class="placeholder">在听你说…</div>`} }) },
+      csub:'没检测到声音时，波形区显示提示；一开口才变波形。组件自解释。',
+      scene: scene({ camOpts:{viewInner:`<div class="placeholder">不着急，准备好了再说～</div>`} }) },
 
     { cap:'⑤ 组件下方文案条',
       csub:'文案在"我说完啦"按钮下方，和组件同宽，作为组件的一部分。',
-      scene: scene({ camOpts:{viewInner:wf(9), under:'该你啦，读出来吧～'} }) },
+      scene: scene({ camOpts:{viewInner:wf(9), under:'不着急，准备好了再说～'} }) },
 
     { cap:'⑥ 按钮内文案变化',
-      csub:'等待时按钮先显示"该你说啦"，学生一开口再变回"我说完啦"。零新增元素。',
-      scene: scene({ camOpts:{viewInner:wf(9), doneText:'该你说啦'} }) },
+      csub:'等待时按钮先显示提示，学生一开口再变回"我说完啦"。零新增元素。',
+      scene: scene({ camOpts:{viewInner:wf(9), doneText:'准备好了再说'} }) },
   ];
 
   document.getElementById('grid').innerHTML = METHODS.map(m=>`
