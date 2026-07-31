@@ -85,12 +85,15 @@
   .cam.soft::before { opacity:.3; animation:rimSoft 6s ease-in-out infinite; }
   .cam .view { position:relative; width:100%; aspect-ratio:4/3; border-radius:11px; overflow:hidden;
     background:linear-gradient(155deg,#6b4a3a,#3a251c 70%,#2a1912); }
-  .cam .view .wf { position:absolute; left:0; right:0; bottom:4px; display:flex; align-items:flex-end;
-    justify-content:center; gap:2px; height:14px; }
-  .cam .view .wf span { width:2px; border-radius:2px; background:linear-gradient(180deg,#fff,#ffd6a8);
-    animation:wave 1.2s ease-in-out infinite; }
-  @keyframes wave { 0%,100%{transform:scaleY(.4);opacity:.75} 50%{transform:scaleY(1);opacity:1} }
-  .cam.soft .view .wf span { opacity:.5; animation-duration:2.4s; }  /* 柔和态波形更淡更慢 */
+  .cam .view .wf { position:absolute; left:0; right:0; bottom:5px; display:flex; align-items:flex-end;
+    justify-content:center; gap:2.5px; height:26px; }
+  .cam .view .wf span { width:2.5px; border-radius:2px; background:linear-gradient(180deg,#fff,#ffd6a8);
+    transform-origin:bottom; animation:wave .85s ease-in-out infinite; }
+  /* 开麦阶段：波动更明显（幅度更大、更快） */
+  @keyframes wave { 0%,100%{transform:scaleY(.35);opacity:.75} 50%{transform:scaleY(1.6);opacity:1} }
+  /* 柔和态（问完→开麦）：单独小幅度、更慢、更淡 */
+  @keyframes waveSoft { 0%,100%{transform:scaleY(.4);opacity:.5} 50%{transform:scaleY(.65);opacity:.65} }
+  .cam.soft .view .wf span { animation:waveSoft 2.6s ease-in-out infinite; }
   .cam .done { position:relative; z-index:2; width:100%; border:none; cursor:pointer; color:#fff;
     font-size:10.5px; font-weight:700; padding:6px 0; border-radius:10px; margin-top:-14px;
     background:linear-gradient(135deg,#ff9d3c,#ff7a1a); box-shadow:0 3px 9px rgba(255,130,30,.5); white-space:nowrap; }
