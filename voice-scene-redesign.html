@@ -90,6 +90,27 @@
   }
   @keyframes rimBreathNew { 0%,100%{opacity:.4} 50%{opacity:.75} }
 
+  /* 思考间歇态：外圈光更淡、更慢、更薄（"这是让你想的时刻，不催"） */
+  .screen.rim-think::after {
+    content:""; position:absolute; inset:0; border-radius:16px; padding:4px; pointer-events:none;
+    background:linear-gradient(120deg,#ffe1b8,#ffcf9a,#ffe1b8);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    opacity:.5; animation:rimBreathThink 6s ease-in-out infinite;
+  }
+  @keyframes rimBreathThink { 0%,100%{opacity:.25} 50%{opacity:.5} }
+
+  /* 思考提示条：居中浮在"我说完啦"按钮正上方，柔和、非催促 */
+  .think-hint {
+    position:absolute; left:50%; bottom:15%; transform:translateX(-50%); white-space:nowrap;
+    display:inline-flex; align-items:center; gap:6px;
+    background:rgba(255,255,255,.85); backdrop-filter:blur(4px);
+    color:#8a7150; font-size:11.5px; padding:6px 14px; border-radius:999px;
+    box-shadow:0 3px 10px rgba(150,110,60,.16);
+  }
+  .think-hint .z { animation:zBreath 2.4s ease-in-out infinite; }
+  @keyframes zBreath { 0%,100%{opacity:.5} 50%{opacity:1} }
+
   /* ===== 底部居中「我说完啦」按钮（形态一） ===== */
   .done-center {
     position:absolute; left:50%; bottom:5%; transform:translateX(-50%);
@@ -179,6 +200,15 @@
       <button class="done-center"><span class="mic">🎤</span>我说完啦</button>
     </div>`;
 
+  // 形态一 · 思考间歇态（提问后到开口前，柔和 + 想好再说提示）
+  const scene1think = () => `
+    <div class="screen bg-read has-center-btn rim-think">
+      <div class="paper">${paperText}${paperText}</div>
+      ${fairyAndBubble('海滩上这个人，他叫什么名字？')}
+      <div class="think-hint"><span class="z">💭</span>不着急，想好了再说～</div>
+      <button class="done-center"><span class="mic">🎤</span>我说完啦</button>
+    </div>`;
+
   // 海底页三个气泡词
   const crabBubbles = `
     <div class="bubble-word" style="left:20%;top:44%;width:23%;aspect-ratio:1"><span class="py">xiǎo qīng xiè</span><span class="zh">小青蟹</span></div>
@@ -208,6 +238,23 @@
     </div>`;
 
   document.getElementById('root').innerHTML = `
+    <div class="row">
+      <h2>🆕 提问后 → 开口前 · 思考间歇态（本次新增）</h2>
+      <div class="rsub">这是最需要柔和的时刻：AI 问完、学生还没开口。外圈光更淡更慢、给"想好再说"的提示，不催</div>
+      <div class="pair">
+        <div class="pane">
+          <span class="tag before">改前（间歇态无差别）</span>
+          ${scene1('rim-old')}
+          <div class="note">提问后仍是全屏彩虹脉动，没有"允许思考"的信号，沉默的每一秒都像在被催。</div>
+        </div>
+        <div class="pane">
+          <span class="tag after">改后（柔和思考态）</span>
+          ${scene1think()}
+          <div class="note">外圈光调到最淡最慢；气泡下方轻轻浮出"不着急，想好了再说～"，把停顿说成"被允许的"，降低开口压力。</div>
+        </div>
+      </div>
+    </div>
+
     <div class="row">
       <h2>形态一 · 朗读/问答题（无摄像头，底部居中按钮）</h2>
       <div class="rsub">AI 提问后全屏外圈呼吸 + 精灵问题气泡 + 「我说完啦」</div>
