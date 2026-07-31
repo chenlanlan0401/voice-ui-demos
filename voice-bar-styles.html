@@ -18,7 +18,22 @@
     padding:9px 14px; font-size:13px; font-weight:600; cursor:pointer; transition:all .18s;
   }
   .picker button.on { background:linear-gradient(135deg,#ff9d3c,#ff7a1a); color:#fff; border-color:transparent; }
+  .picker button.sel { position:relative; }
+  .picker button .badge {
+    position:absolute; top:-9px; right:-8px; background:#2ec26e; color:#fff;
+    font-size:10px; font-weight:700; padding:2px 6px; border-radius:8px;
+    box-shadow:0 2px 6px rgba(46,194,110,.4); white-space:nowrap;
+  }
   .desc { font-size:12.5px; color:#8a7a5e; margin-bottom:16px; text-align:center; min-height:18px; max-width:520px; }
+
+  /* ============ 本次选用方案·三阶段示意（仅 D 显示，竖排全尺寸）============ */
+  .stages-wrap { width:100%; max-width:640px; margin-top:28px; }
+  .stages-title { font-size:14px; font-weight:700; color:#4a4030; text-align:center; margin-bottom:4px; }
+  .stages-sub { font-size:12px; color:#8a7a5e; text-align:center; margin-bottom:20px; }
+  .stages { display:flex; flex-direction:column; gap:22px; align-items:center; }
+  .stage-row { display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .stage-phase { font-size:12.5px; font-weight:700; color:#ff8a1a; }
+  .stage-demo { display:flex; align-items:center; justify-content:center; }
 
   /* 课程白板模拟 */
   .board {
@@ -121,6 +136,12 @@
     <div class="bar-slot" id="slot"></div>
   </div>
 
+  <div class="stages-wrap">
+    <div class="stages-title">✅ 本次选用方案（D）· 三阶段文案示意</div>
+    <div class="stages-sub">同一个语音条，在对话三个阶段呈现不同文案</div>
+    <div class="stages" id="stages"></div>
+  </div>
+
 <script>
   const wf = (n) => `<div class="wf">` + Array.from({length:n},(_,i)=>
     `<span style="animation-delay:${(i*0.07).toFixed(2)}s"></span>`).join('') + `</div>`;
@@ -150,16 +171,34 @@
   const picker = document.getElementById('picker');
   const desc = document.getElementById('desc');
   const slot = document.getElementById('slot');
-  let cur = 0;
+  let cur = 3; // 默认选中 D（本次选用）
 
-  picker.innerHTML = VARIANTS.map((v,i)=>
-    `<button class="${i===0?'on':''}" onclick="pick(${i})">${v.name}</button>`).join('');
+  const SELECTED = 'box'; // 本次选用：D
+  picker.innerHTML = VARIANTS.map((v,i)=>{
+    const isSel = v.key === SELECTED;
+    return `<button class="${i===0?'on':''}${isSel?' sel':''}" onclick="pick(${i})">${v.name}${isSel?'<span class="badge">本次选用</span>':''}</button>`;
+  }).join('');
 
+  // D 样式的静态示意（不带交互，仅展示文案）
+  function boxDemo(text){
+    return `<div class="bar bar-box"><div class="box-col">${wf(11)}<div class="undertext">${text}</div></div><button class="done-round" title="我说完了"><i></i></button></div>`;
+  }
+  const STAGES = [
+    { phase:'① 问完 → 开麦', text:'想一想，准备好了再说～' },
+    { phase:'② 开麦中', text:'嗯嗯，我在听…' },
+    { phase:'③ 开麦 → 闭麦', text:'收到啦，你真棒！' },
+  ];
+  document.getElementById('stages').innerHTML = STAGES.map(s=>
+    `<div class="stage-row"><div class="stage-phase">${s.phase}</div><div class="stage-demo">${boxDemo(s.text)}</div></div>`).join('');
+
+  const stagesWrap = document.querySelector('.stages-wrap');
   function render(){
     const v = VARIANTS[cur];
     desc.textContent = v.desc;
     slot.innerHTML = v.html;
     picker.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on', i===cur));
+    // 三阶段示意仅在选中 D 时显示
+    stagesWrap.style.display = (v.key === SELECTED) ? '' : 'none';
     // 点条内任意"说完了"按钮 → 演示反馈
     const setStatus = (t)=>{ const s = slot.querySelector('.status'), u = slot.querySelector('.undertext');
       if(s) s.textContent = t; if(u) u.textContent = t; };
