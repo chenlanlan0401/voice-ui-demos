@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>形态二 · 文案提醒方式示意</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC","Microsoft YaHei",system-ui,sans-serif; color:#2b3548;
+    background:#eef2f7; padding: 26px 18px 60px;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  h1 { font-size:20px; font-weight:700; margin-bottom:6px; }
+  .lead { font-size:13px; color:#6b7488; text-align:center; max-width:640px; line-height:1.6; margin-bottom:22px; }
+
+  .grid { width:100%; max-width:960px; display:grid; grid-template-columns:repeat(2,1fr); gap:22px; }
+  @media (max-width:720px){ .grid { grid-template-columns:1fr; } }
+  .card { }
+  .card .cap { font-size:14px; font-weight:700; margin-bottom:3px; }
+  .card .csub { font-size:12px; color:#8a94a8; margin-bottom:10px; line-height:1.5; }
+
+  /* 一块 16:9 海底屏 */
+  .screen {
+    position:relative; width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden;
+    background:linear-gradient(180deg,#3bc6d6,#66d0cf 50%,#bfe8d8);
+    box-shadow:0 8px 24px rgba(60,80,140,.16);
+  }
+  .screen::after {   /* 柔和暖光外圈 */
+    content:""; position:absolute; inset:0; border-radius:14px; padding:5px; pointer-events:none;
+    background:linear-gradient(120deg,#ffd08a,#ffb673,#ffcf9a);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    opacity:.55; animation:rim 4s ease-in-out infinite;
+  }
+  @keyframes rim { 0%,100%{opacity:.35} 50%{opacity:.6} }
+
+  .bubble-word {
+    position:absolute; border-radius:50%;
+    background:radial-gradient(circle at 40% 32%, rgba(255,255,255,.85), rgba(200,230,255,.5));
+    border:2px solid rgba(255,255,255,.7); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; color:#2a4a8a; font-weight:700; text-align:center;
+  }
+  .bubble-word .py { font-size:8px; opacity:.8; }
+  .bubble-word .zh { font-size:12px; }
+  .fairy { position:absolute; left:1%; bottom:0; width:16%; max-width:96px; aspect-ratio:3/4;
+    background: radial-gradient(circle at 50% 30%, #ffe0c4 0 22%, transparent 23%),
+                radial-gradient(ellipse at 50% 88%, #9fe0a8 0 46%, transparent 47%); }
+  .qbubble { position:absolute; left:16%; bottom:12%; max-width:44%;
+    background:#fff; border-radius:14px 14px 14px 3px; padding:7px 11px;
+    font-size:11px; color:#38414f; box-shadow:0 3px 10px rgba(0,0,0,.14); line-height:1.4; }
+
+  /* 右下角摄像头连体组件（柔和版） */
+  .cam {
+    position:absolute; right:2.5%; bottom:6%; width:20%; max-width:130px; z-index:1;
+    padding:6px 6px 8px; border-radius:16px; background:rgba(38,25,20,.55); backdrop-filter:blur(5px);
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .cam::before { content:""; position:absolute; inset:-3px; border-radius:19px; z-index:-1;
+    background:linear-gradient(120deg,#ffd08a,#ffb673,#ffcf9a); filter:blur(6px); opacity:.5;
+    animation:rim 4s ease-in-out infinite; }
+  .cam .view { position:relative; width:100%; aspect-ratio:4/3; border-radius:11px; overflow:hidden;
+    background:linear-gradient(155deg,#6b4a3a,#3a251c 70%,#2a1912);
+    display:flex; align-items:flex-end; justify-content:center; }
+  .cam .view .wf { position:absolute; bottom:4px; display:flex; align-items:flex-end; gap:2px; height:14px; }
+  .cam .view .wf span { width:2px; border-radius:2px; background:linear-gradient(180deg,#fff,#ffd6a8);
+    animation:wave 1.2s ease-in-out infinite; }
+  @keyframes wave { 0%,100%{transform:scaleY(.4);opacity:.75} 50%{transform:scaleY(1);opacity:1} }
+  .cam .view .placeholder { position:absolute; bottom:5px; left:0; right:0; text-align:center;
+    font-size:9px; color:#ffe6cf; opacity:.9; }
+  .cam .done { position:relative; z-index:2; width:100%; border:none; cursor:pointer; color:#fff;
+    font-size:11px; font-weight:700; padding:6px 0; border-radius:10px; margin-top:-14px;
+    background:linear-gradient(135deg,#ff9d3c,#ff7a1a); box-shadow:0 3px 9px rgba(255,130,30,.5); }
+
+  /* 方式①：组件旁小提示气泡（指向组件） */
+  .hint-side {
+    position:absolute; right:24%; bottom:14%; max-width:34%; z-index:2;
+    background:rgba(255,255,255,.92); backdrop-filter:blur(4px); color:#8a7150;
+    font-size:11px; padding:6px 10px; border-radius:12px 12px 4px 12px; line-height:1.4;
+    box-shadow:0 3px 10px rgba(150,110,60,.18);
+  }
+  /* 方式②：组件正上方文案（贴着组件） */
+  .hint-top {
+    position:absolute; right:2.5%; bottom:calc(6% + 96px); max-width:24%; z-index:2;
+    background:rgba(255,255,255,.92); backdrop-filter:blur(4px); color:#8a7150;
+    font-size:10.5px; padding:5px 9px; border-radius:11px; line-height:1.35; text-align:center;
+    box-shadow:0 3px 10px rgba(150,110,60,.18);
+  }
+  /* 方式③：老师问题气泡追加一行 */
+  .qbubble .add { display:block; margin-top:4px; color:#ff8a1a; font-weight:700; }
+
+  /* 方式⑤：组件下方文案条 */
+  .cam .undertext { margin-top:6px; font-size:10px; color:#f2e3d3; text-align:center; line-height:1.3; }
+
+  /* 方式⑥：顶部轻横幅 */
+  .hint-banner {
+    position:absolute; top:5%; left:50%; transform:translateX(-50%); z-index:2; white-space:nowrap;
+    background:rgba(58,37,28,.72); color:#ffe6cf; font-size:11px; padding:6px 16px; border-radius:999px;
+    box-shadow:0 3px 10px rgba(0,0,0,.2);
+  }
+</style>
+</head>
+<body>
+  <h1>形态二 · 文案提醒方式示意</h1>
+  <p class="lead">同一个"海底朗读题 + 右下角摄像头组件"场景，展示文案提醒可以"长在哪、怎么出现"的几种方式。可任意组合，也可按沉默时长递进切换。</p>
+  <div class="grid" id="grid"></div>
+<script>
+  const wf = (n) => `<div class="wf">` + Array.from({length:n},(_,i)=>{
+    const d = Math.abs(i-(n-1)/2)/((n-1)/2);
+    const h = (4 + (1-d)*(1-d)*9).toFixed(0);
+    return `<span style="height:${h}px;animation-delay:${(i*0.06).toFixed(2)}s"></span>`;
+  }).join('') + `</div>`;
+
+  const bubbles = `
+    <div class="bubble-word" style="left:18%;top:42%;width:20%;aspect-ratio:1"><span class="py">xiǎo qīng xiè</span><span class="zh">小青蟹</span></div>
+    <div class="bubble-word" style="left:39%;top:14%;width:22%;aspect-ratio:1"><span class="py">jì jū xiè</span><span class="zh">寄居蟹</span></div>
+    <div class="bubble-word" style="left:62%;top:38%;width:21%;aspect-ratio:1"><span class="py">suō zi xiè</span><span class="zh">梭子蟹</span></div>`;
+
+  // 组件构造：可传 内部占位文字 / 按钮文案 / 下方文字
+  function cam({viewInner, doneText='我说完啦', under=''} = {}){
+    return `<div class="cam">
+      <div class="view">${viewInner}</div>
+      <button class="done">${doneText}</button>
+      ${under ? `<div class="undertext">${under}</div>` : ''}
+    </div>`;
+  }
+
+  // 场景外壳：extras 放各方式独有的提示元素
+  function scene({qAdd='', extras='', camOpts={}} = {}){
+    return `<div class="screen">
+      ${bubbles}
+      <div class="fairy"></div>
+      <div class="qbubble">看着屏幕气泡大声读出三种螃蟹名牌上的名字${qAdd ? `<span class="add">${qAdd}</span>` : ''}</div>
+      ${extras}
+      ${cam(camOpts)}
+    </div>`;
+  }
+
+  const METHODS = [
+    { cap:'① 组件旁小提示气泡',
+      csub:'气泡浮在摄像头组件左侧、尖角指向它，视线正好在作答区附近。',
+      scene: scene({ camOpts:{viewInner:wf(9)}, extras:`<div class="hint-side">🎤 该你啦～看着气泡读出来吧</div>` }) },
+
+    { cap:'② 组件正上方文案',
+      csub:'紧贴摄像头组件上沿，和组件像一体，不占用画面别处。',
+      scene: scene({ camOpts:{viewInner:wf(9)}, extras:`<div class="hint-top">🎤 该你啦，读出来吧</div>` }) },
+
+    { cap:'③ 老师问题气泡追加一行',
+      csub:'精灵老师在题目后再补一句，最像真人对话，最自然。',
+      scene: scene({ qAdd:'🎤 该你啦～大声读给我听', camOpts:{viewInner:wf(9)} }) },
+
+    { cap:'④ 摄像头内占位文字',
+      csub:'没检测到声音时，波形区显示"在听你说…"；一开口才变波形。组件自解释。',
+      scene: scene({ camOpts:{viewInner:`<div class="placeholder">在听你说…</div>`} }) },
+
+    { cap:'⑤ 组件下方文案条',
+      csub:'文案在"我说完啦"按钮下方，和组件同宽，作为组件的一部分。',
+      scene: scene({ camOpts:{viewInner:wf(9), under:'该你啦，读出来吧～'} }) },
+
+    { cap:'⑥ 按钮内文案变化',
+      csub:'等待时按钮先显示"该你说啦"，学生一开口再变回"我说完啦"。零新增元素。',
+      scene: scene({ camOpts:{viewInner:wf(9), doneText:'该你说啦'} }) },
+  ];
+
+  document.getElementById('grid').innerHTML = METHODS.map(m=>`
+    <div class="card">
+      <div class="cap">${m.cap}</div>
+      <div class="csub">${m.csub}</div>
+      ${m.scene}
+    </div>`).join('');
+</script>
+</body>
+</html>
