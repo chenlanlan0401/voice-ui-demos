@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>语音交互场景 · 改前改后</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC","Microsoft YaHei",system-ui,sans-serif; color:#2b3548;
+    background:#eef2f7; padding: 26px 18px 60px;
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+  }
+  h1 { font-size:20px; font-weight:700; }
+  .lead { font-size:13px; color:#6b7488; text-align:center; max-width:680px; line-height:1.6; margin-bottom:10px; }
+
+  .row { width:100%; max-width:960px; }
+  .row h2 { font-size:15px; font-weight:700; margin:22px 0 4px; }
+  .row .rsub { font-size:12.5px; color:#8a94a8; margin-bottom:12px; }
+  .pair { display:flex; gap:20px; flex-wrap:wrap; }
+  .pane { flex:1 1 380px; }
+  .tag { display:inline-block; font-size:12px; font-weight:700; padding:4px 12px; border-radius:10px; margin-bottom:8px; }
+  .tag.before { background:#f0e2e2; color:#a86a6a; }
+  .tag.after  { background:#2ec26e; color:#fff; }
+
+  /* ===== 通用：一块 16:9 的"屏幕" ===== */
+  .screen {
+    position:relative; width:100%; aspect-ratio:16/9; border-radius:16px; overflow:hidden;
+    box-shadow:0 10px 30px rgba(60,80,140,.18); background:#cfe0f0;
+  }
+  /* 阅读页背景 */
+  .bg-read { background:linear-gradient(180deg,#bfe0ee,#8ec5d6 55%,#e8dcc0); }
+  .bg-read .paper {
+    position:absolute; left:22%; right:6%; top:6%; bottom:6%; background:#fdfdfa; border-radius:8px;
+    box-shadow:0 6px 18px rgba(0,0,0,.12); padding:9% 7%; font-size:11px; line-height:2.1; color:#3a3128;
+    overflow:hidden;
+  }
+  .bg-read .hl { background:#ffe1b8; border-radius:3px; padding:0 3px; }
+  /* 海底页背景 */
+  .bg-sea { background:linear-gradient(180deg,#3bc6d6,#66d0cf 50%,#bfe8d8); }
+  .bubble-word {
+    position:absolute; border-radius:50%; background:radial-gradient(circle at 40% 32%, rgba(255,255,255,.85), rgba(200,230,255,.5));
+    border:2px solid rgba(255,255,255,.7); display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:#2a4a8a; font-weight:700; text-align:center;
+  }
+  .bubble-word .py { font-size:9px; opacity:.8; }
+  .bubble-word .zh { font-size:14px; }
+
+  /* 精灵老师（占位） */
+  .fairy {
+    position:absolute; left:2%; bottom:0; width:20%; max-width:120px; aspect-ratio:3/4;
+    background:
+      radial-gradient(circle at 50% 30%, #ffe0c4 0 22%, transparent 23%),
+      radial-gradient(ellipse at 50% 88%, #9fe0a8 0 46%, transparent 47%);
+  }
+  /* 问题气泡：默认贴精灵头顶偏上，避免遮住底部按钮 */
+  .qbubble {
+    position:absolute; left:19%; bottom:24%; max-width:48%;
+    background:#fff; border-radius:16px 16px 16px 4px; padding:9px 14px;
+    font-size:12px; color:#38414f; box-shadow:0 4px 12px rgba(0,0,0,.14); line-height:1.5;
+  }
+  /* 形态一：底部有居中按钮，气泡再往上抬一些 */
+  .screen.has-center-btn .qbubble { bottom:26%; }
+  /* 左侧"展开"小把手 */
+  .handle { position:absolute; left:2%; top:34%; width:16px; height:64px; border-radius:10px;
+    background:#1c1c1e; display:flex; align-items:center; justify-content:center; }
+  .handle i { width:6px; height:6px; border-radius:50%; background:#ffb347; }
+
+  .note { font-size:12px; color:#7d8698; line-height:1.55; margin-top:8px; }
+
+  /* ===== 全屏外圈光 ===== */
+  /* 改前：彩虹、持续脉动、很抢眼（像整屏被录制） */
+  .screen.rim-old::after {
+    content:""; position:absolute; inset:0; border-radius:16px; padding:7px; pointer-events:none;
+    background:conic-gradient(from 0deg,#ff5b5b,#ffb03a,#ffe93a,#5bd97a,#3ac6d6,#5a7bff,#b45bff,#ff5b8a,#ff5b5b);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    animation:rimPulseOld 1.6s ease-in-out infinite;
+  }
+  @keyframes rimPulseOld { 0%,100%{opacity:.55; filter:blur(1px)} 50%{opacity:1; filter:blur(0)} }
+
+  /* 改后：单一暖色、更慢更淡的呼吸（柔和陪伴，不抢内容） */
+  .screen.rim-new::after {
+    content:""; position:absolute; inset:0; border-radius:16px; padding:6px; pointer-events:none;
+    background:linear-gradient(120deg,#ffd08a,#ffb673,#ffcf9a);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    opacity:.7; animation:rimBreathNew 4s ease-in-out infinite;
+  }
+  @keyframes rimBreathNew { 0%,100%{opacity:.4} 50%{opacity:.75} }
+
+  /* ===== 底部居中「我说完啦」按钮（形态一） ===== */
+  .done-center {
+    position:absolute; left:50%; bottom:5%; transform:translateX(-50%);
+    display:flex; align-items:center; gap:6px; border:none; cursor:pointer; color:#fff;
+    font-size:13px; font-weight:700; padding:9px 22px; border-radius:999px;
+    background:linear-gradient(135deg,#ff9d3c,#ff7a1a); box-shadow:0 5px 14px rgba(255,130,30,.5);
+  }
+  .done-center .mic { font-size:13px; }
+
+  /* ===== 右下角语音组件（形态二） ===== */
+  /* 改前：硬方框摄像头 + 三根粗竖条压脸 */
+  .cam-old {
+    position:absolute; right:3%; bottom:6%; width:22%; max-width:150px;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+  }
+  .cam-old .view {
+    position:relative; width:100%; aspect-ratio:4/3; border-radius:8px; overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 42%, #ffd9b8 0 26%, transparent 27%),
+      radial-gradient(ellipse at 50% 92%, #6b8fd4 0 40%, transparent 41%),
+      linear-gradient(160deg,#8fb3e8,#6f93cf);
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .cam-old .view i { width:7px; height:22px; border-radius:3px; background:#ff9d3c;
+    box-shadow:0 1px 4px rgba(0,0,0,.35); }
+  .cam-old .done { width:80%; border:none; cursor:pointer; color:#fff; font-size:12px; font-weight:700;
+    padding:7px 0; border-radius:10px; background:linear-gradient(135deg,#ff9d3c,#ff7a1a); }
+
+  /* 改后：连体组件——圆角摄像头 + 底部流动波形 + 按钮，统一底衬 + 暖光 */
+  .cam-new {
+    position:absolute; right:3%; bottom:6%; width:23%; max-width:158px; z-index:1;
+    padding:7px 7px 9px; border-radius:18px;
+    background:rgba(38,25,20,.55); backdrop-filter:blur(5px);
+    display:flex; flex-direction:column; align-items:center; gap:7px;
+  }
+  .cam-new::before { content:""; position:absolute; inset:-3px; border-radius:21px; z-index:-1;
+    background:linear-gradient(120deg,#ffd08a,#ffb673,#ffcf9a);
+    filter:blur(7px); opacity:.55; animation:rimBreathNew 4s ease-in-out infinite; }
+  .cam-new .view {
+    position:relative; width:100%; aspect-ratio:4/3; border-radius:13px; overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 42%, #ffd9b8 0 26%, transparent 27%),
+      radial-gradient(ellipse at 50% 92%, #6b8fd4 0 40%, transparent 41%),
+      linear-gradient(160deg,#8fb3e8,#6f93cf);
+  }
+  .cam-new .view .wf {
+    position:absolute; left:0; right:0; bottom:5px; display:flex; align-items:flex-end;
+    justify-content:center; gap:2.5px; height:16px;
+  }
+  .cam-new .view .wf span { width:2.5px; border-radius:3px;
+    background:linear-gradient(180deg,#fff,#ffd6a8); animation:wave 1.15s ease-in-out infinite; }
+  @keyframes wave { 0%,100%{transform:scaleY(.4);opacity:.75} 50%{transform:scaleY(1);opacity:1} }
+  .cam-new .done { width:100%; border:none; cursor:pointer; color:#fff; font-size:12px; font-weight:700;
+    padding:7px 0; border-radius:11px; background:linear-gradient(135deg,#ff9d3c,#ff7a1a); }
+</style>
+</head>
+<body>
+  <h1>语音交互场景 · 改前 / 改后</h1>
+  <p class="lead">尽量一对一还原两种真实形态。核心改动：把「全屏彩虹脉动外框」（像整屏在录制/被监视）改成「柔和暖光呼吸」；形态二再把摄像头柔化、粗竖条换成流动波形。问题气泡与「我说完啦」保留。</p>
+
+  <div id="root"></div>
+
+<script>
+  const wf = (n) => `<div class="wf">` + Array.from({length:n},(_,i)=>{
+    const d = Math.abs(i-(n-1)/2)/((n-1)/2);
+    const h = (4 + (1-d)*(1-d)*11).toFixed(0);
+    return `<span style="height:${h}px;animation-delay:${(i*0.06).toFixed(2)}s"></span>`;
+  }).join('') + `</div>`;
+
+  // 阅读页纸面内容（占位）
+  const paperText = `
+    <div>他说到这儿，"唉——"叹了一口气，显得更加瘦了。
+    <span class="hl">他是真心爱孩子们的。</span>
+    依依和良良都觉得很过意不去，珊珊连眼圈儿也红了。</div>`;
+
+  // 通用：精灵 + 展开把手 + 问题气泡
+  const fairyAndBubble = (q) => `
+    <div class="handle"><i></i></div>
+    <div class="fairy"></div>
+    <div class="qbubble">${q}</div>`;
+
+  // 形态一（阅读页 · 底部居中按钮）
+  const scene1 = (rimClass) => `
+    <div class="screen bg-read has-center-btn ${rimClass}">
+      <div class="paper">${paperText}${paperText}</div>
+      ${fairyAndBubble('海滩上这个人，他叫什么名字？')}
+      <button class="done-center"><span class="mic">🎤</span>我说完啦</button>
+    </div>`;
+
+  // 海底页三个气泡词
+  const crabBubbles = `
+    <div class="bubble-word" style="left:20%;top:44%;width:23%;aspect-ratio:1"><span class="py">xiǎo qīng xiè</span><span class="zh">小青蟹</span></div>
+    <div class="bubble-word" style="left:40%;top:16%;width:25%;aspect-ratio:1"><span class="py">jì jū xiè</span><span class="zh">寄居蟹</span></div>
+    <div class="bubble-word" style="left:64%;top:40%;width:24%;aspect-ratio:1"><span class="py">suō zi xiè</span><span class="zh">梭子蟹</span></div>`;
+
+  // 形态二（海底页 · 右下角摄像头组件）——改前
+  const scene2old = (rimClass) => `
+    <div class="screen bg-sea ${rimClass}">
+      ${crabBubbles}
+      ${fairyAndBubble('看着屏幕气泡大声读出三种螃蟹名牌上的名字')}
+      <div class="cam-old">
+        <div class="view"><i></i><i></i><i></i></div>
+        <button class="done">我说完啦</button>
+      </div>
+    </div>`;
+
+  // 形态二 —— 改后
+  const scene2new = (rimClass) => `
+    <div class="screen bg-sea ${rimClass}">
+      ${crabBubbles}
+      ${fairyAndBubble('看着屏幕气泡大声读出三种螃蟹名牌上的名字')}
+      <div class="cam-new">
+        <div class="view">${wf(11)}</div>
+        <button class="done">我说完啦</button>
+      </div>
+    </div>`;
+
+  document.getElementById('root').innerHTML = `
+    <div class="row">
+      <h2>形态一 · 朗读/问答题（无摄像头，底部居中按钮）</h2>
+      <div class="rsub">AI 提问后全屏外圈呼吸 + 精灵问题气泡 + 「我说完啦」</div>
+      <div class="pair">
+        <div class="pane">
+          <span class="tag before">改前</span>
+          ${scene1('rim-old')}
+          <div class="note">全屏彩虹外框持续脉动，像"整屏在录制/被监视"，抢注意力、加剧紧张。</div>
+        </div>
+        <div class="pane">
+          <span class="tag after">改后</span>
+          ${scene1('rim-new')}
+          <div class="note">外框改为单一暖色、更慢更淡的呼吸——像柔和陪伴的注视，不与内容争夺注意力。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <h2>形态二 · 朗读题（右下角摄像头组件）</h2>
+      <div class="rsub">全屏外圈呼吸 + 气泡词 + 精灵气泡 + 右下角「摄像头 + 波形 + 我说完啦」</div>
+      <div class="pair">
+        <div class="pane">
+          <span class="tag before">改前</span>
+          ${scene2old('rim-old')}
+          <div class="note">全屏彩虹脉动 + 硬方框摄像头 + 三根粗竖条压在脸上：被拍 + 被录双重压力。</div>
+        </div>
+        <div class="pane">
+          <span class="tag after">改后</span>
+          ${scene2new('rim-new')}
+          <div class="note">外框暖光柔化；摄像头圆角、波形移到画面底部不压脸；摄像头+波形+按钮整合为连体组件，自带底衬，背景变化不影响可读。</div>
+        </div>
+      </div>
+    </div>`;
+</script>
+</body>
+</html>
