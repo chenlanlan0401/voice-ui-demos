@@ -85,10 +85,10 @@
   .cam.soft::before { opacity:.3; animation:rimSoft 6s ease-in-out infinite; }
   .cam .view { position:relative; width:100%; aspect-ratio:4/3; border-radius:11px; overflow:hidden;
     background:linear-gradient(155deg,#6b4a3a,#3a251c 70%,#2a1912); }
-  .cam .view .wf { position:absolute; left:0; right:0; bottom:5px; display:flex; align-items:flex-end;
-    justify-content:center; gap:2.5px; height:26px; }
-  .cam .view .wf span { width:2.5px; border-radius:2px; background:linear-gradient(180deg,#fff,#ffd6a8);
-    transform-origin:bottom; animation:wave .85s ease-in-out infinite; }
+  .cam .view .wf { position:absolute; left:0; right:0; top:50%; transform:translateY(-50%);
+    display:flex; align-items:center; justify-content:center; gap:2.5px; height:26px; }
+  .cam .view .wf span { width:2.5px; height:22px; border-radius:2px; background:linear-gradient(180deg,#fff,#ffd6a8);
+    transform-origin:center; animation:wave .85s ease-in-out infinite; }
   /* 开麦阶段：波动更明显（幅度更大、更快） */
   @keyframes wave { 0%,100%{transform:scaleY(.35);opacity:.75} 50%{transform:scaleY(1.6);opacity:1} }
   /* 柔和态（问完→开麦）：单独小幅度、更慢、更淡 */
