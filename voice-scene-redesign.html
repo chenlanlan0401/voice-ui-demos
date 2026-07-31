@@ -108,6 +108,16 @@
     color:#8a7150; font-size:11.5px; padding:6px 14px; border-radius:999px;
     box-shadow:0 3px 10px rgba(150,110,60,.16);
   }
+  /* 形态二·组件上方的"轮到你了"小提示 */
+  .cam-hint {
+    position:absolute; right:3%; bottom:calc(6% + 22%); max-width:24%;
+    background:rgba(255,255,255,.9); backdrop-filter:blur(4px);
+    color:#8a7150; font-size:11px; padding:5px 10px; border-radius:12px 12px 12px 4px;
+    box-shadow:0 3px 10px rgba(150,110,60,.18); line-height:1.4; text-align:center;
+  }
+  /* 形态二·等待作答态：波形更淡更慢、暖光更收敛 */
+  .cam-new.waiting .view .wf span { opacity:.5; animation-duration:2.4s; }
+  .cam-new.waiting::before { opacity:.35; }
   .think-hint .z { animation:zBreath 2.4s ease-in-out infinite; }
   @keyframes zBreath { 0%,100%{opacity:.5} 50%{opacity:1} }
 
@@ -205,7 +215,7 @@
     <div class="screen bg-read has-center-btn rim-think">
       <div class="paper">${paperText}${paperText}</div>
       ${fairyAndBubble('海滩上这个人，他叫什么名字？')}
-      <div class="think-hint"><span class="z">💭</span>不着急，想好了再说～</div>
+      <div class="think-hint"><span class="z">🎤</span>该你啦～想好了就说给我听</div>
       <button class="done-center"><span class="mic">🎤</span>我说完啦</button>
     </div>`;
 
@@ -237,6 +247,18 @@
       </div>
     </div>`;
 
+  // 形态二 · 等待作答态（提问后到开口前）：柔和外圈 + 组件更淡 + "轮到你了"提示
+  const scene2wait = () => `
+    <div class="screen bg-sea rim-think">
+      ${crabBubbles}
+      ${fairyAndBubble('看着屏幕气泡大声读出三种螃蟹名牌上的名字')}
+      <div class="cam-hint">🎤 该你啦～看着气泡读出来吧</div>
+      <div class="cam-new waiting">
+        <div class="view">${wf(11)}</div>
+        <button class="done">我说完啦</button>
+      </div>
+    </div>`;
+
   document.getElementById('root').innerHTML = `
     <div class="row">
       <h2>🆕 提问后 → 开口前 · 思考间歇态（本次新增）</h2>
@@ -248,9 +270,9 @@
           <div class="note">提问后仍是全屏彩虹脉动，没有"允许思考"的信号，沉默的每一秒都像在被催。</div>
         </div>
         <div class="pane">
-          <span class="tag after">改后（柔和思考态）</span>
+          <span class="tag after">改后（柔和 + 告知轮到你）</span>
           ${scene1think()}
-          <div class="note">外圈光调到最淡最慢；气泡下方轻轻浮出"不着急，想好了再说～"，把停顿说成"被允许的"，降低开口压力。</div>
+          <div class="note">外圈光调到最淡最慢；按钮上方浮出"🎤 该你啦～想好了就说给我听"——既柔和、又明确告诉学生"现在在等你作答"。</div>
         </div>
       </div>
     </div>
@@ -285,6 +307,23 @@
           <span class="tag after">改后</span>
           ${scene2new('rim-new')}
           <div class="note">外框暖光柔化；摄像头圆角、波形移到画面底部不压脸；摄像头+波形+按钮整合为连体组件，自带底衬，背景变化不影响可读。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <h2>形态二 · 等待作答态（提问后 → 开口前）</h2>
+      <div class="rsub">在形态二基础上：外圈更柔和、右下角组件更淡（波形慢下来）、并明确告知"轮到你了"</div>
+      <div class="pair">
+        <div class="pane">
+          <span class="tag before">改前</span>
+          ${scene2old('rim-old')}
+          <div class="note">提问后仍是彩虹脉动 + 硬方框摄像头 + 粗竖条，没有"轮到你"的提示，学生不确定该不该开口。</div>
+        </div>
+        <div class="pane">
+          <span class="tag after">改后（柔和 + 告知轮到你）</span>
+          ${scene2wait()}
+          <div class="note">外圈调淡放慢；右下角组件的波形也变淡放慢（等待感）；组件上方浮出"🎤 该你啦～看着气泡读出来吧"，明确提示轮次又不催。</div>
         </div>
       </div>
     </div>`;
