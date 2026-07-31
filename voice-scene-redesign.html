@@ -103,7 +103,7 @@
   /* 改前：硬方框摄像头 + 三根粗竖条压脸 */
   .cam-old {
     position:absolute; right:3%; bottom:6%; width:22%; max-width:150px;
-    display:flex; flex-direction:column; align-items:center; gap:6px;
+    display:flex; flex-direction:column; align-items:center;
   }
   .cam-old .view {
     position:relative; width:100%; aspect-ratio:4/3; border-radius:8px; overflow:hidden;
@@ -112,15 +112,18 @@
   }
   .cam-old .view i { width:7px; height:22px; border-radius:3px; background:#ff9d3c;
     box-shadow:0 1px 4px rgba(0,0,0,.35); }
-  .cam-old .done { width:80%; border:none; cursor:pointer; color:#fff; font-size:12px; font-weight:700;
-    padding:7px 0; border-radius:10px; background:linear-gradient(135deg,#ff9d3c,#ff7a1a); }
+  /* 按钮中线与摄像头底边平齐：上移自身高度的一半 */
+  .cam-old .done { position:relative; z-index:2; width:80%; border:none; cursor:pointer;
+    color:#fff; font-size:12px; font-weight:700; padding:7px 0; border-radius:10px;
+    background:linear-gradient(135deg,#ff9d3c,#ff7a1a); box-shadow:0 3px 10px rgba(255,130,30,.5);
+    margin-top:-16px; }
 
   /* 改后：连体组件——圆角摄像头 + 底部流动波形 + 按钮，统一底衬 + 暖光 */
   .cam-new {
     position:absolute; right:3%; bottom:6%; width:23%; max-width:158px; z-index:1;
     padding:7px 7px 9px; border-radius:18px;
     background:rgba(38,25,20,.55); backdrop-filter:blur(5px);
-    display:flex; flex-direction:column; align-items:center; gap:7px;
+    display:flex; flex-direction:column; align-items:center;
   }
   .cam-new::before { content:""; position:absolute; inset:-3px; border-radius:21px; z-index:-1;
     background:linear-gradient(120deg,#ffd08a,#ffb673,#ffcf9a);
@@ -136,8 +139,11 @@
   .cam-new .view .wf span { width:2.5px; border-radius:3px;
     background:linear-gradient(180deg,#fff,#ffd6a8); animation:wave 1.15s ease-in-out infinite; }
   @keyframes wave { 0%,100%{transform:scaleY(.4);opacity:.75} 50%{transform:scaleY(1);opacity:1} }
-  .cam-new .done { width:100%; border:none; cursor:pointer; color:#fff; font-size:12px; font-weight:700;
-    padding:7px 0; border-radius:11px; background:linear-gradient(135deg,#ff9d3c,#ff7a1a); }
+  /* 按钮中线与摄像头底边平齐：上移自身高度的一半 */
+  .cam-new .done { position:relative; z-index:2; width:90%; border:none; cursor:pointer;
+    color:#fff; font-size:12px; font-weight:700; padding:7px 0; border-radius:11px;
+    background:linear-gradient(135deg,#ff9d3c,#ff7a1a); box-shadow:0 3px 10px rgba(255,130,30,.5);
+    margin-top:-16px; }
 </style>
 </head>
 <body>
