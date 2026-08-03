@@ -288,12 +288,17 @@
     };
   });
 
-  function stopWave(u) { if (u.animId) { clearInterval(u.animId); u.animId = null; } u.bars.forEach(b => b.style.height = '6px'); }
+  // 平缓态：固定静态波形（8 根，两侧低中间略高），待开麦与暂停开麦完全一致
+  const CALM_HEIGHTS = [7, 10, 8, 12, 9, 11, 8, 7];
+  function stopWave(u) { if (u.animId) { clearInterval(u.animId); u.animId = null; } }
   function runWave(u, amp) {
     stopWave(u);
-    const max = amp === 'strong' ? 26 : 8;   // 剧烈 vs 平缓
-    const base = amp === 'strong' ? 8 : 5;
-    u.animId = setInterval(() => u.bars.forEach(b => b.style.height = (base + Math.random() * max) + 'px'), amp === 'strong' ? 130 : 340);
+    if (amp === 'strong') {
+      u.animId = setInterval(() => u.bars.forEach(b => b.style.height = (8 + Math.random() * 26) + 'px'), 130);
+    } else {
+      // 平缓：固定高度，不跳动 → 两个平缓阶段视觉完全相同
+      u.bars.forEach((b, i) => b.style.height = CALM_HEIGHTS[i] + 'px');
+    }
   }
 
   function applyStage(u, stage) {
