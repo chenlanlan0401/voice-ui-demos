@@ -83,13 +83,12 @@
 
   /* ===== 阶段状态色 ===== */
   .voice-text { font-weight: 600; white-space: nowrap; }
-  /* 待开麦 与 暂停开麦 保持完全一致（同为平缓态）：文案暖橙、波形青色 */
-  .stage-idle   .voice-text,
-  .stage-paused .voice-text { color: #ffd9a8; }
+  /* 文案颜色三阶段保持一致 */
+  .voice-text { color: #ffffff; }
+  /* 待开麦 与 暂停开麦 保持完全一致（同为平缓态）：波形青色 */
   .stage-idle   .wave span,
   .stage-paused .wave span { background: #6cc0c8; }
-  /* 开麦收音中：区别色 */
-  .stage-listen .voice-text { color: #a8f5d8; }
+  /* 开麦收音中：波形区别色 */
   .stage-listen .wave span { background: #14e69a; }
 
   /* 结束按钮通用 */
