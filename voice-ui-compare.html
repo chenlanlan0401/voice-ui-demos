@@ -152,6 +152,9 @@
   .view { display: none; }
   .view.active { display: block; }
 
+  /* 无摄像头权限：隐藏所有摄像头元素（坞内 + 独立），布局其余不变 */
+  .stage.no-cam .cam { display: none; }
+
   /* ===== 阶段调试面板 ===== */
   .panel {
     width: 900px; max-width: 100%;
@@ -171,15 +174,22 @@
 </style>
 </head>
 <body>
-  <!-- 顶部：两大类切换 -->
+  <!-- 顶层：摄像头权限切换 -->
   <div class="switcher">
-    <span class="label">方案大类：</span>
+    <span class="label">摄像头权限：</span>
+    <button data-cammode="on" class="active">有摄像头权限</button>
+    <button data-cammode="off">无摄像头权限</button>
+  </div>
+
+  <!-- 次级：布局方案切换 -->
+  <div class="switcher">
+    <span class="label">布局方案：</span>
     <button data-view="merged" class="active">① 合而为一（摄像头在坞内）</button>
     <button data-view="split">② 摄像头独立（拆到右上角）</button>
   </div>
 
   <!-- 舞台 -->
-  <div class="stage">
+  <div class="stage" id="stage">
     <div class="clutter"></div>
     <div class="crab c1"><div class="py">jì jū xiè</div><div class="name">寄居蟹</div></div>
     <div class="crab c2"><div class="py">xiǎo qīng xiè</div><div class="name">小青蟹</div></div>
@@ -328,12 +338,22 @@
     if (e.target.dataset.stage) setStage(e.target.dataset.stage);
   });
 
-  // 顶部大类切换
-  document.querySelector('.switcher').addEventListener('click', e => {
-    const v = e.target.dataset.view;
-    if (!v) return;
-    document.querySelectorAll('.switcher button').forEach(b => b.classList.toggle('active', b === e.target));
-    document.querySelectorAll('.view').forEach(view => view.classList.toggle('active', view.id === 'view-' + v));
+  // 布局方案切换（仅在自身 switcher 内切高亮）
+  document.querySelectorAll('[data-view]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const v = btn.dataset.view;
+      btn.parentElement.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.view').forEach(view => view.classList.toggle('active', view.id === 'view-' + v));
+    });
+  });
+
+  // 摄像头权限切换：off 时给舞台加 .no-cam 隐藏所有摄像头
+  document.querySelectorAll('[data-cammode]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const on = btn.dataset.cammode === 'on';
+      btn.parentElement.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+      document.getElementById('stage').classList.toggle('no-cam', !on);
+    });
   });
 
   setStage('idle');
