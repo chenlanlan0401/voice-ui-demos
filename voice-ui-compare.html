@@ -83,11 +83,14 @@
 
   /* ===== 阶段状态色 ===== */
   .voice-text { font-weight: 600; white-space: nowrap; }
-  .stage-idle   .voice-text { color: #ffd9a8; }
+  /* 待开麦 与 暂停开麦 保持完全一致（同为平缓态）：文案暖橙、波形青色 */
+  .stage-idle   .voice-text,
+  .stage-paused .voice-text { color: #ffd9a8; }
+  .stage-idle   .wave span,
+  .stage-paused .wave span { background: #6cc0c8; }
+  /* 开麦收音中：区别色 */
   .stage-listen .voice-text { color: #a8f5d8; }
-  .stage-paused .voice-text { color: #cfd4da; }
   .stage-listen .wave span { background: #14e69a; }
-  .stage-paused .wave span { background: #9aa1aa; }
 
   /* 结束按钮通用 */
   .end-btn {
@@ -288,17 +291,14 @@
     };
   });
 
-  // 平缓态：固定静态波形（8 根，两侧低中间略高），待开麦与暂停开麦完全一致
-  const CALM_HEIGHTS = [7, 10, 8, 12, 9, 11, 8, 7];
-  function stopWave(u) { if (u.animId) { clearInterval(u.animId); u.animId = null; } }
+  function stopWave(u) { if (u.animId) { clearInterval(u.animId); u.animId = null; } u.bars.forEach(b => b.style.height = '6px'); }
   function runWave(u, amp) {
     stopWave(u);
-    if (amp === 'strong') {
-      u.animId = setInterval(() => u.bars.forEach(b => b.style.height = (8 + Math.random() * 26) + 'px'), 130);
-    } else {
-      // 平缓：固定高度，不跳动 → 两个平缓阶段视觉完全相同
-      u.bars.forEach((b, i) => b.style.height = CALM_HEIGHTS[i] + 'px');
-    }
+    // 平缓：小幅波动；剧烈：大幅波动。两个平缓阶段用同一套参数 → 幅度一致
+    const base = amp === 'strong' ? 8 : 5;
+    const max  = amp === 'strong' ? 26 : 7;
+    const speed = amp === 'strong' ? 130 : 300;
+    u.animId = setInterval(() => u.bars.forEach(b => b.style.height = (base + Math.random() * max) + 'px'), speed);
   }
 
   function applyStage(u, stage) {
