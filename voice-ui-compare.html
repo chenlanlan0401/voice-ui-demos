@@ -83,13 +83,8 @@
 
   /* ===== 阶段状态色 ===== */
   .voice-text { font-weight: 600; white-space: nowrap; }
-  /* 文案颜色三阶段保持一致 */
+  /* 文案与波形颜色三阶段保持一致（波形色见 .wave span 基础规则） */
   .voice-text { color: #ffffff; }
-  /* 待开麦 与 暂停开麦 保持完全一致（同为平缓态）：波形青色 */
-  .stage-idle   .wave span,
-  .stage-paused .wave span { background: #6cc0c8; }
-  /* 开麦收音中：波形区别色 */
-  .stage-listen .wave span { background: #14e69a; }
 
   /* 结束按钮通用 */
   .end-btn {
