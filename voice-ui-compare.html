@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>课堂语音交互 · 布局对比</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #e8ecf0;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 24px; gap: 18px; min-height: 100vh;
+  }
+
+  /* ===== 顶部大类切换 ===== */
+  .switcher {
+    width: 900px; max-width: 100%;
+    display: flex; gap: 10px; align-items: center;
+    background: #fff; padding: 14px 18px; border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  }
+  .switcher .label { font-size: 14px; color: #888; margin-right: 6px; }
+  .switcher button {
+    padding: 10px 20px; border: 1.5px solid #d0d5dd; border-radius: 10px;
+    background: #f8f9fb; cursor: pointer; font-size: 15px; color: #444;
+    font-family: inherit; transition: all .18s; font-weight: 600;
+  }
+  .switcher button.active { background: #3a7afe; border-color: #3a7afe; color: #fff; }
+
+  /* ===== 课堂舞台 ===== */
+  .stage {
+    position: relative; width: 900px; max-width: 100%;
+    aspect-ratio: 16 / 9; border-radius: 20px; overflow: hidden;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,.5), transparent 40%),
+      linear-gradient(160deg, #b8e6df 0%, #8fd3cf 50%, #6cc0c8 100%);
+    box-shadow: 0 12px 40px rgba(0,0,0,.15);
+  }
+  .clutter {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      radial-gradient(circle at 12% 70%, rgba(255,200,120,.35) 0 60px, transparent 61px),
+      radial-gradient(circle at 60% 88%, rgba(255,150,180,.28) 0 70px, transparent 71px);
+  }
+  /* 课程内容 */
+  .crab {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.85), rgba(214,240,240,.6));
+    box-shadow: 0 8px 24px rgba(80,150,150,.25), inset 0 0 30px rgba(255,255,255,.6);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  }
+  .crab .py { font-size: 13px; color: #5a8f8a; letter-spacing: 1px; margin-bottom: 3px; }
+  .crab .name { font-size: 24px; font-weight: 700; color: #2b3f3d; }
+  .crab.c1 { width: 170px; height: 170px; left: 34%; top: 12%; }
+  .crab.c2 { width: 142px; height: 142px; left: 15%; top: 38%; }
+  .crab.c3 { width: 156px; height: 156px; left: 55%; top: 40%; }
+
+  .prompt-bubble {
+    position: absolute; left: 14%; top: 60%;
+    background: #fff; padding: 15px 20px; border-radius: 16px; max-width: 320px;
+    font-size: 16px; color: #333; line-height: 1.5;
+    box-shadow: 0 6px 18px rgba(0,0,0,.12); z-index: 5;
+  }
+  .avatar { position: absolute; left: 22px; bottom: 20px; z-index: 4; }
+  .avatar .head { width: 42px; height: 42px; border-radius: 50%; background: #ffd9b3; margin: 0 auto; }
+  .avatar .body { width: 64px; height: 36px; border-radius: 28px 28px 0 0; background: #a8d8a0; margin-top: -5px; }
+
+  /* ===== 摄像头小窗 ===== */
+  .cam {
+    border-radius: 12px;
+    background: linear-gradient(135deg, #3a3f47, #23262b);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; flex-shrink: 0; overflow: hidden;
+  }
+  .cam .dot { position: absolute; top: 5px; right: 5px; width: 7px; height: 7px; border-radius: 50%; background: #ff5252; box-shadow: 0 0 6px #ff5252; }
+  .cam.off .dot { background: #777; box-shadow: none; }
+  .cam.off .face { opacity: .4; }
+
+  /* ===== 波形通用 ===== */
+  .wave { display: flex; align-items: center; gap: 3px; }
+  .wave span { width: 4px; border-radius: 2px; background: #6cc0c8; height: 6px; transition: height .12s, background .3s; }
+
+  /* ===== 阶段状态色 ===== */
+  .voice-text { font-weight: 600; white-space: nowrap; }
+  .stage-idle   .voice-text { color: #ffd9a8; }
+  .stage-listen .voice-text { color: #a8f5d8; }
+  .stage-paused .voice-text { color: #cfd4da; }
+  .stage-listen .wave span { background: #14e69a; }
+  .stage-paused .wave span { background: #9aa1aa; }
+
+  /* 结束按钮通用 */
+  .end-btn {
+    border: none; cursor: pointer; font-family: inherit;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s; flex-shrink: 0;
+  }
+  /* 样式A：停止方块 / 播放三角 */
+  .end-btn.styleA {
+    width: 42px; height: 42px; border-radius: 50%; font-size: 16px;
+    background: #ff5a52; color: #fff;
+  }
+  .end-btn.styleA:hover { background: #ff6f68; }
+  /* 样式C：文字按钮 */
+  .end-btn.styleC {
+    padding: 8px 14px; border-radius: 12px; font-size: 13px; font-weight: 700;
+    background: #ff5a52; color: #fff; white-space: nowrap;
+  }
+  .end-btn.styleC:hover { background: #ff6f68; }
+
+  /* ===== 控制坞 / 横条 通用容器（波形在上、文案在下） ===== */
+  .ctrl {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    background: rgba(30, 34, 40, .55);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-radius: 18px; border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 8px 28px rgba(0,0,0,.28); z-index: 8;
+  }
+  .ctrl .voice { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+  .ctrl .voice .wave { height: 24px; }
+  .ctrl .voice .voice-text { font-size: 14px; }
+
+  /* 大类一：合而为一（含摄像头，右下，两种按钮样式竖排对比） */
+  .docks { position: absolute; right: 18px; bottom: 18px; display: flex; flex-direction: column; gap: 12px; align-items: flex-end; z-index: 8; }
+  .dock { max-width: 300px; }
+  .dock .cam { width: 44px; height: 44px; }
+  .dock .cam .face { font-size: 22px; }
+
+  /* 大类二：摄像头独立 */
+  .cam-standalone {
+    position: absolute; right: 18px; top: 18px;
+    width: 96px; height: 72px; z-index: 8;
+    box-shadow: 0 6px 20px rgba(0,0,0,.25);
+    border: 2px solid rgba(255,255,255,.5);
+  }
+  .cam-standalone .face { font-size: 34px; }
+  .cam-standalone .caption {
+    position: absolute; bottom: 4px; left: 0; right: 0; text-align: center;
+    font-size: 10px; color: rgba(255,255,255,.85);
+  }
+  /* 横条控制区（右下，两种按钮样式并列） */
+  .bars { position: absolute; right: 18px; bottom: 18px; display: flex; flex-direction: column; gap: 12px; align-items: flex-end; z-index: 8; }
+  .bar { max-width: 260px; }
+  .style-tag { font-size: 11px; color: rgba(0,0,0,.4); margin-right: 4px; align-self: center; }
+  .bar-row { display: flex; align-items: center; gap: 8px; }
+
+  /* 视图切换显隐 */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ===== 阶段调试面板 ===== */
+  .panel {
+    width: 900px; max-width: 100%;
+    background: #fff; border-radius: 16px; padding: 18px 22px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.08);
+  }
+  .panel h3 { font-size: 14px; color: #666; margin-bottom: 12px; font-weight: 600; }
+  .btns { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btns button {
+    padding: 8px 15px; border: 1.5px solid #d0d5dd; border-radius: 10px;
+    background: #f8f9fb; cursor: pointer; font-size: 14px; color: #444;
+    transition: all .18s; font-family: inherit;
+  }
+  .btns button:hover { border-color: #6cc0c8; color: #2b7a7a; }
+  .btns button.active { background: #6cc0c8; border-color: #6cc0c8; color: #fff; }
+  .hint { margin-top: 12px; font-size: 13px; color: #999; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <!-- 顶部：两大类切换 -->
+  <div class="switcher">
+    <span class="label">方案大类：</span>
+    <button data-view="merged" class="active">① 合而为一（摄像头在坞内）</button>
+    <button data-view="split">② 摄像头独立（拆到右上角）</button>
+  </div>
+
+  <!-- 舞台 -->
+  <div class="stage">
+    <div class="clutter"></div>
+    <div class="crab c1"><div class="py">jì jū xiè</div><div class="name">寄居蟹</div></div>
+    <div class="crab c2"><div class="py">xiǎo qīng xiè</div><div class="name">小青蟹</div></div>
+    <div class="crab c3"><div class="py">suō zi xiè</div><div class="name">梭子蟹</div></div>
+    <div class="prompt-bubble">看着屏幕气泡大声读出三种螃蟹名牌上的名字</div>
+    <div class="avatar"><div class="head"></div><div class="body"></div></div>
+
+    <!-- 大类一：合而为一（摄像头在坞内，两种按钮样式竖排对比） -->
+    <div class="view active" id="view-merged">
+      <div class="docks">
+        <!-- 样式A：停止方块 -->
+        <div class="bar-row">
+          <span class="style-tag">样式A</span>
+          <div class="ctrl dock" data-unit>
+            <div class="cam" data-cam><span class="dot"></span><span class="face">🙂</span></div>
+            <div class="voice">
+              <div class="wave" data-wave></div>
+              <span class="voice-text" data-text>准备好了再说～</span>
+            </div>
+            <button class="end-btn styleA" data-end data-style="A" title="点击暂停/继续">⏹</button>
+          </div>
+        </div>
+        <!-- 样式C：文字按钮 -->
+        <div class="bar-row">
+          <span class="style-tag">样式C</span>
+          <div class="ctrl dock" data-unit>
+            <div class="cam" data-cam><span class="dot"></span><span class="face">🙂</span></div>
+            <div class="voice">
+              <div class="wave" data-wave></div>
+              <span class="voice-text" data-text>准备好了再说～</span>
+            </div>
+            <button class="end-btn styleC" data-end data-style="C" title="点击暂停/继续">说完了</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 大类二：摄像头独立（右上角） -->
+    <div class="view" id="view-split">
+      <div class="cam cam-standalone" data-cam><span class="dot"></span><span class="face">🙂</span><span class="caption">你在镜头里</span></div>
+
+      <div class="bars">
+        <!-- 样式A：停止方块 -->
+        <div class="bar-row">
+          <span class="style-tag">样式A</span>
+          <div class="ctrl bar" data-unit>
+            <div class="voice">
+              <div class="wave" data-wave></div>
+              <span class="voice-text" data-text>准备好了再说～</span>
+            </div>
+            <button class="end-btn styleA" data-end data-style="A" title="点击暂停/继续">⏹</button>
+          </div>
+        </div>
+        <!-- 样式C：文字按钮 -->
+        <div class="bar-row">
+          <span class="style-tag">样式C</span>
+          <div class="ctrl bar" data-unit>
+            <div class="voice">
+              <div class="wave" data-wave></div>
+              <span class="voice-text" data-text>准备好了再说～</span>
+            </div>
+            <button class="end-btn styleC" data-end data-style="C" title="点击暂停/继续">说完了</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 阶段调试面板 -->
+  <div class="panel">
+    <h3>切换语音交互阶段（模拟真实状态，两大类同步生效）</h3>
+    <div class="btns" id="btns">
+      <button data-stage="idle" class="active">待开麦</button>
+      <button data-stage="listen">开麦收音中</button>
+      <button data-stage="paused">暂停开麦</button>
+    </div>
+    <div class="hint">
+      · 顶部切换「合而为一 / 摄像头独立」。两大类视图里都同时给出样式A（⏹停止方块）和样式C（说完了文字按钮）两种结束按钮对比。<br>
+      · 控制区按钮只在「开麦收音中 ↔ 暂停开麦」间切换：收音中点一下暂停，再点恢复。按钮样式各阶段保持一致（始终红色、文案不变）。<br>
+      · 「待开麦」为初始态，用上方面板切入。文案常驻显示。
+    </div>
+  </div>
+
+  <script>
+  const stages = {
+    idle:   { text: '准备好了再说～', amp: 'calm'   },
+    listen: { text: '我在听...',      amp: 'strong' },
+    paused: { text: '我在听',         amp: 'calm'   }
+  };
+  const STAGE_CLASSES = ['stage-idle', 'stage-listen', 'stage-paused'];
+
+  let currentStage = 'idle';
+
+  function initWave(waveEl, n) {
+    for (let i = 0; i < n; i++) waveEl.appendChild(document.createElement('span'));
+    return waveEl.querySelectorAll('span');
+  }
+
+  const units = [...document.querySelectorAll('[data-unit]')].map(el => {
+    const waveEl = el.querySelector('[data-wave]');
+    const bars = initWave(waveEl, 8);
+    return {
+      el,
+      bars,
+      textEl: el.querySelector('[data-text]'),
+      endBtn: el.querySelector('[data-end]'),
+      style: el.querySelector('[data-end]').dataset.style,
+      animId: null
+    };
+  });
+
+  function stopWave(u) { if (u.animId) { clearInterval(u.animId); u.animId = null; } u.bars.forEach(b => b.style.height = '6px'); }
+  function runWave(u, amp) {
+    stopWave(u);
+    const max = amp === 'strong' ? 26 : 8;   // 剧烈 vs 平缓
+    const base = amp === 'strong' ? 8 : 5;
+    u.animId = setInterval(() => u.bars.forEach(b => b.style.height = (base + Math.random() * max) + 'px'), amp === 'strong' ? 130 : 340);
+  }
+
+  function applyStage(u, stage) {
+    STAGE_CLASSES.forEach(c => u.el.classList.remove(c));
+    u.el.classList.add('stage-' + stage);
+    u.textEl.textContent = stages[stage].text;
+    runWave(u, stages[stage].amp);
+    // 按钮始终保持红色 + 原文案，各阶段一致（不随暂停变态）
+  }
+
+  function setStage(stage) {
+    currentStage = stage;
+    units.forEach(u => applyStage(u, stage));
+    document.querySelectorAll('#btns button').forEach(b => b.classList.toggle('active', b.dataset.stage === stage));
+  }
+
+  // 控制区按钮：仅在 listen ↔ paused 间切换（对所有单元同步，保持面板高亮一致）
+  units.forEach(u => {
+    u.endBtn.addEventListener('click', () => {
+      const next = currentStage === 'paused' ? 'listen' : 'paused';
+      setStage(next);
+    });
+  });
+
+  // 阶段面板
+  document.getElementById('btns').addEventListener('click', e => {
+    if (e.target.dataset.stage) setStage(e.target.dataset.stage);
+  });
+
+  // 顶部大类切换
+  document.querySelector('.switcher').addEventListener('click', e => {
+    const v = e.target.dataset.view;
+    if (!v) return;
+    document.querySelectorAll('.switcher button').forEach(b => b.classList.toggle('active', b === e.target));
+    document.querySelectorAll('.view').forEach(view => view.classList.toggle('active', view.id === 'view-' + v));
+  });
+
+  setStage('idle');
+  </script>
+</body>
+</html>

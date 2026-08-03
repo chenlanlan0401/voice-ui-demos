@@ -70,7 +70,10 @@ ENC_NAME="${DEST_NAME// /%20}"
 LINK="$PAGES_BASE/$ENC_NAME"
 
 # ---- 复制 + 提交 + 推送 ----
-cp "$SRC" "$REPO_DIR/$DEST_NAME"
+# 源文件已在仓库内（常见：直接在仓库里编辑后发布）则跳过 cp，避免 "identical" 报错
+if [ "$(cd "$(dirname "$SRC")" && pwd)/$(basename "$SRC")" != "$REPO_DIR/$DEST_NAME" ]; then
+  cp "$SRC" "$REPO_DIR/$DEST_NAME"
+fi
 cd "$REPO_DIR"
 git add -A
 
