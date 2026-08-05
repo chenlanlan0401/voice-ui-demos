@@ -58,14 +58,9 @@
   #annoInput .row { display:flex; gap:6px; margin-top:8px; }
   #annoInput .row button { flex:1; border-radius:7px; padding:7px; font-size:12px; cursor:pointer; border:1px solid var(--line); background:#fff; }
   #annoInput .row .save { background:var(--brand); color:#fff; border:none; }
-  #expOut { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:10001; display:none; align-items:center; justify-content:center; }
-  #expOut.show { display:flex; }
-  #expOut .box { background:#fff; border-radius:14px; width:min(560px,92vw); max-height:80vh; display:flex; flex-direction:column; }
-  #expOut .box h3 { margin:0; padding:16px; border-bottom:1px solid var(--line); font-size:15px; }
-  #expOut textarea { flex:1; margin:12px 16px; border:1px solid var(--line); border-radius:10px; padding:12px; font-size:13px; font-family:ui-monospace,monospace; min-height:220px; }
-  #expOut .foot { padding:12px 16px; display:flex; gap:8px; justify-content:flex-end; }
-  #expOut .foot button { border-radius:8px; padding:9px 16px; font-size:13px; cursor:pointer; border:1px solid var(--line); background:#fff; }
-  #expOut .foot .copy { background:var(--brand); color:#fff; border:none; }
+  #toast { position:fixed; left:50%; bottom:80px; transform:translateX(-50%) translateY(20px); z-index:10002; background:#1f2430; color:#fff; font-size:14px; padding:12px 22px; border-radius:24px; box-shadow:0 6px 24px rgba(0,0,0,.28); opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; white-space:nowrap; }
+  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  #toast.err { background:#dc2626; }
 </style>
 </head>
 <body>
@@ -89,7 +84,7 @@
   </div>
 </div>
 
-<div style="position:fixed;right:16px;top:16px;z-index:9999;background:var(--brand);color:#fff;font-size:14px;font-weight:700;padding:6px 16px;border-radius:20px;box-shadow:0 3px 12px rgba(79,70,229,.4);letter-spacing:.5px;">版本 v3</div>
+<div style="position:fixed;right:16px;top:16px;z-index:9999;background:var(--brand);color:#fff;font-size:14px;font-weight:700;padding:6px 16px;border-radius:20px;box-shadow:0 3px 12px rgba(79,70,229,.4);letter-spacing:.5px;">版本 v4</div>
 <button id="annoToggle">✏️ 批注模式</button>
 
 <div id="annoPanel">
@@ -107,14 +102,8 @@
   <div class="row"><button id="annoCancel">取消</button><button class="save" id="annoSave">保存</button></div>
 </div>
 
-<div id="expOut">
-  <div class="box">
-    <h3>发给 Claude</h3>
-    <div id="expTip" style="padding:0 16px;font-size:12px;color:var(--brand);font-weight:600;"></div>
-    <textarea id="expText" readonly></textarea>
-    <div class="foot"><button id="expClose">关闭</button><button class="copy" id="expCopy">一键复制</button></div>
-  </div>
-</div>
+<textarea id="expText" readonly style="position:fixed;left:-9999px;top:0;opacity:0;"></textarea>
+<div id="toast"></div>
 
 <script>
 /* ---- 待办交互 ---- */
@@ -229,26 +218,24 @@
     } else { fallback(); }
   }
 
+  var toastTimer=null;
+  function showToast(msg, isErr){
+    var t=document.getElementById('toast');
+    t.textContent=msg;
+    t.classList.toggle('err', !!isErr);
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(function(){ t.classList.remove('show'); },2200);
+  }
+
   document.getElementById('annoExport').onclick=function(){
-    if(!notes.length){ alert('还没有批注'); return; }
+    if(!notes.length){ showToast('还没有批注', true); return; }
     var out='原型修改意见（共 '+notes.length+' 条）：\n\n';
     notes.forEach(function(n){ out+='#'+n.id+' 【'+n.name+'】\n   → '+n.note+'\n\n'; });
     document.getElementById('expText').value=out;
-    document.getElementById('expOut').classList.add('show');
-    // 点导出即自动复制到剪贴板（双保险）
+    // 点导出直接复制 + toast（双保险）
     copyText(out, function(success){
-      document.getElementById('expTip').textContent = success
-        ? '✅ 已复制到剪贴板 —— 回对话框 Cmd/Ctrl+V 粘贴发给我'
-        : '⚠️ 自动复制失败，请点下方「一键复制」或手动选中 Cmd+C';
-    });
-  };
-  document.getElementById('expClose').onclick=function(){ document.getElementById('expOut').classList.remove('show'); };
-
-  document.getElementById('expCopy').onclick=function(){
-    var b=document.getElementById('expCopy');
-    copyText(document.getElementById('expText').value, function(success){
-      b.textContent = success ? '✅ 已复制' : '请手动 Cmd+C';
-      setTimeout(function(){ b.textContent='一键复制'; },1800);
+      showToast(success ? '✅ 已复制，回对话框 Cmd/Ctrl+V 粘贴' : '⚠️ 复制失败，请重试', !success);
     });
   };
 })();
