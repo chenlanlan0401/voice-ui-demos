@@ -54,7 +54,7 @@
     <div class="date" id="date" data-name="日期">----</div>
   </div>
 
-  <div style="position:fixed;right:16px;top:16px;z-index:9999;background:var(--brand);color:#fff;font-size:14px;font-weight:700;padding:6px 16px;border-radius:20px;box-shadow:0 3px 12px rgba(79,70,229,.4);letter-spacing:.5px;">版本 v1</div>
+  <div style="position:fixed;right:16px;top:16px;z-index:9999;background:var(--brand);color:#fff;font-size:14px;font-weight:700;padding:6px 16px;border-radius:20px;box-shadow:0 3px 12px rgba(79,70,229,.4);letter-spacing:.5px;">版本 v2</div>
   <button id="annoToggle">✏️ 批注模式</button>
 
   <div id="annoPanel">
@@ -83,7 +83,7 @@
     function tick(){
       var d=new Date();
       document.getElementById('time').textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
-      document.getElementById('date').textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 '+weeks[d.getDay()];
+      document.getElementById('date').textContent='111';
     }
     tick(); setInterval(tick,1000);
   })();
