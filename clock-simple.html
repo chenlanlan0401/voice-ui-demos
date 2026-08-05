@@ -46,6 +46,18 @@
   #toast { position:fixed; left:50%; bottom:80px; transform:translateX(-50%) translateY(20px); z-index:10002; background:#1f2430; color:#fff; font-size:14px; padding:12px 22px; border-radius:24px; box-shadow:0 6px 24px rgba(0,0,0,.28); opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; white-space:nowrap; }
   #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
   #toast.err { background:#dc2626; }
+
+  /* ---- 版本历史 ---- */
+  #verBadge { position:fixed; right:16px; top:16px; z-index:9999; background:var(--brand); color:#fff; font-size:14px; font-weight:700; padding:6px 16px; border-radius:20px; box-shadow:0 3px 12px rgba(79,70,229,.4); letter-spacing:.5px; border:none; cursor:pointer; }
+  #verBadge:hover { filter:brightness(1.08); }
+  #verPanel { position:fixed; right:16px; top:52px; z-index:9999; width:280px; max-height:60vh; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.18); display:none; flex-direction:column; overflow:hidden; }
+  #verPanel.show { display:flex; }
+  .vp-head { padding:12px 16px; border-bottom:1px solid var(--line); font-weight:600; font-size:14px; }
+  .vp-list { padding:8px 12px; overflow:auto; }
+  .vp-item { border-left:3px solid var(--brand); padding:8px 12px; margin-bottom:8px; background:#f8f9ff; border-radius:0 8px 8px 0; }
+  .vp-item .v { font-weight:700; color:var(--brand); font-size:13px; }
+  .vp-item .t { font-size:11px; color:var(--muted); margin-left:8px; }
+  .vp-item .d { font-size:13px; color:var(--ink); margin-top:3px; }
 </style>
 </head>
 <body>
@@ -54,7 +66,11 @@
     <div class="date" id="date" data-name="日期">----</div>
   </div>
 
-  <div style="position:fixed;right:16px;top:16px;z-index:9999;background:var(--brand);color:#fff;font-size:14px;font-weight:700;padding:6px 16px;border-radius:20px;box-shadow:0 3px 12px rgba(79,70,229,.4);letter-spacing:.5px;">版本 v2</div>
+  <button id="verBadge" title="点击查看版本历史">版本 v2</button>
+  <div id="verPanel">
+    <div class="vp-head">版本历史</div>
+    <div class="vp-list" id="verList"></div>
+  </div>
   <button id="annoToggle">✏️ 批注模式</button>
 
   <div id="annoPanel">
@@ -88,6 +104,32 @@
     tick(); setInterval(tick,1000);
   })();
   </script>
+  <script>
+  /* ---- 版本历史（只存文字说明，不存快照，迭代不膨胀） ---- */
+  (function(){
+    // 每次改动在数组末尾追加一条 {v, date, desc}
+    var VERSIONS = [
+      { v:'v1', date:'2026-08-05', desc:'初始版本：极简数字时钟（时分秒 + 中文日期）' },
+      { v:'v2', date:'2026-08-05', desc:'日期文字改成 111' },
+      { v:'v3', date:'2026-08-05', desc:'右上角版本条加上"点击查看版本历史"能力' }
+    ];
+    var badge=document.getElementById('verBadge');
+    var panel=document.getElementById('verPanel');
+    var list=document.getElementById('verList');
+    // 徽标显示最新版本号
+    badge.textContent='版本 '+VERSIONS[VERSIONS.length-1].v;
+    // 渲染历史（最新在上）
+    VERSIONS.slice().reverse().forEach(function(x){
+      var d=document.createElement('div');
+      d.className='vp-item';
+      d.innerHTML='<span class="v">'+x.v+'</span><span class="t">'+x.date+'</span><div class="d">'+x.desc+'</div>';
+      list.appendChild(d);
+    });
+    badge.onclick=function(e){ e.stopPropagation(); panel.classList.toggle('show'); };
+    document.addEventListener('click',function(e){ if(!panel.contains(e.target)&&e.target!==badge) panel.classList.remove('show'); });
+  })();
+  </script>
+
   <script>
   /* ---- 批注层 ---- */
   (function(){
