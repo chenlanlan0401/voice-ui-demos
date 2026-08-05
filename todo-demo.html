@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>待办清单 · 交互演示</title>
+<style>
+  :root { --brand:#4f46e5; --ink:#1f2430; --muted:#6b7280; --line:#e6e8ee; --bg:#f5f6fa; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,"PingFang SC",sans-serif; background:var(--bg); color:var(--ink); }
+
+  .wrap { max-width:520px; margin:40px auto; padding:0 20px; }
+  .head { text-align:center; margin-bottom:28px; }
+  .head h1 { font-size:26px; margin:0 0 6px; }
+  .head p { color:var(--muted); font-size:14px; margin:0; }
+
+  .card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,.05); }
+
+  .add-row { display:flex; gap:10px; margin-bottom:18px; }
+  .add-row input { flex:1; border:1px solid var(--line); border-radius:10px; padding:11px 14px; font-size:15px; outline:none; }
+  .add-row input:focus { border-color:var(--brand); }
+  .add-row button { border:none; border-radius:10px; background:var(--brand); color:#fff; padding:0 20px; font-size:15px; font-weight:600; cursor:pointer; }
+
+  .stats { display:flex; justify-content:space-between; font-size:13px; color:var(--muted); margin-bottom:12px; padding:0 4px; }
+  .stats b { color:var(--brand); }
+
+  .list { list-style:none; margin:0; padding:0; }
+  .item { display:flex; align-items:center; gap:12px; padding:12px 8px; border-bottom:1px solid var(--line); }
+  .item:last-child { border-bottom:none; }
+  .item .check { width:22px; height:22px; border:2px solid var(--line); border-radius:50%; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:13px; color:#fff; }
+  .item.done .check { background:var(--brand); border-color:var(--brand); }
+  .item .txt { flex:1; font-size:15px; }
+  .item.done .txt { text-decoration:line-through; color:var(--muted); }
+  .item .del { border:none; background:none; color:#cbd0da; cursor:pointer; font-size:16px; }
+  .item .del:hover { color:#dc2626; }
+  .empty { text-align:center; color:var(--muted); font-size:14px; padding:24px 0; }
+
+  /* ---- 批注层 ---- */
+  #annoToggle { position:fixed; right:20px; bottom:20px; z-index:9999; background:var(--brand); color:#fff; border:none; border-radius:30px; padding:12px 20px; font-size:14px; cursor:pointer; box-shadow:0 4px 16px rgba(79,70,229,.35); }
+  #annoToggle.on { background:#dc2626; box-shadow:0 4px 16px rgba(220,38,38,.35); }
+  body.anno-on [data-name]:hover { outline:2px dashed var(--brand); outline-offset:2px; cursor:crosshair; }
+  .anno-marker { position:absolute; width:22px; height:22px; background:#dc2626; color:#fff; border-radius:50%; font-size:12px; display:flex; align-items:center; justify-content:center; transform:translate(-50%,-50%); z-index:9998; box-shadow:0 2px 6px rgba(0,0,0,.25); }
+  #annoPanel { position:fixed; right:20px; bottom:74px; width:320px; max-height:70vh; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.15); z-index:9999; display:none; flex-direction:column; }
+  #annoPanel.show { display:flex; }
+  .ap-head { padding:14px 16px; border-bottom:1px solid var(--line); font-weight:600; font-size:14px; }
+  .ap-list { padding:8px 12px; overflow:auto; flex:1; }
+  .ap-empty { color:var(--muted); font-size:13px; text-align:center; padding:24px 8px; }
+  .ap-item { border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:8px; font-size:13px; }
+  .ap-item b { color:var(--brand); }
+  .ap-item .rm { float:right; color:var(--muted); cursor:pointer; border:none; background:none; font-size:13px; }
+  .ap-foot { padding:12px 16px; border-top:1px solid var(--line); display:flex; gap:8px; }
+  .ap-foot button { flex:1; border-radius:8px; padding:9px; font-size:13px; cursor:pointer; border:1px solid var(--line); background:#fff; }
+  .ap-foot .exp { background:var(--brand); color:#fff; border:none; }
+  #annoInput { position:absolute; z-index:10000; background:#fff; border:1px solid var(--brand); border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,.18); padding:10px; width:240px; display:none; }
+  #annoInput.show { display:block; }
+  #annoInput .tgt { font-size:12px; color:var(--brand); font-weight:600; margin-bottom:6px; }
+  #annoInput textarea { width:100%; border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-size:13px; resize:vertical; min-height:52px; font-family:inherit; }
+  #annoInput .row { display:flex; gap:6px; margin-top:8px; }
+  #annoInput .row button { flex:1; border-radius:7px; padding:7px; font-size:12px; cursor:pointer; border:1px solid var(--line); background:#fff; }
+  #annoInput .row .save { background:var(--brand); color:#fff; border:none; }
+  #expOut { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:10001; display:none; align-items:center; justify-content:center; }
+  #expOut.show { display:flex; }
+  #expOut .box { background:#fff; border-radius:14px; width:min(560px,92vw); max-height:80vh; display:flex; flex-direction:column; }
+  #expOut .box h3 { margin:0; padding:16px; border-bottom:1px solid var(--line); font-size:15px; }
+  #expOut textarea { flex:1; margin:12px 16px; border:1px solid var(--line); border-radius:10px; padding:12px; font-size:13px; font-family:ui-monospace,monospace; min-height:220px; }
+  #expOut .foot { padding:12px 16px; display:flex; gap:8px; justify-content:flex-end; }
+  #expOut .foot button { border-radius:8px; padding:9px 16px; font-size:13px; cursor:pointer; border:1px solid var(--line); background:#fff; }
+  #expOut .foot .copy { background:var(--brand); color:#fff; border:none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head" data-name="页面头部">
+    <h1 data-name="页面标题">我的待办</h1>
+    <p data-name="页面副标题">添加任务、勾选完成、随手删除</p>
+  </div>
+
+  <div class="card" data-name="待办卡片">
+    <div class="add-row" data-name="添加区">
+      <input id="todoInput" type="text" placeholder="输入一个待办，回车添加…" data-name="输入框">
+      <button id="addBtn" data-name="添加按钮">加</button>
+    </div>
+    <div class="stats" data-name="统计栏">
+      <span>共 <b id="totalCount">0</b> 项</span>
+      <span>已完成 <b id="doneCount">0</b> 项</span>
+    </div>
+    <ul class="list" id="todoList" data-name="待办列表"></ul>
+    <div class="empty" id="emptyTip" data-name="空状态提示">还没有待办，加一个试试吧</div>
+  </div>
+</div>
+
+<div style="position:fixed;right:16px;top:16px;z-index:9999;background:var(--brand);color:#fff;font-size:14px;font-weight:700;padding:6px 16px;border-radius:20px;box-shadow:0 3px 12px rgba(79,70,229,.4);letter-spacing:.5px;">版本 v2</div>
+<button id="annoToggle">✏️ 批注模式</button>
+
+<div id="annoPanel">
+  <div class="ap-head">批注清单 (<span id="annoCount">0</span>)</div>
+  <div class="ap-list"><div class="ap-empty" id="annoEmpty">开启批注模式后，点击任意元素写意见</div></div>
+  <div class="ap-foot">
+    <button id="annoClear">清空</button>
+    <button class="exp" id="annoExport">导出给 Claude</button>
+  </div>
+</div>
+
+<div id="annoInput">
+  <div class="tgt" id="annoTgt"></div>
+  <textarea id="annoText" placeholder="写下修改意见，回车保存 / Shift+回车换行"></textarea>
+  <div class="row"><button id="annoCancel">取消</button><button class="save" id="annoSave">保存</button></div>
+</div>
+
+<div id="expOut">
+  <div class="box">
+    <h3>发给 Claude</h3>
+    <div id="expTip" style="padding:0 16px;font-size:12px;color:var(--brand);font-weight:600;"></div>
+    <textarea id="expText" readonly></textarea>
+    <div class="foot"><button id="expClose">关闭</button><button class="copy" id="expCopy">一键复制</button></div>
+  </div>
+</div>
+
+<script>
+/* ---- 待办交互 ---- */
+(function(){
+  var todos=[], input=document.getElementById('todoInput'), list=document.getElementById('todoList');
+  function render(){
+    list.innerHTML='';
+    todos.forEach(function(t,i){
+      var li=document.createElement('li');
+      li.className='item'+(t.done?' done':'');
+      li.setAttribute('data-name','待办项-'+(i+1));
+      li.innerHTML='<div class="check" data-name="勾选框-'+(i+1)+'">'+(t.done?'✓':'')+'</div>'
+        +'<span class="txt">'+t.text.replace(/</g,'&lt;')+'</span>'
+        +'<button class="del" data-name="删除按钮-'+(i+1)+'">✕</button>';
+      li.querySelector('.check').onclick=function(){ t.done=!t.done; render(); };
+      li.querySelector('.del').onclick=function(){ todos.splice(i,1); render(); };
+      list.appendChild(li);
+    });
+    document.getElementById('totalCount').textContent=todos.length;
+    document.getElementById('doneCount').textContent=todos.filter(function(t){return t.done;}).length;
+    document.getElementById('emptyTip').style.display=todos.length?'none':'block';
+  }
+  function add(){ var v=input.value.trim(); if(!v)return; todos.push({text:v,done:false}); input.value=''; render(); }
+  document.getElementById('addBtn').onclick=add;
+  input.addEventListener('keydown',function(e){ if(e.key==='Enter') add(); });
+  render();
+})();
+</script>
+<script>
+/* ---- 批注层 ---- */
+(function(){
+  var on=false, notes=[], pending=null;
+  var body=document.body;
+  var toggle=document.getElementById('annoToggle');
+  var panel=document.getElementById('annoPanel');
+  var input=document.getElementById('annoInput');
+
+  toggle.onclick=function(){
+    on=!on;
+    body.classList.toggle('anno-on',on);
+    toggle.classList.toggle('on',on);
+    toggle.textContent=on?'✅ 完成批注':'✏️ 批注模式';
+    panel.classList.toggle('show',on);
+    if(!on) hideInput();
+  };
+
+  document.addEventListener('click',function(e){
+    if(!on) return;
+    if(input.contains(e.target)||panel.contains(e.target)||e.target===toggle) return;
+    var el=e.target.closest('[data-name]');
+    if(!el) return;
+    e.preventDefault(); e.stopPropagation();
+    var r=el.getBoundingClientRect();
+    pending={name:el.getAttribute('data-name'), x:r.left+r.width/2+window.scrollX, y:r.top+window.scrollY};
+    document.getElementById('annoTgt').textContent='📍 '+pending.name;
+    document.getElementById('annoText').value='';
+    input.style.left=Math.min(pending.x, window.innerWidth-260)+'px';
+    input.style.top=(pending.y+10)+'px';
+    input.classList.add('show');
+    document.getElementById('annoText').focus();
+  },true);
+
+  document.getElementById('annoText').addEventListener('keydown',function(e){
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); document.getElementById('annoSave').click(); }
+    if(e.key==='Escape'){ hideInput(); }
+  });
+
+  function hideInput(){ input.classList.remove('show'); pending=null; }
+  document.getElementById('annoCancel').onclick=hideInput;
+
+  document.getElementById('annoSave').onclick=function(){
+    var txt=document.getElementById('annoText').value.trim();
+    if(!txt||!pending) return hideInput();
+    var n={id:notes.length+1, name:pending.name, note:txt, x:pending.x, y:pending.y};
+    notes.push(n);
+    var m=document.createElement('div');
+    m.className='anno-marker'; m.textContent=n.id;
+    m.style.left=n.x+'px'; m.style.top=n.y+'px';
+    body.appendChild(m);
+    render(); hideInput();
+  };
+  function render(){
+    document.getElementById('annoCount').textContent=notes.length;
+    var l=document.querySelector('.ap-list');
+    l.innerHTML= notes.length? '' : '<div class="ap-empty">开启批注模式后，点击任意元素写意见</div>';
+    notes.forEach(function(n){
+      var d=document.createElement('div');
+      d.className='ap-item';
+      d.innerHTML='<button class="rm" data-id="'+n.id+'">✕</button><b>#'+n.id+' '+n.name+'</b><br>'+n.note;
+      l.appendChild(d);
+    });
+    l.querySelectorAll('.rm').forEach(function(b){
+      b.onclick=function(){
+        notes=notes.filter(function(x){return x.id!=b.dataset.id;});
+        document.querySelectorAll('.anno-marker').forEach(function(m){m.remove();});
+        notes.forEach(function(n,i){ n.id=i+1; var m=document.createElement('div'); m.className='anno-marker'; m.textContent=n.id; m.style.left=n.x+'px'; m.style.top=n.y+'px'; body.appendChild(m); });
+        render();
+      };
+    });
+  }
+
+  document.getElementById('annoClear').onclick=function(){ notes=[]; document.querySelectorAll('.anno-marker').forEach(function(m){m.remove();}); render(); };
+
+  function copyText(text, cb){
+    function fallback(){
+      var t=document.getElementById('expText'); t.focus(); t.select();
+      try{ if(document.execCommand('copy')){ cb(true); return; } }catch(e){}
+      cb(false);
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){cb(true);}).catch(fallback);
+    } else { fallback(); }
+  }
+
+  document.getElementById('annoExport').onclick=function(){
+    if(!notes.length){ alert('还没有批注'); return; }
+    var out='原型修改意见（共 '+notes.length+' 条）：\n\n';
+    notes.forEach(function(n){ out+='#'+n.id+' 【'+n.name+'】\n   → '+n.note+'\n\n'; });
+    document.getElementById('expText').value=out;
+    document.getElementById('expOut').classList.add('show');
+    // 点导出即自动复制到剪贴板（双保险）
+    copyText(out, function(success){
+      document.getElementById('expTip').textContent = success
+        ? '✅ 已复制到剪贴板 —— 回对话框 Cmd/Ctrl+V 粘贴发给我'
+        : '⚠️ 自动复制失败，请点下方「一键复制」或手动选中 Cmd+C';
+    });
+  };
+  document.getElementById('expClose').onclick=function(){ document.getElementById('expOut').classList.remove('show'); };
+
+  document.getElementById('expCopy').onclick=function(){
+    var b=document.getElementById('expCopy');
+    copyText(document.getElementById('expText').value, function(success){
+      b.textContent = success ? '✅ 已复制' : '请手动 Cmd+C';
+      setTimeout(function(){ b.textContent='一键复制'; },1800);
+    });
+  };
+})();
+</script>
+</body>
+</html>
