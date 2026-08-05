@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简易时钟</title>
+<style>
+  :root { --brand:#4f46e5; --ink:#1f2430; --muted:#6b7280; --line:#e6e8ee; --bg:#f5f6fa; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,"PingFang SC",sans-serif; background:var(--bg); color:var(--ink);
+         min-height:100vh; display:flex; align-items:center; justify-content:center; }
+
+  .clock-card {
+    background:#fff; border:1px solid var(--line); border-radius:20px;
+    padding:48px 56px; text-align:center; box-shadow:0 8px 30px rgba(0,0,0,.08);
+  }
+  .time {
+    font-size:64px; font-weight:700; letter-spacing:3px; color:var(--ink);
+    font-variant-numeric:tabular-nums; font-family:ui-monospace,"SF Mono",monospace;
+  }
+  .date { margin-top:12px; font-size:16px; color:var(--muted); }
+
+  /* ---- 批注层 ---- */
+  #annoToggle { position:fixed; right:20px; bottom:20px; z-index:9999; background:var(--brand); color:#fff; border:none; border-radius:30px; padding:12px 20px; font-size:14px; cursor:pointer; box-shadow:0 4px 16px rgba(79,70,229,.35); }
+  #annoToggle.on { background:#dc2626; box-shadow:0 4px 16px rgba(220,38,38,.35); }
+  body.anno-on [data-name]:hover { outline:2px dashed var(--brand); outline-offset:2px; cursor:crosshair; }
+  .anno-marker { position:absolute; width:22px; height:22px; background:#dc2626; color:#fff; border-radius:50%; font-size:12px; display:flex; align-items:center; justify-content:center; transform:translate(-50%,-50%); z-index:9998; box-shadow:0 2px 6px rgba(0,0,0,.25); }
+  #annoPanel { position:fixed; right:20px; bottom:74px; width:320px; max-height:70vh; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.15); z-index:9999; display:none; flex-direction:column; }
+  #annoPanel.show { display:flex; }
+  .ap-head { padding:14px 16px; border-bottom:1px solid var(--line); font-weight:600; font-size:14px; }
+  .ap-list { padding:8px 12px; overflow:auto; flex:1; }
+  .ap-empty { color:var(--muted); font-size:13px; text-align:center; padding:24px 8px; }
+  .ap-item { border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:8px; font-size:13px; }
+  .ap-item b { color:var(--brand); }
+  .ap-item .rm { float:right; color:var(--muted); cursor:pointer; border:none; background:none; font-size:13px; }
+  .ap-foot { padding:12px 16px; border-top:1px solid var(--line); display:flex; gap:8px; }
+  .ap-foot button { flex:1; border-radius:8px; padding:9px; font-size:13px; cursor:pointer; border:1px solid var(--line); background:#fff; }
+  .ap-foot .exp { background:var(--brand); color:#fff; border:none; }
+  #annoInput { position:absolute; z-index:10000; background:#fff; border:1px solid var(--brand); border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,.18); padding:10px; width:240px; display:none; }
+  #annoInput.show { display:block; }
+  #annoInput .tgt { font-size:12px; color:var(--brand); font-weight:600; margin-bottom:6px; }
+  #annoInput textarea { width:100%; border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-size:13px; resize:vertical; min-height:52px; font-family:inherit; }
+  #annoInput .row { display:flex; gap:6px; margin-top:8px; }
+  #annoInput .row button { flex:1; border-radius:7px; padding:7px; font-size:12px; cursor:pointer; border:1px solid var(--line); background:#fff; }
+  #annoInput .row .save { background:var(--brand); color:#fff; border:none; }
+  #toast { position:fixed; left:50%; bottom:80px; transform:translateX(-50%) translateY(20px); z-index:10002; background:#1f2430; color:#fff; font-size:14px; padding:12px 22px; border-radius:24px; box-shadow:0 6px 24px rgba(0,0,0,.28); opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; white-space:nowrap; }
+  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  #toast.err { background:#dc2626; }
+</style>
+</head>
+<body>
+  <div class="clock-card" data-name="时钟卡片">
+    <div class="time" id="time" data-name="时间">--:--:--</div>
+    <div class="date" id="date" data-name="日期">----</div>
+  </div>
+
+  <div style="position:fixed;right:16px;top:16px;z-index:9999;background:var(--brand);color:#fff;font-size:14px;font-weight:700;padding:6px 16px;border-radius:20px;box-shadow:0 3px 12px rgba(79,70,229,.4);letter-spacing:.5px;">版本 v1</div>
+  <button id="annoToggle">✏️ 批注模式</button>
+
+  <div id="annoPanel">
+    <div class="ap-head">批注清单 (<span id="annoCount">0</span>)</div>
+    <div class="ap-list"><div class="ap-empty">开启批注模式后，点击任意元素写意见</div></div>
+    <div class="ap-foot">
+      <button id="annoClear">清空</button>
+      <button class="exp" id="annoExport">导出给 Claude</button>
+    </div>
+  </div>
+
+  <div id="annoInput">
+    <div class="tgt" id="annoTgt"></div>
+    <textarea id="annoText" placeholder="写下修改意见，回车保存 / Shift+回车换行"></textarea>
+    <div class="row"><button id="annoCancel">取消</button><button class="save" id="annoSave">保存</button></div>
+  </div>
+
+  <textarea id="expText" readonly style="position:fixed;left:-9999px;top:0;opacity:0;"></textarea>
+  <div id="toast"></div>
+
+  <script>
+  /* ---- 时钟 ---- */
+  (function(){
+    var weeks=['周日','周一','周二','周三','周四','周五','周六'];
+    function pad(n){ return n<10?'0'+n:''+n; }
+    function tick(){
+      var d=new Date();
+      document.getElementById('time').textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+      document.getElementById('date').textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 '+weeks[d.getDay()];
+    }
+    tick(); setInterval(tick,1000);
+  })();
+  </script>
+  <script>
+  /* ---- 批注层 ---- */
+  (function(){
+    var on=false, notes=[], pending=null;
+    var body=document.body;
+    var toggle=document.getElementById('annoToggle');
+    var panel=document.getElementById('annoPanel');
+    var input=document.getElementById('annoInput');
+
+    toggle.onclick=function(){
+      on=!on;
+      body.classList.toggle('anno-on',on);
+      toggle.classList.toggle('on',on);
+      toggle.textContent=on?'✅ 完成批注':'✏️ 批注模式';
+      panel.classList.toggle('show',on);
+      if(!on) hideInput();
+    };
+
+    document.addEventListener('click',function(e){
+      if(!on) return;
+      if(input.contains(e.target)||panel.contains(e.target)||e.target===toggle) return;
+      var el=e.target.closest('[data-name]');
+      if(!el) return;
+      e.preventDefault(); e.stopPropagation();
+      var r=el.getBoundingClientRect();
+      pending={name:el.getAttribute('data-name'), x:r.left+r.width/2+window.scrollX, y:r.top+window.scrollY};
+      document.getElementById('annoTgt').textContent='📍 '+pending.name;
+      document.getElementById('annoText').value='';
+      input.style.left=Math.min(pending.x, window.innerWidth-260)+'px';
+      input.style.top=(pending.y+10)+'px';
+      input.classList.add('show');
+      document.getElementById('annoText').focus();
+    },true);
+
+    document.getElementById('annoText').addEventListener('keydown',function(e){
+      if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); document.getElementById('annoSave').click(); }
+      if(e.key==='Escape'){ hideInput(); }
+    });
+
+    function hideInput(){ input.classList.remove('show'); pending=null; }
+    document.getElementById('annoCancel').onclick=hideInput;
+
+    document.getElementById('annoSave').onclick=function(){
+      var txt=document.getElementById('annoText').value.trim();
+      if(!txt||!pending) return hideInput();
+      var n={id:notes.length+1, name:pending.name, note:txt, x:pending.x, y:pending.y};
+      notes.push(n);
+      var m=document.createElement('div');
+      m.className='anno-marker'; m.textContent=n.id;
+      m.style.left=n.x+'px'; m.style.top=n.y+'px';
+      body.appendChild(m);
+      render(); hideInput();
+    };
+    function render(){
+      document.getElementById('annoCount').textContent=notes.length;
+      var l=document.querySelector('.ap-list');
+      l.innerHTML= notes.length? '' : '<div class="ap-empty">开启批注模式后，点击任意元素写意见</div>';
+      notes.forEach(function(n){
+        var d=document.createElement('div');
+        d.className='ap-item';
+        d.innerHTML='<button class="rm" data-id="'+n.id+'">✕</button><b>#'+n.id+' '+n.name+'</b><br>'+n.note;
+        l.appendChild(d);
+      });
+      l.querySelectorAll('.rm').forEach(function(b){
+        b.onclick=function(){
+          notes=notes.filter(function(x){return x.id!=b.dataset.id;});
+          document.querySelectorAll('.anno-marker').forEach(function(m){m.remove();});
+          notes.forEach(function(n,i){ n.id=i+1; var m=document.createElement('div'); m.className='anno-marker'; m.textContent=n.id; m.style.left=n.x+'px'; m.style.top=n.y+'px'; body.appendChild(m); });
+          render();
+        };
+      });
+    }
+
+    document.getElementById('annoClear').onclick=function(){ notes=[]; document.querySelectorAll('.anno-marker').forEach(function(m){m.remove();}); render(); };
+
+    function copyText(text, cb){
+      function fallback(){
+        var t=document.getElementById('expText'); t.value=text; t.focus(); t.select();
+        try{ if(document.execCommand('copy')){ cb(true); return; } }catch(e){}
+        cb(false);
+      }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){cb(true);}).catch(fallback);
+      } else { fallback(); }
+    }
+
+    var toastTimer=null;
+    function showToast(msg, isErr){
+      var t=document.getElementById('toast');
+      t.textContent=msg;
+      t.classList.toggle('err', !!isErr);
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer=setTimeout(function(){ t.classList.remove('show'); },2200);
+    }
+
+    document.getElementById('annoExport').onclick=function(){
+      if(!notes.length){ showToast('还没有批注', true); return; }
+      var out='原型修改意见（共 '+notes.length+' 条）：\n\n';
+      notes.forEach(function(n){ out+='#'+n.id+' 【'+n.name+'】\n   → '+n.note+'\n\n'; });
+      copyText(out, function(success){
+        showToast(success ? '✅ 已复制，回对话框 Cmd/Ctrl+V 粘贴' : '⚠️ 复制失败，请重试', !success);
+      });
+    };
+  })();
+  </script>
+</body>
+</html>
