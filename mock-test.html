@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mock 测试页</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", sans-serif;
+    background: #f5f6f8;
+    color: #1a1a2e;
+    line-height: 1.6;
+  }
+  .hero {
+    background: linear-gradient(135deg, #6a5acd, #4169e1);
+    color: #fff;
+    padding: 60px 24px;
+    text-align: center;
+  }
+  .hero h1 { font-size: 32px; margin-bottom: 12px; }
+  .hero p { opacity: 0.9; font-size: 16px; }
+  .container { max-width: 720px; margin: 0 auto; padding: 32px 24px; }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .card h2 { font-size: 20px; margin-bottom: 8px; }
+  .card p { color: #555; font-size: 15px; }
+  .btn-row { display: flex; gap: 12px; margin-top: 32px; justify-content: center; }
+  .btn {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .btn-primary { background: #4169e1; color: #fff; }
+  .btn-ghost { background: #eef0f5; color: #333; }
+  .footer { text-align: center; color: #999; font-size: 13px; padding: 24px; }
+</style>
+</head>
+<body>
+
+  <header class="hero" data-name="顶部横幅">
+    <h1 data-name="主标题">欢迎来到 Mock 测试页</h1>
+    <p data-name="副标题">这是一个用来测试点选批注流程的示例页面</p>
+  </header>
+
+  <main class="container">
+    <div class="card" data-name="卡片-功能一">
+      <h2 data-name="卡片标题-功能一">功能一</h2>
+      <p data-name="卡片描述-功能一">这里放第一项功能的说明文字，随便写点内容占位。</p>
+    </div>
+
+    <div class="card" data-name="卡片-功能二">
+      <h2 data-name="卡片标题-功能二">功能二</h2>
+      <p data-name="卡片描述-功能二">这里放第二项功能的说明文字，随便写点内容占位。</p>
+    </div>
+
+    <div class="card" data-name="卡片-功能三">
+      <h2 data-name="卡片标题-功能三">功能三</h2>
+      <p data-name="卡片描述-功能三">这里放第三项功能的说明文字，随便写点内容占位。</p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" data-name="按钮-开始使用">开始使用</button>
+      <button class="btn btn-ghost" data-name="按钮-了解更多">了解更多</button>
+    </div>
+  </main>
+
+  <footer class="footer" data-name="页脚">
+    © 2026 Mock 测试页 · 仅供演示
+  </footer>
+
+  <!-- PLACEHOLDER_ANNOTATION -->
+
+</body>
+</html>
