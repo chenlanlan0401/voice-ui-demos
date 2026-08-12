@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASR 模型维度对照看板</title>
+<style>
+  :root{
+    color-scheme:light;
+    --ink:#19324a; --muted:#617286; --line:#d7e0e8; --soft:#f4f7fa;
+    --fun:#176b87; --fun-soft:#e9f4f8;
+    --qwen:#7a4bce; --qwen-soft:#f0eafb;
+    --volc:#c2410c; --volc-soft:#fdeee4;
+    --good:#08775b; --good-soft:#e8f7f1;
+    --bad:#b42318; --bad-soft:#fff0ee;
+    --shadow:0 8px 28px rgba(25,50,74,.08);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#eef3f7;color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;}
+  .topbar{padding:24px 28px 20px;color:#fff;background:linear-gradient(120deg,#14324c,#176b87);}
+  .topbar h1{margin:0 0 6px;font-size:26px;letter-spacing:.02em;}
+  .topbar p{margin:0;color:#d9edf4;font-size:14px;}
+  .shell{width:min(1400px,calc(100% - 32px));margin:18px auto 48px;}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 2px 16px;}
+  .controls .seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;box-shadow:var(--shadow);}
+  .controls .seg button{border:0;background:#fff;color:var(--muted);padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;}
+  .controls .seg button+button{border-left:1px solid var(--line);}
+  .controls .seg button.active{background:#176b87;color:#fff;}
+  .controls .hint{color:var(--muted);font-size:12px;margin-left:auto;}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin:0 2px 18px;color:var(--muted);font-size:12px;}
+  .legend .dot{display:inline-flex;align-items:center;gap:6px;}
+  .legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block;}
+  section{margin-bottom:26px;}
+  .sec-head{display:flex;align-items:baseline;gap:10px;margin:0 2px 10px;}
+  .sec-head h2{margin:0;font-size:18px;}
+  .sec-head .sub{color:var(--muted);font-size:12px;}
+  .card{border:1px solid var(--line);border-radius:14px;background:#fff;box-shadow:var(--shadow);overflow:hidden;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{position:sticky;top:0;background:#f7fafc;color:var(--muted);font-weight:700;
+    text-align:right;padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:12px;}
+  thead th.grp{text-align:left;}
+  tbody td{padding:10px 12px;border-bottom:1px solid #eef2f6;text-align:right;vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:0;}
+  td.grp{text-align:left;font-weight:700;}
+  td.grp .n{display:block;color:var(--muted);font-weight:600;font-size:11px;margin-top:2px;}
+  .bar-cell{min-width:150px;}
+  .bar-wrap{display:flex;align-items:center;gap:8px;justify-content:flex-end;}
+  .bar-track{flex:1;height:14px;border-radius:7px;background:#eef2f6;overflow:hidden;max-width:120px;}
+  .bar-fill{height:100%;border-radius:7px;}
+  .val{min-width:52px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;}
+  .best{color:var(--good);} .worst{color:var(--bad);}
+  .badge{display:inline-block;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:800;}
+  .badge.best{background:var(--good-soft);color:var(--good);}
+  .badge.worst{background:var(--bad-soft);color:var(--bad);}
+  .mfun{color:var(--fun);} .mqwen{color:var(--qwen);} .mvolc{color:var(--volc);}
+  .fill-fun{background:var(--fun);} .fill-qwen{background:var(--qwen);} .fill-volc{background:var(--volc);}
+  .foot{color:var(--muted);font-size:12px;margin:4px 2px 0;}
+  .note{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;color:var(--muted);font-size:12.5px;line-height:1.7;box-shadow:var(--shadow);}
+  .note b{color:var(--ink);}
+  @media(max-width:720px){thead th,tbody td{padding:8px 7px;font-size:11.5px;} .bar-track{display:none;}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>ASR 模型维度对照看板</h1>
+  <p id="subtitle">按可用性、问题类型、音频时长分桶对照三家 ASR 模型的字错率（CER）表现</p>
+</div>
+<div class="shell">
+  <div class="controls">
+    <div class="seg" id="metricSeg">
+      <button data-metric="avgCer" class="active">平均 CER</button>
+      <button data-metric="winRate">胜率</button>
+      <button data-metric="emptyRate">空文本率</button>
+      <button data-metric="avgLat">平均尾延迟</button>
+    </div>
+    <span class="hint" id="metricHint"></span>
+  </div>
+  <div class="legend" id="legend"></div>
+  <div id="sections"></div>
+  <p class="foot" id="genfoot"></p>
+</div>
+<script>
+window.__PIVOT__ = /*__PIVOT__*/{"models": [{"key": "fun-asr-realtime-2026-02-28", "label": "FunASR", "tone": "fun"}, {"key": "qwen-audio-3.0-asr-flash-streaming", "label": "千问 3.0 ASR", "tone": "qwen"}, {"key": "volc.seedasr.sauc.duration", "label": "火山 ASR", "tone": "volc"}], "generatedAt": "2026-08-12T09:03:13.462Z", "totalCases": 200, "overall": {"n": 200, "models": {"fun-asr-realtime-2026-02-28": {"avgCer": 0.1921, "medCer": 0.0345, "avgLat": 372.0, "emptyN": 1, "emptyRate": 0.005, "win": 17, "winRate": 0.0854}, "qwen-audio-3.0-asr-flash-streaming": {"avgCer": 0.2113, "medCer": 0, "avgLat": 527.0, "emptyN": 2, "emptyRate": 0.01, "win": 47, "winRate": 0.2362}, "volc.seedasr.sauc.duration": {"avgCer": 0.2218, "medCer": 0.1111, "avgLat": 272.0, "emptyN": 13, "emptyRate": 0.065, "win": 14, "winRate": 0.0704}}, "winValidN": 199}, "availability": [{"label": "完全可用", "n": 157, "models": {"fun-asr-realtime-2026-02-28": {"avgCer": 0.1368, "medCer": 0, "avgLat": 370.0, "emptyN": 0, "emptyRate": 0.0, "win": 8, "winRate": 0.051}, "qwen-audio-3.0-asr-flash-streaming": {"avgCer": 0.153, "medCer": 0, "avgLat": 515.0, "emptyN": 1, "emptyRate": 0.0064, "win": 34, "winRate": 0.2166}, "volc.seedasr.sauc.duration": {"avgCer": 0.1782, "medCer": 0.0952, "avgLat": 278.0, "emptyN": 8, "emptyRate": 0.051, "win": 7, "winRate": 0.0446}}, "winValidN": 157}, {"label": "基本可用", "n": 37, "models": {"fun-asr-realtime-2026-02-28": {"avgCer": 0.2862, "medCer": 0.1429, "avgLat": 383.0, "emptyN": 0, "emptyRate": 0.0, "win": 9, "winRate": 0.2432}, "qwen-audio-3.0-asr-flash-streaming": {"avgCer": 0.3969, "medCer": 0.1316, "avgLat": 538.0, "emptyN": 0, "emptyRate": 0.0, "win": 12, "winRate": 0.3243}, "volc.seedasr.sauc.duration": {"avgCer": 0.3363, "medCer": 0.25, "avgLat": 252.0, "emptyN": 2, "emptyRate": 0.0541, "win": 7, "winRate": 0.1892}}, "winValidN": 37}, {"label": "完全不可用", "n": 6, "models": {"fun-asr-realtime-2026-02-28": {"avgCer": 1.2333, "medCer": 1, "avgLat": 352.0, "emptyN": 1, "emptyRate": 0.1667, "win": 0, "winRate": 0.0}, "qwen-audio-3.0-asr-flash-streaming": {"avgCer": 0.6667, "medCer": 1, "avgLat": 813.0, "emptyN": 1, "emptyRate": 0.1667, "win": 1, "winRate": 0.2}, "volc.seedasr.sauc.duration": {"avgCer": 0.7444, "medCer": 1, "avgLat": 186.0, "emptyN": 3, "emptyRate": 0.5, "win": 0, "winRate": 0.0}}, "winValidN": 5}], "category": [{"label": "转写错误", "n": 27, "models": {"fun-asr-realtime-2026-02-28": {"avgCer": 0.3864, "medCer": 0.1429, "avgLat": 405.0, "emptyN": 0, "emptyRate": 0.0, "win": 5, "winRate": 0.1852}, "qwen-audio-3.0-asr-flash-streaming": {"avgCer": 0.3226, "medCer": 0.2098, "avgLat": 595.0, "emptyN": 0, "emptyRate": 0.0, "win": 10, "winRate": 0.3704}, "volc.seedasr.sauc.duration": {"avgCer": 0.3977, "medCer": 0.25, "avgLat": 288.0, "emptyN": 4, "emptyRate": 0.1481, "win": 2, "winRate": 0.0741}}, "winValidN": 27}, {"label": "串音", "n": 7, "models": {"fun-asr-realtime-2026-02-28": {"avgCer": 0.5664, "medCer": 0.54, "avgLat": 260.0, "emptyN": 0, "emptyRate": 0.0, "win": 2, "winRate": 0.2857}, "qwen-audio-3.0-asr-flash-streaming": {"avgCer": 0.5635, "medCer": 0.3846, "avgLat": 656.0, "emptyN": 0, "emptyRate": 0.0, "win": 1, "winRate": 0.1429}, "volc.seedasr.sauc.duration": {"avgCer": 0.4327, "medCer": 0.3846, "avgLat": 206.0, "emptyN": 0, "emptyRate": 0.0, "win": 3, "winRate": 0.4286}}, "winValidN": 7}, {"label": "截断", "n": 6, "models": {"fun-asr-realtime-2026-02-28": {"avgCer": 0.2772, "medCer": 0.1874, "avgLat": 378.0, "emptyN": 0, "emptyRate": 0.0, "win": 1, "winRate": 0.1667}, "qwen-audio-3.0-asr-flash-streaming": {"avgCer": 0.4183, "medCer": 0.1142, "avgLat": 325.0, "emptyN": 0, "emptyRate": 0.0, "win": 2, "winRate": 0.3333}, "volc.seedasr.sauc.duration": {"avgCer": 0.3085, "medCer": 0.3125, "avgLat": 124.0, "emptyN": 0, "emptyRate": 0.0, "win": 1, "winRate": 0.1667}}, "winValidN": 6}, {"label": "幻听", "n": 4, "models": {"fun-asr-realtime-2026-02-28": {"avgCer": 0.3227, "medCer": 0.1579, "avgLat": 374.0, "emptyN": 1, "emptyRate": 0.25, "win": 1, "winRate": 0.3333}, "qwen-audio-3.0-asr-flash-streaming": {"avgCer": 1.042, "medCer": 1.3158, "avgLat": 683.0, "emptyN": 1, "emptyRate": 0.25, "win": 0, "winRate": 0.0}, "volc.seedasr.sauc.duration": {"avgCer": 0.3339, "medCer": 0.2632, "avgLat": 432.0, "emptyN": 1, "emptyRate": 0.25, "win": 1, "winRate": 0.3333}}, "winValidN": 3}, {"label": "无标注(正常)", "n": 156, "models": {"fun-asr-realtime-2026-02-28": {"avgCer": 0.1359, "medCer": 0.0, "avgLat": 371.0, "emptyN": 0, "emptyRate": 0.0, "win": 8, "winRate": 0.0513}, "qwen-audio-3.0-asr-flash-streaming": {"avgCer": 0.1523, "medCer": 0.0, "avgLat": 514.0, "emptyN": 1, "emptyRate": 0.0064, "win": 34, "winRate": 0.2179}, "volc.seedasr.sauc.duration": {"avgCer": 0.1764, "medCer": 0.0945, "avgLat": 275.0, "emptyN": 8, "emptyRate": 0.0513, "win": 7, "winRate": 0.0449}}, "winValidN": 156}], "duration": [{"label": "<5s", "n": 48, "models": {"fun-asr-realtime-2026-02-28": {"avgCer": 0.1666, "medCer": 0, "avgLat": 331.0, "emptyN": 1, "emptyRate": 0.0208, "win": 3, "winRate": 0.0638}, "qwen-audio-3.0-asr-flash-streaming": {"avgCer": 0.1961, "medCer": 0, "avgLat": 427.0, "emptyN": 1, "emptyRate": 0.0208, "win": 3, "winRate": 0.0638}, "volc.seedasr.sauc.duration": {"avgCer": 0.2538, "medCer": 0, "avgLat": 279.0, "emptyN": 6, "emptyRate": 0.125, "win": 3, "winRate": 0.0638}}, "winValidN": 47}, {"label": "5-15s", "n": 96, "models": {"fun-asr-realtime-2026-02-28": {"avgCer": 0.2099, "medCer": 0.0247, "avgLat": 379.0, "emptyN": 0, "emptyRate": 0.0, "win": 6, "winRate": 0.0625}, "qwen-audio-3.0-asr-flash-streaming": {"avgCer": 0.1762, "medCer": 0.0, "avgLat": 603.0, "emptyN": 1, "emptyRate": 0.0104, "win": 21, "winRate": 0.2188}, "volc.seedasr.sauc.duration": {"avgCer": 0.235, "medCer": 0.1213, "avgLat": 284.0, "emptyN": 6, "emptyRate": 0.0625, "win": 5, "winRate": 0.0521}}, "winValidN": 96}, {"label": "15-30s", "n": 42, "models": {"fun-asr-realtime-2026-02-28": {"avgCer": 0.1349, "medCer": 0.0476, "avgLat": 433.0, "emptyN": 0, "emptyRate": 0.0, "win": 5, "winRate": 0.119}, "qwen-audio-3.0-asr-flash-streaming": {"avgCer": 0.2547, "medCer": 0.0247, "avgLat": 515.0, "emptyN": 0, "emptyRate": 0.0, "win": 18, "winRate": 0.4286}, "volc.seedasr.sauc.duration": {"avgCer": 0.1214, "medCer": 0.1049, "avgLat": 247.0, "emptyN": 0, "emptyRate": 0.0, "win": 2, "winRate": 0.0476}}, "winValidN": 42}, {"label": ">30s", "n": 14, "models": {"fun-asr-realtime-2026-02-28": {"avgCer": 0.3276, "medCer": 0.1382, "avgLat": 277.0, "emptyN": 0, "emptyRate": 0.0, "win": 3, "winRate": 0.2143}, "qwen-audio-3.0-asr-flash-streaming": {"avgCer": 0.3724, "medCer": 0.159, "avgLat": 378.0, "emptyN": 0, "emptyRate": 0.0, "win": 5, "winRate": 0.3571}, "volc.seedasr.sauc.duration": {"avgCer": 0.3257, "medCer": 0.204, "avgLat": 246.0, "emptyN": 1, "emptyRate": 0.0714, "win": 4, "winRate": 0.2857}}, "winValidN": 14}]}/*__END__*/;
+</script>
+<script>
+const P = window.__PIVOT__;
+const MODELS = P.models;
+const TONE_CLASS = {fun:'fun', qwen:'qwen', volc:'volc'};
+const toneOf = k => (MODELS.find(m=>m.key===k)||{}).tone || 'fun';
+
+const METRIC = {
+  avgCer:   {label:'平均 CER', fmt:v=>v==null?'—':(v*100).toFixed(1)+'%', lowerBetter:true,  max:null, hint:'字错率，越低越好。柱长按分组内最大值归一。'},
+  winRate:  {label:'胜率',     fmt:v=>v==null?'—':(v*100).toFixed(1)+'%', lowerBetter:false, max:1,    hint:'该分组内 CER 严格最低的 case 占比；并列不计入任一方，故三家之和常小于 100%。'},
+  emptyRate:{label:'空文本率', fmt:v=>v==null?'—':(v*100).toFixed(1)+'%', lowerBetter:true,  max:null, hint:'输出为空文本的占比，越低越好。'},
+  avgLat:   {label:'平均尾延迟', fmt:v=>v==null?'—':Math.round(v)+'ms', lowerBetter:true, max:null, hint:'tailLatencyMs 均值，越低越快。'},
+};
+
+let curMetric = 'avgCer';
+
+function buildLegend(){
+  const el = document.getElementById('legend');
+  el.innerHTML = MODELS.map(m=>{
+    const t = TONE_CLASS[m.tone]||'fun';
+    return `<span class="dot"><span class="sw fill-${t}"></span><b class="m${t}">${m.label}</b></span>`;
+  }).join('') + `<span class="dot">🏆 深色徽标=该行最优 / 浅红=最差</span>`;
+}
+
+function rowValues(group){
+  return MODELS.map(m => group.models[m.key] ? group.models[m.key][curMetric] : null);
+}
+
+function renderTable(groups, colGrp){
+  const mdef = METRIC[curMetric];
+  const head = `<thead><tr><th class="grp">${colGrp}</th>`
+    + MODELS.map(m=>`<th>${m.label}</th>`).join('')
+    + `<th>最优</th></tr></thead>`;
+  const body = groups.map(g=>{
+    const vals = rowValues(g);
+    const nums = vals.filter(v=>v!=null);
+    let best=null, worst=null;
+    if(nums.length){
+      best  = mdef.lowerBetter ? Math.min(...nums) : Math.max(...nums);
+      worst = mdef.lowerBetter ? Math.max(...nums) : Math.min(...nums);
+    }
+    // bar scale
+    const localMax = mdef.max!=null ? mdef.max : (nums.length?Math.max(...nums):1);
+    const bestIdx = vals.findIndex(v=>v!=null && v===best);
+    const bestModel = bestIdx>=0 ? MODELS[bestIdx].label : '—';
+    const cells = MODELS.map((m,i)=>{
+      const v = vals[i];
+      const t = TONE_CLASS[m.tone]||'fun';
+      const pct = (v==null||localMax===0)?0:Math.max(2,Math.min(100,(v/localMax)*100));
+      let cls='';
+      if(nums.length>1){ if(v===best) cls='best'; else if(v===worst) cls='worst'; }
+      return `<td class="bar-cell"><div class="bar-wrap">`
+        + `<span class="bar-track"><span class="bar-fill fill-${t}" style="width:${pct}%"></span></span>`
+        + `<span class="val ${cls}">${mdef.fmt(v)}</span></div></td>`;
+    }).join('');
+    return `<tr><td class="grp">${g.label}<span class="n">n=${g.n}</span></td>${cells}`
+      + `<td><span class="badge best">${bestModel}</span></td></tr>`;
+  }).join('');
+  return `<div class="card"><table>${head}<tbody>${body}</tbody></table></div>`;
+}
+
+function section(title, sub, groups, colGrp){
+  return `<section><div class="sec-head"><h2>${title}</h2><span class="sub">${sub}</span></div>`
+    + renderTable(groups, colGrp) + `</section>`;
+}
+
+function render(){
+  const mdef = METRIC[curMetric];
+  document.getElementById('metricHint').textContent = mdef.hint;
+  const html = [
+    section('总体', `全部 ${P.totalCases} 条 case`, [Object.assign({label:'全部 case'}, P.overall)], '范围'),
+    section('按可用性', '人工标注的音频可用性', P.availability, '可用性'),
+    section('按问题类型', '人工标注的疑难 case 类别', P.category, '问题类型'),
+    section('按音频时长', '按录音时长分桶', P.duration, '时长区间'),
+  ].join('');
+  document.getElementById('sections').innerHTML = html;
+}
+
+document.getElementById('metricSeg').addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  curMetric = b.dataset.metric;
+  [...e.currentTarget.querySelectorAll('button')].forEach(x=>x.classList.toggle('active', x===b));
+  render();
+});
+
+buildLegend();
+render();
+document.getElementById('genfoot').textContent =
+  '数据生成时间 ' + (P.generatedAt||'') + ' · 共 ' + P.totalCases + ' 条 case · 模型：' + MODELS.map(m=>m.label).join(' / ');
+</script>
+</body>
+</html>
