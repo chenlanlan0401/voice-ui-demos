@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026中国教育消费与学习场景报告 · 核心解读</title>
+<style>
+:root{
+  --bg:#0e1116; --panel:#161b23; --panel2:#1c2430; --ink:#e8edf4; --sub:#9aa7b8;
+  --line:#28313f; --accent:#5b9bff; --accent2:#7c6cff; --good:#3ecf8e; --warn:#ffb454;
+  --chip:#202a38;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.75; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+
+/* 头部 */
+.hero{padding:64px 20px 48px;text-align:center;background:
+  radial-gradient(1200px 400px at 50% -80px,rgba(91,155,255,.18),transparent 70%),
+  radial-gradient(900px 350px at 80% 0,rgba(124,108,255,.14),transparent 70%);
+  border-bottom:1px solid var(--line)}
+.hero .tag{display:inline-block;font-size:13px;letter-spacing:2px;color:var(--accent);
+  border:1px solid var(--line);padding:5px 14px;border-radius:999px;margin-bottom:20px;background:var(--chip)}
+.hero h1{font-size:34px;font-weight:800;line-height:1.3;letter-spacing:.5px;
+  background:linear-gradient(90deg,#fff,#a9c7ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--sub);margin-top:14px;font-size:15px}
+.hero .meta{margin-top:22px;font-size:13px;color:var(--sub)}
+
+/* 区块 */
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:13px;letter-spacing:3px;color:var(--accent2);font-weight:700;margin-bottom:8px;text-transform:uppercase}
+h2{font-size:24px;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+h2 .bar{width:5px;height:24px;border-radius:3px;background:linear-gradient(180deg,var(--accent),var(--accent2))}
+h3{font-size:17px;font-weight:700;margin:22px 0 10px;color:#dbe6f5}
+p{color:#cdd6e3;margin:10px 0}
+strong{color:#fff;font-weight:700}
+.lead{font-size:16px;color:#dbe6f5;background:var(--panel);border:1px solid var(--line);
+  border-left:4px solid var(--accent);padding:18px 20px;border-radius:12px;margin:16px 0}
+
+/* 四维卡片 */
+.grid{display:grid;gap:16px}
+.grid.g2{grid-template-columns:repeat(2,1fr)}
+.grid.g3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;transition:.2s}
+.card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.card .k{font-size:13px;color:var(--accent);font-weight:700;letter-spacing:1px;margin-bottom:8px}
+.card .v{font-size:14px;color:#cdd6e3}
+.card .big{font-size:28px;font-weight:800;color:#fff;line-height:1.2}
+.card .unit{font-size:13px;color:var(--sub);margin-top:4px}
+
+/* 数据表 */
+.datatbl{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;overflow:hidden;border-radius:12px}
+.datatbl th{background:var(--panel2);color:#dbe6f5;text-align:left;padding:12px 14px;font-weight:700;border-bottom:1px solid var(--line)}
+.datatbl td{padding:12px 14px;border-bottom:1px solid var(--line);color:#cdd6e3;background:var(--panel)}
+.datatbl tr:last-child td{border-bottom:none}
+.datatbl td b{color:var(--good)}
+
+/* 趋势列表 */
+.trend{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:14px 0;position:relative;overflow:hidden}
+.trend::before{content:attr(data-n);position:absolute;right:-8px;top:-18px;font-size:90px;font-weight:900;color:rgba(91,155,255,.07);line-height:1}
+.trend .th{font-size:16px;font-weight:800;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.trend .th .num{font-size:13px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  width:26px;height:26px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.trend .desc{font-size:14px;color:#cdd6e3;position:relative;z-index:1}
+
+/* 决策要点 */
+.dec{border-radius:14px;padding:20px 22px;margin:14px 0;border:1px solid var(--line);background:var(--panel)}
+.dec .dt{font-size:15px;font-weight:800;color:#fff;margin-bottom:8px}
+.dec.good{border-left:4px solid var(--good)}
+.dec.warn{border-left:4px solid var(--warn);background:linear-gradient(90deg,rgba(255,180,84,.06),var(--panel))}
+.dec ul{margin:8px 0 0 18px}
+.dec li{margin:6px 0;color:#cdd6e3;font-size:14px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{background:var(--chip);border:1px solid var(--line);color:#bcd0ea;font-size:13px;padding:6px 12px;border-radius:999px}
+
+footer{padding:30px 20px 60px;text-align:center;color:var(--sub);font-size:13px}
+footer a{color:var(--accent);text-decoration:none}
+
+@media(max-width:720px){
+  .grid.g2,.grid.g3{grid-template-columns:1fr}
+  .hero h1{font-size:26px}
+  h2{font-size:20px}
+}
+
+/* ===== 批注层 ===== */
+#annotBar{position:fixed;right:16px;bottom:16px;z-index:9999;display:flex;gap:8px;align-items:center}
+#annotBar button{font-family:inherit;font-size:13px;border:1px solid var(--line);background:var(--panel2);
+  color:var(--ink);padding:9px 13px;border-radius:10px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+#annotBar button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.annot-dot{position:absolute;width:22px;height:22px;border-radius:50%;background:var(--warn);color:#1a1200;
+  font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transform:translate(-50%,-50%);z-index:9998;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.annot-pop{position:absolute;z-index:10000;background:#fff;color:#111;border-radius:10px;padding:10px;
+  width:240px;box-shadow:0 8px 30px rgba(0,0,0,.4);transform:translate(-50%,10px)}
+.annot-pop textarea{width:100%;height:70px;border:1px solid #ccc;border-radius:6px;padding:6px;font-family:inherit;font-size:13px;resize:none}
+.annot-pop .row{display:flex;gap:6px;margin-top:6px;justify-content:flex-end}
+.annot-pop button{font-size:12px;padding:5px 10px;border-radius:6px;border:none;cursor:pointer}
+.annot-pop .save{background:var(--accent);color:#fff}
+.annot-pop .del{background:#eee;color:#333}
+body.annot-on{cursor:crosshair}
+</style>
+</head>
+<body>
+<div class="hero">
+  <span class="tag">多鲸教育研究院 · 2026年5月</span>
+  <h1>2026 中国教育消费与学习场景报告<br>核心观点 · 十大趋势 · 决策要点</h1>
+  <p>一次消费范式的跃迁:从「刚性支出」走向「体验型投资」,AI 是底层引擎</p>
+  <div class="meta">共 52 页深度解读 · 覆盖市场数据 / 十大趋势 / 决策建议</div>
+</div>
+
+<div class="wrap">
+
+<!-- 一、核心论点 -->
+<section>
+  <div class="eyebrow">CORE THESIS</div>
+  <h2><span class="bar"></span>一、报告的核心论点</h2>
+  <p class="lead">中国教育消费正在完成一次「范式跃迁」——从以学科培训为主的「刚性支出」,转变为涵盖素质培养、技术工具、情感陪伴与个性化服务的「体验型投资」。家长不再只为提分买单,而是为孩子的全面发展、学习体验与成长环境付费。</p>
+  <p>报告用四个维度概括这一转变,而驱动这一切的底层引擎是 <strong>AI</strong>——它已从教育的「可选项」变为「必选项」。</p>
+  <div class="grid g2">
+    <div class="card"><div class="k">支出结构 · 多元化</div><div class="v">学科培训支出下降,素质教育、智能硬件、轻服务(作业批改、学情分析)支出显著上升。家庭非学科投入已<strong>超过双减前水平</strong>。</div></div>
+    <div class="card"><div class="k">消费模式 · 服务化</div><div class="v">从「硬件买断」转向「硬件+内容+服务」订阅制。用户更看重持续的内容更新、AI 伴学、情绪感知等动态价值。</div></div>
+    <div class="card"><div class="k">消费动机 · 升级</div><div class="v">从「应试提分」转向「素养培育 / 习惯养成 / 心理健康 / 科技赋能」。愿为提效、减负、增强亲子互动的产品付费。</div></div>
+    <div class="card"><div class="k">决策逻辑 · 理性又感性</div><div class="v">「数感」维度重质量、实用、安全;「种草」维度依赖社交平台、达人测评、沉浸式内容触发购买。</div></div>
+  </div>
+</section>
+
+<!-- 二、关键数据 -->
+<section>
+  <div class="eyebrow">MARKET DATA</div>
+  <h2><span class="bar"></span>二、关键市场数据</h2>
+  <p>帮你快速判断赛道规模与增长确定性。</p>
+  <div class="grid g3">
+    <div class="card"><div class="k">消费级教育智能硬件</div><div class="big">691亿</div><div class="unit">2026 预测 · 2020年仅252亿 → 2027年763亿</div></div>
+    <div class="card"><div class="k">学习平板(2025)</div><div class="big">632万台</div><div class="unit">全渠道销量 · 销额约199亿元</div></div>
+    <div class="card"><div class="k">AI教育硬件全球份额</div><div class="big">40%+</div><div class="unit">中国贡献,供应链+性价比优势</div></div>
+  </div>
+  <table class="datatbl">
+    <tr><th>指标</th><th>数据</th></tr>
+    <tr><td>家庭非学科培训年支出(2023)</td><td>达 <b>1027元</b>,已超过双减前(1007元)</td></tr>
+    <tr><td>家庭学科培训支出</td><td>从2021峰值2454元回落至2022年 1508元</td></tr>
+    <tr><td>Z世代家长占比</td><td>有孩家庭中 <b>超过28%</b>,有孩家庭 MAU 达 3.62亿</td></tr>
+    <tr><td>头部出海App月收入</td><td>Gauth+Solvely+Question AI 合计 <b>月入超3400万美元</b></td></tr>
+    <tr><td>知识付费市场规模(2024)</td><td>约1808.8亿美元 · 用户6.4亿人</td></tr>
+    <tr><td>国家智慧教育平台(截至2026.3)</td><td>注册用户超 1.8亿,浏览量突破726亿次</td></tr>
+  </table>
+</section>
+
+<!-- 三、十大趋势 -->
+<section>
+  <div class="eyebrow">TEN TRENDS</div>
+  <h2><span class="bar"></span>三、十大趋势(行业现状与未来方向)</h2>
+
+  <div class="trend" data-n="01"><div class="th"><span class="num">1</span>政策驱动:双减深化与家庭教育投入升级</div><div class="desc">重心从「减负」转向「家校社协同育人」。《"人工智能+教育"行动计划》要求 2026 秋季起中小学开齐 AI 通识课。脑科学、AI、智能硬件纳入政策支持。核心逻辑是<strong>「减负不减投入」</strong>。</div></div>
+
+  <div class="trend" data-n="02"><div class="th"><span class="num">2</span>技术革新引领:AI 重塑家庭学习空间</div><div class="desc">空间演进「静态书桌 → 智能角 → AI交互空间」;技术角色「工具 → 伙伴 → 环境」。AI 覆盖课前-课中-课后全流程,多模态交互(语音+情绪+图像)成为标配。</div></div>
+
+  <div class="trend" data-n="03"><div class="th"><span class="num">3</span>产品品类重塑:工具走向系统、细分走向爆品</div><div class="desc">两条路径并行——<strong>系统化学习中心做「全」</strong>(学习机成家庭第一硬件,进入「AI军备竞赛」,价位带千元到万元全覆盖);<strong>垂直爆品做「精」</strong>(护眼灯、错题打印机、单词卡)。0-6岁启蒙硬件成新蓝海,模式为「硬件引流+内容订阅」。</div></div>
+
+  <div class="trend" data-n="04"><div class="th"><span class="num">4</span>用户分层显著:Z世代家长决策「理性又感性」</div><div class="desc">决策公式≈质量+实用性+预算内最优性价比(「数感」),但路径深嵌社交生态(「种草」)。<strong>高端用户为AI能力溢价,普及型用户重性价比</strong>。用户还从「消费者」进化为「共创者」。</div></div>
+
+  <div class="trend" data-n="05"><div class="th"><span class="num">5</span>内容生态深化:从「学科强化」走向「素养陪伴」</div><div class="desc">早教认知投入前移;K12内容拓展到心理健康、人文素养、思维训练。家长角色从「教练」转向「园丁」。</div></div>
+
+  <div class="trend" data-n="06"><div class="th"><span class="num">6</span>消费逻辑转变:从硬件买断到订阅陪伴</div><div class="desc">产品从「工具属性」转向「服务关系」,<strong>订阅成主力商业模式</strong>。价值衡量标准升级为「<strong>陪伴时长 × 用户留存</strong>」,行业从「成本中心」转为「价值中心」。</div></div>
+
+  <div class="trend" data-n="07"><div class="th"><span class="num">7</span>交互体验进化:学习过程游戏化、情境化</div><div class="desc">VR/AR、多感官参与、情绪感知+奖励机制构成激励闭环,推动孩子从「被动接收」到「主动探索」,角色从「内容消费者」变为「对话发起者」。</div></div>
+
+  <div class="trend" data-n="08"><div class="th"><span class="num">8</span>内容+硬件融合:数字家庭新基建成形</div><div class="desc">教育硬件成为<strong>智能家庭中枢</strong>,「家庭即学校」。核心竞争力公式=<strong>好内容 × 好体验 × 高适配</strong>。生态呈「硬件+APP+社群+服务」四位一体平台化。</div></div>
+
+  <div class="trend" data-n="09"><div class="th"><span class="num">9</span>多端联动普及:教育「云+屏」生态成型</div><div class="desc">电视/平板/手机融合为「家庭云教室」。<strong>电信运营商</strong>从「管道提供者」升级为「教育普惠生态构建者」(四川IPTV已覆盖1600万家庭、月活超500万)。</div></div>
+
+  <div class="trend" data-n="10"><div class="th"><span class="num">10</span>全球视野拓展:中国教育「文化+技术」双轮出海</div><div class="desc">从「产品出口 → 理念传播 → 生态共建」三级跃迁。科大讯飞硬件 2025上半年海外营收同比增 <strong>346%</strong>,松鼠Ai发布适配北美课标的英文教学引擎。</div></div>
+</section>
+
+<!-- 四、决策要点 -->
+<section>
+  <div class="eyebrow">DECISION</div>
+  <h2><span class="bar"></span>四、给你决策的关键提炼</h2>
+
+  <div class="dec good"><div class="dt">商业模式:护城河在「订阅 + 数据闭环」</div><ul>
+    <li>一次性硬件买断越来越难做,产品「越用越懂用户」,陪伴时长和留存率才是新的核心资产。</li>
+    <li>单纯拼硬件参数会陷入同质化价格战。</li>
+  </ul></div>
+
+  <div class="dec good"><div class="dt">产品定位:两条清晰路径,别待在中间地带</div><ul>
+    <li><strong>系统化中枢</strong>:全科全流程,拼「AI+内容+服务」生态。</li>
+    <li><strong>垂直爆品</strong>:精准切中一个高频焦虑点,极致体验+低门槛。</li>
+    <li>爆款逻辑:精准定位焦虑 → 极致体验闭环 → 匹配定价与政策 → 适配渠道触达。</li>
+  </ul></div>
+
+  <div class="dec good"><div class="dt">用户与渠道:数感 + 种草,两手都要硬</div><ul>
+    <li>面向 Z 世代家长的产品必须<strong>同时通过「数感」理性测试和「种草」感性共鸣</strong>。</li>
+    <li>渠道组合:小红书种草 + 抖音转化 + 私域沉淀。内容生态能力正取代广告预算能力。</li>
+  </ul></div>
+
+  <div class="dec good"><div class="dt">增长空间:三个高确定性增长点</div>
+    <div class="chips"><span class="chip">0-6岁启蒙硬件(新蓝海)</span><span class="chip">素质素养赛道(千亿级新风口)</span><span class="chip">出海(全球40%份额)</span></div>
+    <p style="font-size:14px">下沉市场是尚未充分释放的「蓄水池」——认知度与付费意愿仍有较大提升空间。</p>
+  </div>
+
+  <div class="dec warn"><div class="dt">⚠ 风险提示:存量竞争时代</div><ul>
+    <li><strong>人口出生率下降、增量市场变存量市场</strong>——报告原文即点出这一隐忧。</li>
+    <li>教育支出分化加剧:中等收入家庭陷入「退出不甘心、投入不划算」的困境。</li>
+    <li>结论:未来靠<strong>效果和价值</strong>取胜,而非流量和价格。</li>
+  </ul></div>
+</section>
+
+</div>
+
+<footer>
+  内容整理自《2026中国教育消费与学习场景报告》(多鲸教育研究院,2026年5月)<br>
+  右下角可开启「批注」模式,点击页面任意处添加想法 · 批注保存在本地浏览器
+</footer>
+
+<!-- 批注层 -->
+<div id="annotBar">
+  <button id="annotToggle">✏️ 批注</button>
+  <button id="annotClear" style="display:none">清空</button>
+</div>
+<script>
+(function(){
+  var KEY='edu_report_2026_annots';
+  var on=false;
+  var toggle=document.getElementById('annotToggle');
+  var clearBtn=document.getElementById('annotClear');
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return[]}}
+  function save(a){localStorage.setItem(KEY,JSON.stringify(a))}
+  function render(){
+    document.querySelectorAll('.annot-dot,.annot-pop').forEach(function(n){n.remove()});
+    var a=load();
+    clearBtn.style.display=a.length?'inline-block':'none';
+    a.forEach(function(it,i){
+      var d=document.createElement('div');
+      d.className='annot-dot';d.textContent=i+1;
+      d.style.left=(it.xr*document.documentElement.scrollWidth)+'px';
+      d.style.top=(it.yr*document.documentElement.scrollHeight)+'px';
+      d.title=it.text||'(空)';
+      d.onclick=function(ev){ev.stopPropagation();openPop(it,i,d)};
+      document.body.appendChild(d);
+    });
+  }
+  function openPop(it,idx,dot){
+    document.querySelectorAll('.annot-pop').forEach(function(n){n.remove()});
+    var p=document.createElement('div');p.className='annot-pop';
+    p.style.left=dot.style.left;p.style.top=dot.style.top;
+    var ta=document.createElement('textarea');ta.value=it.text||'';ta.placeholder='写下你的想法…';
+    var row=document.createElement('div');row.className='row';
+    var del=document.createElement('button');del.className='del';del.textContent='删除';
+    var sv=document.createElement('button');sv.className='save';sv.textContent='保存';
+    del.onclick=function(ev){ev.stopPropagation();var a=load();a.splice(idx,1);save(a);render()};
+    sv.onclick=function(ev){ev.stopPropagation();var a=load();a[idx].text=ta.value;save(a);render()};
+    row.appendChild(del);row.appendChild(sv);
+    p.appendChild(ta);p.appendChild(row);
+    p.onclick=function(ev){ev.stopPropagation()};
+    document.body.appendChild(p);ta.focus();
+  }
+  toggle.onclick=function(){on=!on;document.body.classList.toggle('annot-on',on);toggle.classList.toggle('active',on)};
+  clearBtn.onclick=function(){if(confirm('确定清空所有批注?')){save([]);render()}};
+  document.addEventListener('click',function(ev){
+    if(!on)return;
+    if(ev.target.closest('#annotBar')||ev.target.closest('.annot-pop')||ev.target.classList.contains('annot-dot'))return;
+    var a=load();
+    a.push({xr:ev.pageX/document.documentElement.scrollWidth, yr:ev.pageY/document.documentElement.scrollHeight, text:''});
+    save(a);render();
+    var dots=document.querySelectorAll('.annot-dot');openPop(a[a.length-1],a.length-1,dots[dots.length-1]);
+  });
+  window.addEventListener('resize',render);
+  render();
+})();
+</script>
+</body>
+</html>
