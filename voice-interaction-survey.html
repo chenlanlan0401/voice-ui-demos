@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>语音交互问卷题目拆解</title>
+<style>
+:root { color-scheme: light; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:#f5f3ee; color:#2b2b2b; line-height:1.55; padding:34px 20px 56px; }
+.wrap { max-width:1280px; margin:0 auto; }
+header { text-align:center; margin-bottom:6px; }
+h1 { font-size:26px; font-weight:700; color:#1f2937; letter-spacing:-.5px; }
+.sub { color:#6b7280; font-size:13.5px; margin:8px 0 22px; }
+.tip { text-align:center; font-size:12px; color:#9ca3af; margin-bottom:18px; }
+
+table { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.06),0 10px 30px rgba(0,0,0,.05); }
+th, td { text-align:left; vertical-align:top; padding:11px 13px; font-size:12.5px; border-bottom:1px solid #eee7dc; }
+thead th { background:#2f5e45; color:#eaf4ee; font-weight:700; font-size:12.5px; border-bottom:none; }
+tbody tr:last-child td { border-bottom:none; }
+
+.env { font-weight:700; }
+.env .code { display:inline-block; font-size:11px; color:#fff; border-radius:5px; padding:1px 6px; margin-right:2px; background:#2f5e45; }
+.env .nm { color:#374151; white-space:nowrap; }
+.subj { color:#5a4a86; font-size:12px; }
+.q { color:#1f2937; }
+.q .item { display:block; margin-bottom:7px; }
+.q .item:last-child { margin-bottom:0; }
+.q .open { display:block; margin-top:8px; color:#a4501f; font-size:11.5px; }
+.q .open::before { content:"追问 "; font-weight:700; }
+.scale { color:#555; font-size:11.5px; }
+.scale .tag { display:inline-block; background:#f2f0ea; border-radius:5px; padding:1px 6px; margin:0 0 4px; color:#6b6456; }
+
+.band td { background:#f2f0ea; font-weight:700; color:#7a7568; font-size:12px; letter-spacing:.5px; }
+.note { max-width:1280px; margin:22px auto 0; font-size:12px; color:#6b7280; line-height:1.7; background:#fff; border-radius:10px; padding:16px 20px; box-shadow:0 1px 3px rgba(0,0,0,.05); }
+.note b { color:#2f5e45; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>语音交互问卷题目拆解</h1>
+  <div class="sub">按环节主观指标 → 拆成孩子能答的问卷题目 · 配量表与开放追问</div>
+</header>
+<div class="tip">量表统一用 5 点表情式:😣1 不同意 — 😐3 一般 — 😄5 很同意;低龄可用 3 点👎👌👍</div>
+
+<table>
+<thead>
+<tr>
+  <th style="width:11%;">环节</th>
+  <th style="width:20%;">主观指标</th>
+  <th style="width:46%;">问卷题目(孩子视角口语化)</th>
+  <th style="width:23%;">量表 / 答法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td class="env"><span class="code">01</span><span class="nm">收麦</span></td>
+  <td class="subj">被误收的主观感受分</td>
+  <td class="q">
+    <span class="item">1. 我没说话的时候，它有时候会自己乱答。</span>
+    <span class="item">2. 旁边有人说话（爸妈、同学），它会把别人的话当成我说的。</span>
+    <span class="item">3. 我明明说了，它却好像没在听、没收到。</span>
+    <span class="open">最近一次它"乱接话"是什么情况？当时你在做什么？</span>
+  </td>
+  <td class="scale"><span class="tag">5点表情量表</span>题1-3各打一次分；数值越高＝越常发生（反向计分，越低越好）</td>
+</tr>
+<tr>
+  <td class="env"><span class="code">02</span><span class="nm">端点检测</span></td>
+  <td class="subj">被切断 / 被干等的主观感受分</td>
+  <td class="q">
+    <span class="item">1. 我话还没说完，它就抢着开始回答了。</span>
+    <span class="item">2. 我停下来想一下的时候，它不等我，就打断了。</span>
+    <span class="item">3. 我说完了，它却半天不吭声，让我干等。</span>
+    <span class="open">你有没有过"想了一下正要接着说，它却已经开始讲了"？说说那次。</span>
+  </td>
+  <td class="scale"><span class="tag">5点表情量表</span>题1、2测"切太早"，题3测"等太久"；分开统计</td>
+</tr>
+<tr>
+  <td class="env"><span class="code">03</span><span class="nm">识别 ASR</span></td>
+  <td class="subj">识别准确性主观分</td>
+  <td class="q">
+    <span class="item">1. 我说的话，它基本都能听对。</span>
+    <span class="item">2. 我说方言 / 说得快 / 周围吵的时候，它也听得清。</span>
+    <span class="item">3. 它经常把我说的字听错、听成别的词。</span>
+    <span class="open">它最容易听错你哪句话或哪个词？举个例子。</span>
+  </td>
+  <td class="scale"><span class="tag">5点表情量表</span>题1、2正向（越高越好），题3反向</td>
+</tr>
+<tr>
+  <td class="env"><span class="code">07</span><span class="nm">合成 TTS</span></td>
+  <td class="subj">语气自然度 MOS、情绪匹配度、认知安全感评分</td>
+  <td class="q">
+    <span class="item">1.〔自然度〕它说话的声音像真人，不像机器人干巴巴地念。</span>
+    <span class="item">2.〔情绪匹配〕我答对的时候它听起来很开心，我卡住的时候它会鼓励我。</span>
+    <span class="item">3.〔认知安全感〕跟它说话我很放松，就算说错了也不怕、敢一直开口。</span>
+    <span class="open">它的声音让你想多聊，还是想赶紧结束？为什么？</span>
+  </td>
+  <td class="scale"><span class="tag">5点表情量表</span>三题分别对应自然度 / 情绪匹配 / 安全感，三项独立算分</td>
+</tr>
+<tr>
+  <td class="env"><span class="code">08</span><span class="nm">播报</span></td>
+  <td class="subj">节奏顺畅度评分</td>
+  <td class="q">
+    <span class="item">1. 我说完以后，它很快就回我，不用等太久。</span>
+    <span class="item">2. 它讲话的快慢、停顿刚刚好，我听得清、跟得上。</span>
+    <span class="item">3. 因为它半天不出声，我以为它没听见，又重说了一遍。</span>
+    <span class="open">等它回话的时候，你会不会忍不住再说一次或者催它？</span>
+  </td>
+  <td class="scale"><span class="tag">5点表情量表</span>题1、2正向，题3反向（测"被迫重说"）</td>
+</tr>
+<tr>
+  <td class="env"><span class="code">09</span><span class="nm">打断</span></td>
+  <td class="subj">被打断能否接住的主观感受分</td>
+  <td class="q">
+    <span class="item">1. 它正在讲的时候，我插一句，它能停下来听我。</span>
+    <span class="item">2. 我打断它以后，它能接住我新说的话，而不是自顾自讲完。</span>
+    <span class="item">3. 我想插话，它根本不理，非要把自己那段说完。</span>
+    <span class="open">你有没有过想打断它但打断不了的时候？当时想说什么？</span>
+  </td>
+  <td class="scale"><span class="tag">5点表情量表</span>题1、2正向，题3反向</td>
+</tr>
+<tr>
+  <td class="env"><span class="code">10</span><span class="nm">轮次 / 状态</span></td>
+  <td class="subj">"知不知道该谁说"主观分</td>
+  <td class="q">
+    <span class="item">1. 我总能搞清楚现在是该我说，还是该听它说。</span>
+    <span class="item">2. 该我说话的时候，它会给我提示（灯、声音），我一看就懂。</span>
+    <span class="item">3. 我常常不知道该不该开口，会愣一下、或者重复开头。</span>
+    <span class="open">什么时候你会拿不准"到底该我说了没"？</span>
+  </td>
+  <td class="scale"><span class="tag">5点表情量表</span>题1、2正向，题3反向（测"状态误解"）</td>
+</tr>
+</tbody>
+</table>
+
+<div class="note">
+<b>拆解逻辑：</b>每个环节取原表的「主观指标」作为要测的构念，再拆成 3 道孩子能听懂的陈述句（描述一个具体场景，不用术语），最后加 1 道开放追问定性补充。<br>
+<b>正/反向题：</b>每组里混入 1 道反向题（描述坏体验），既能核查孩子是否认真作答，也避免一味顺着点头。统计时反向题需转分。<br>
+<b>量表选择：</b>默认 5 点表情量表；6-8 岁低龄建议降为 3 点（👎👌👍），并由施测者读题。<br>
+<b>施测建议：</b>紧跟一次真实使用后立刻问，记忆最准；开放追问口头采集、录音转写，用于定位客观指标里"待基线/待横评"的具体 bad case。
+</div>
+
+</div>
+</body>
+</html>
