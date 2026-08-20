@@ -40,17 +40,18 @@ tbody tr:last-child td { border-bottom:none; }
 <div class="wrap">
 <header>
   <h1>语音交互问卷题目拆解</h1>
-  <div class="sub">按环节主观指标 → 拆成孩子能答的问卷题目 · 配量表与开放追问</div>
+  <div class="sub">按环节主观指标 → 拆成问卷题目 · 区分学生自评与家长观察 · 配量表</div>
 </header>
-<div class="tip">量表统一用 5 点表情式:😣1 不同意 — 😐3 一般 — 😄5 很同意;低龄可用 3 点👎👌👍</div>
+<div class="tip">量表统一 5 点:😣1 不同意 — 😐3 一般 — 😄5 很同意;每题均含「没遇到过 / 不清楚」跳选项;低龄用 3 点👎👌👍并由施测者读题</div>
 
 <table>
 <thead>
 <tr>
-  <th style="width:11%;">环节</th>
-  <th style="width:20%;">主观指标</th>
-  <th style="width:46%;">问卷题目(孩子视角口语化)</th>
-  <th style="width:23%;">量表 / 答法</th>
+  <th style="width:9%;">环节</th>
+  <th style="width:14%;">主观指标</th>
+  <th style="width:29%;">学生版(自评·第一人称)</th>
+  <th style="width:29%;">家长版(观察·外显行为)</th>
+  <th style="width:19%;">量表 / 答法</th>
 </tr>
 </thead>
 <tbody>
@@ -58,87 +59,116 @@ tbody tr:last-child td { border-bottom:none; }
   <td class="env"><span class="code">01</span><span class="nm">收麦</span></td>
   <td class="subj">被误收的主观感受分</td>
   <td class="q">
-    <span class="item">1. 我没说话的时候，它有时候会自己乱答。</span>
-    <span class="item">2. 旁边有人说话（爸妈、同学），它会把别人的话当成我说的。</span>
-    <span class="item">3. 我明明说了，它却好像没在听、没收到。</span>
-    <span class="open">最近一次它"乱接话"是什么情况？当时你在做什么？</span>
+    <span class="item">1. 我没说话的时候，它会自己乱答。</span>
+    <span class="item">2. 旁边有别人说话时，它会把别人的话当成我说的。</span>
+    <span class="item">3. 我说了话，它却没收到、没反应。</span>
   </td>
-  <td class="scale"><span class="tag">5点表情量表</span>题1-3各打一次分；数值越高＝越常发生（反向计分，越低越好）</td>
+  <td class="q">
+    <span class="item">1. 孩子没开口时，设备会自己出声应答。</span>
+    <span class="item">2. 家里有人说话或有电视声时，设备会被旁边的声音触发。</span>
+    <span class="item">3. 孩子说了话，设备没有任何反应。</span>
+  </td>
+  <td class="scale"><span class="tag">5点·反向</span>三题均为坏体验，越高越差；家长版只问看得见的动作</td>
 </tr>
 <tr>
   <td class="env"><span class="code">02</span><span class="nm">端点检测</span></td>
   <td class="subj">被切断 / 被干等的主观感受分</td>
   <td class="q">
-    <span class="item">1. 我话还没说完，它就抢着开始回答了。</span>
-    <span class="item">2. 我停下来想一下的时候，它不等我，就打断了。</span>
-    <span class="item">3. 我说完了，它却半天不吭声，让我干等。</span>
-    <span class="open">你有没有过"想了一下正要接着说，它却已经开始讲了"？说说那次。</span>
+    <span class="item">1. 我话还没说完，它就抢着回答。</span>
+    <span class="item">2. 我停下来想一下时，它不等我就开始说。</span>
+    <span class="item">3. 我说完了，它半天不出声，让我干等。</span>
   </td>
-  <td class="scale"><span class="tag">5点表情量表</span>题1、2测"切太早"，题3测"等太久"；分开统计</td>
+  <td class="q">
+    <span class="item">1. 孩子话没说完，设备就开始应答。</span>
+    <span class="item">2. 孩子说话中间停顿一下，设备就抢着接。</span>
+    <span class="item">3. 孩子说完后，设备明显迟迟不回应。</span>
+  </td>
+  <td class="scale"><span class="tag">5点·反向</span>题1、2＝切太早，题3＝等太久，分开统计</td>
 </tr>
 <tr>
   <td class="env"><span class="code">03</span><span class="nm">识别 ASR</span></td>
   <td class="subj">识别准确性主观分</td>
   <td class="q">
     <span class="item">1. 我说的话，它基本都能听对。</span>
-    <span class="item">2. 我说方言 / 说得快 / 周围吵的时候，它也听得清。</span>
-    <span class="item">3. 它经常把我说的字听错、听成别的词。</span>
-    <span class="open">它最容易听错你哪句话或哪个词？举个例子。</span>
+    <span class="item">2. 我说得快的时候，它也听得清。</span>
+    <span class="item">3. 周围吵的时候，它也听得清。</span>
   </td>
-  <td class="scale"><span class="tag">5点表情量表</span>题1、2正向（越高越好），题3反向</td>
+  <td class="q">
+    <span class="item">1. 从孩子和它的对话看，它基本能听对孩子说的话。</span>
+    <span class="item">2. 孩子语速快时，它仍能听对。</span>
+    <span class="item">3. 环境嘈杂时，它仍能听对。</span>
+  </td>
+  <td class="scale"><span class="tag">5点·正向</span>三题各测一种条件下的准确性，独立算分</td>
 </tr>
 <tr>
   <td class="env"><span class="code">07</span><span class="nm">合成 TTS</span></td>
-  <td class="subj">语气自然度 MOS、情绪匹配度、认知安全感评分</td>
+  <td class="subj">语气自然度 · 情绪匹配 · 认知安全感</td>
   <td class="q">
-    <span class="item">1.〔自然度〕它说话的声音像真人，不像机器人干巴巴地念。</span>
-    <span class="item">2.〔情绪匹配〕我答对的时候它听起来很开心，我卡住的时候它会鼓励我。</span>
-    <span class="item">3.〔认知安全感〕跟它说话我很放松，就算说错了也不怕、敢一直开口。</span>
-    <span class="open">它的声音让你想多聊，还是想赶紧结束？为什么？</span>
+    <span class="item">1.〔自然〕它说话像真人，不像机器人念字。</span>
+    <span class="item">2.〔情绪〕我卡住的时候，它听起来在鼓励我。</span>
+    <span class="item">3.〔安全〕跟它说话我很放松，说错了也不怕。</span>
   </td>
-  <td class="scale"><span class="tag">5点表情量表</span>三题分别对应自然度 / 情绪匹配 / 安全感，三项独立算分</td>
+  <td class="q">
+    <span class="item">1.〔自然〕它的声音听起来自然、不生硬。</span>
+    <span class="item">2.〔情绪〕孩子答不出时，它的语气是鼓励式的。</span>
+    <span class="item">3.〔安全〕孩子跟它说话时状态放松、愿意多说。</span>
+  </td>
+  <td class="scale"><span class="tag">5点·正向</span>自然/情绪/安全三项独立算分；安全感家长按孩子外在状态判断</td>
 </tr>
 <tr>
   <td class="env"><span class="code">08</span><span class="nm">播报</span></td>
   <td class="subj">节奏顺畅度评分</td>
   <td class="q">
-    <span class="item">1. 我说完以后，它很快就回我，不用等太久。</span>
-    <span class="item">2. 它讲话的快慢、停顿刚刚好，我听得清、跟得上。</span>
-    <span class="item">3. 因为它半天不出声，我以为它没听见，又重说了一遍。</span>
-    <span class="open">等它回话的时候，你会不会忍不住再说一次或者催它？</span>
+    <span class="item">1. 我说完后，它很快就回我。</span>
+    <span class="item">2. 它讲话的快慢和停顿，我跟得上。</span>
+    <span class="item">3. 它半天不出声，我以为没听见，又重说了一遍。</span>
   </td>
-  <td class="scale"><span class="tag">5点表情量表</span>题1、2正向，题3反向（测"被迫重说"）</td>
+  <td class="q">
+    <span class="item">1. 孩子说完后，设备回应及时。</span>
+    <span class="item">2. 设备说话的语速孩子能跟上。</span>
+    <span class="item">3. 因为设备迟迟不回应，孩子重复说了一遍或催它。</span>
+  </td>
+  <td class="scale"><span class="tag">5点·1+2正向 / 3反向</span>题3测"被迫重说"</td>
 </tr>
 <tr>
   <td class="env"><span class="code">09</span><span class="nm">打断</span></td>
   <td class="subj">被打断能否接住的主观感受分</td>
   <td class="q">
-    <span class="item">1. 它正在讲的时候，我插一句，它能停下来听我。</span>
-    <span class="item">2. 我打断它以后，它能接住我新说的话，而不是自顾自讲完。</span>
-    <span class="item">3. 我想插话，它根本不理，非要把自己那段说完。</span>
-    <span class="open">你有没有过想打断它但打断不了的时候？当时想说什么？</span>
+    <span class="item">1. 它正在讲时，我插一句，它能停下来听我。</span>
+    <span class="item">2. 我打断它后，它能接住我新说的话。</span>
+    <span class="item">3. 我想插话，它不理，非要把自己那段说完。</span>
   </td>
-  <td class="scale"><span class="tag">5点表情量表</span>题1、2正向，题3反向</td>
+  <td class="q">
+    <span class="item">1. 它讲话时孩子插话，它能停下来。</span>
+    <span class="item">2. 孩子打断后，它能顺着孩子的新话接。</span>
+    <span class="item">3. 孩子想插话，它不停，坚持把自己说完。</span>
+  </td>
+  <td class="scale"><span class="tag">5点·1+2正向 / 3反向</span>孩子没试过打断可选"没遇到过"</td>
 </tr>
 <tr>
   <td class="env"><span class="code">10</span><span class="nm">轮次 / 状态</span></td>
   <td class="subj">"知不知道该谁说"主观分</td>
   <td class="q">
-    <span class="item">1. 我总能搞清楚现在是该我说，还是该听它说。</span>
-    <span class="item">2. 该我说话的时候，它会给我提示（灯、声音），我一看就懂。</span>
-    <span class="item">3. 我常常不知道该不该开口，会愣一下、或者重复开头。</span>
-    <span class="open">什么时候你会拿不准"到底该我说了没"？</span>
+    <span class="item">1. 我总能搞清现在是该我说还是该听它说。</span>
+    <span class="item">2. 该我说话时，它会给我提示，我一看就懂。</span>
+    <span class="item">3. 我常不知道该不该开口，会愣一下或重复开头。</span>
   </td>
-  <td class="scale"><span class="tag">5点表情量表</span>题1、2正向，题3反向（测"状态误解"）</td>
+  <td class="q">
+    <span class="item">1. 孩子清楚什么时候轮到自己说。</span>
+    <span class="item">2. 该孩子说话时，设备的提示孩子能看懂。</span>
+    <span class="item">3. 孩子常表现出犹豫，不确定该不该开口。</span>
+  </td>
+  <td class="scale"><span class="tag">5点·1+2正向 / 3反向</span>题3测"状态误解"</td>
 </tr>
 </tbody>
 </table>
 
 <div class="note">
-<b>拆解逻辑：</b>每个环节取原表的「主观指标」作为要测的构念，再拆成 3 道孩子能听懂的陈述句（描述一个具体场景，不用术语），最后加 1 道开放追问定性补充。<br>
-<b>正/反向题：</b>每组里混入 1 道反向题（描述坏体验），既能核查孩子是否认真作答，也避免一味顺着点头。统计时反向题需转分。<br>
-<b>量表选择：</b>默认 5 点表情量表；6-8 岁低龄建议降为 3 点（👎👌👍），并由施测者读题。<br>
-<b>施测建议：</b>紧跟一次真实使用后立刻问，记忆最准；开放追问口头采集、录音转写，用于定位客观指标里"待基线/待横评"的具体 bad case。
+<b>两个版本、谁填谁答：</b>学生版是第一人称自评，测的是"我的感受"；家长版全部改成<b>可观察的外显行为</b>（设备有没有出声、孩子有没有重说/犹豫），不让家长替孩子猜内心感受——内心构念（如"我很放松""我听得清"）只有孩子自己答才有信度，家长只能从孩子的外在状态间接判断，已在对应题里注明。<br>
+<b>一题一维度：</b>已拆掉原来的双重装填题——"方言/说得快/吵"拆成独立三题，"快慢+停顿+听清+跟上"收敛为单一"跟得上"，"灯/声音提示"合并为中性的"提示"。每题只问一件事，避免答案无法归因。<br>
+<b>反向题与转分：</b>每组含至少 1 道反向题（描述坏体验），用于检测乱答、抵消一味点头倾向；统计时反向题需转分后再合并。<br>
+<b>"没遇到过"跳选项：</b>每题都提供"没遇到过 / 不清楚"，避免孩子对没经历过的场景（如打断）被迫瞎选，污染数据。<br>
+<b>量表与施测：</b>默认 5 点表情量表；6-8 岁低龄降为 3 点👎👌👍并由施测者读题。紧跟一次真实使用后立刻问，记忆最准。可另用中性开放题（"说说最近印象深的一次"，不预设好坏）口头采集，用于定位客观指标里"待基线/待横评"的具体 bad case。
 </div>
 
 </div>
