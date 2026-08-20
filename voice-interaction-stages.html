@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>语音交互环节拆解表</title>
+<style>
+:root { color-scheme: light; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:#f5f3ee; color:#2b2b2b; line-height:1.55; padding:34px 20px 56px; }
+.wrap { max-width:1340px; margin:0 auto; }
+header { text-align:center; margin-bottom:6px; }
+h1 { font-size:26px; font-weight:700; color:#1f2937; letter-spacing:-.5px; }
+.sub { color:#6b7280; font-size:13.5px; margin:8px 0 22px; }
+.tip { text-align:center; font-size:12px; color:#9ca3af; margin-bottom:18px; }
+
+table { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.06),0 10px 30px rgba(0,0,0,.05); }
+th, td { text-align:left; vertical-align:top; padding:11px 13px; font-size:12.5px; border-bottom:1px solid #eee7dc; }
+thead th { background:#2f5e45; color:#eaf4ee; font-weight:700; font-size:12.5px; border-bottom:none; }
+tbody tr:last-child td { border-bottom:none; }
+
+.env { font-weight:700; }
+.env .code { display:inline-block; font-size:11px; color:#fff; border-radius:5px; padding:1px 6px; margin-right:2px; background:#2f5e45; }
+.env .nm { color:#374151; white-space:nowrap; }
+.env .def { display:block; margin-top:6px; font-weight:400; font-size:11px; color:#8a8578; line-height:1.4; }
+
+.std { color:#1f2937; }
+.arg { color:#555; }
+.arg .hard { color:#a4501f; font-weight:600; }
+.arg .cite { color:#2f5e45; font-weight:600; }
+.obj, .subj { font-size:12px; }
+.obj { color:#3f5f80; }
+.subj { color:#5a4a86; }
+
+.band td { background:#f2f0ea; font-weight:700; color:#7a7568; font-size:12px; letter-spacing:.5px; }
+tr.cross td:first-child { border-left:3px solid #b8860b; }
+.legend { display:flex; justify-content:center; gap:20px; margin:20px 0 0; flex-wrap:wrap; font-size:12px; color:#666; }
+.legend span { display:inline-flex; align-items:center; gap:6px; }
+.dot { width:11px; height:11px; border-radius:3px; }
+.dot.core { background:#e07a3f; } .dot.own { background:#6fae8f; } .dot.cross { background:#b8860b; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>语音交互环节拆解表</h1>
+  <div class="sub">按做功环节拆解：好的标准 · 论证与证据 · 客观指标 · 主观指标</div>
+</header>
+<div class="tip">统一判断逻辑：这个环节有没有在损害孩子"完整地说、从容地想"</div>
+
+<table>
+<thead>
+<tr>
+  <th style="width:11%;">环节</th>
+  <th style="width:20%;">好的标准</th>
+  <th style="width:31%;">论证与证据</th>
+  <th style="width:19%;">客观指标</th>
+  <th style="width:19%;">主观指标</th>
+</tr>
+</thead>
+<tbody>
+<tr class="core">
+  <td class="env"><span class="code">01</span><span class="nm">收麦</span><span class="def">从设备麦克风持续采集声音，并决定这一段音频要不要送去识别——是整条语音链路的"开麦收音"入口。</span></td>
+  <td class="std">只收有效话语，不误收噪音 / 家长 / 自言自语，不漏收</td>
+  <td class="arg">入口错则全错（误差传播）；误收＝AI 基于孩子没说的话乱应，直接制造答非所问。证据靠归因链，<span class="hard">待基线统计</span></td>
+  <td class="obj">误收麦率、漏收率</td>
+  <td class="subj">被误收的主观感受分</td>
+</tr>
+<tr class="core">
+  <td class="env"><span class="code">02</span><span class="nm">端点检测</span><span class="def">判断孩子"是不是说完了"——检测语音的开始与结束点(VAD/端点),决定何时收束这一轮、把话交给系统处理。</span></td>
+  <td class="std">说完才收束；思考停顿时给足等待、不切断</td>
+  <td class="arg">守护"从容地想"。切早＝剥夺表达，切晚＝尴尬空等。证据硬：<span class="cite">wait time（Rowe）</span>等待延到 3 秒回答更长更有信心；<span class="cite">轮替预判（Stivers）</span>判断说完靠语义、非纯静默计时</td>
+  <td class="obj">误关麦率（切断 + 该关没关）、超时无响应率</td>
+  <td class="subj">被切断 / 被干等的主观感受分</td>
+</tr>
+<tr class="own">
+  <td class="env"><span class="code">03</span><span class="nm">识别 ASR</span><span class="def">把采集到的语音转成文字(自动语音识别),是"听懂孩子说了什么"的一步,输出文本供后续理解与应答。</span></td>
+  <td class="std">如实转写，儿童 / 方言 / 嘈杂下不掉字错识</td>
+  <td class="arg">识别错＝孩子的话被曲解着传入，同样制造答非所问。<span class="hard">已达标 CER&lt;4%，维持即可</span></td>
+  <td class="obj">ASR CER、识别错误影响后续的比例</td>
+  <td class="subj">识别准确性主观分</td>
+</tr>
+<tr class="own">
+  <td class="env"><span class="code">07</span><span class="nm">合成 TTS</span><span class="def">把 AI 要说的文字转成语音(文本转语音),决定回答用什么声音、语气、情绪说出来。</span></td>
+  <td class="std">语气自然不平板，情绪匹配情境（卡住时鼓励）</td>
+  <td class="arg">声音温度直接影响"敢不敢开口"，语气错位让孩子闭嘴。证据：认知安全感是学习前提；追求自然非播音腔（过度完美反噬）</td>
+  <td class="obj">情绪标签匹配率、语速 / 停顿合理性</td>
+  <td class="subj">语气自然度 MOS、情绪匹配度、认知安全感评分</td>
+</tr>
+<tr class="own">
+  <td class="env"><span class="code">08</span><span class="nm">播报</span><span class="def">把合成好的语音真正播放给孩子听,并管理"从孩子说完到 AI 开口"的整体响应节奏与时延。</span></td>
+  <td class="std">不让孩子干等到以为没听见；语速停顿得当</td>
+  <td class="arg">延迟过大→孩子抢话 / 重说，轮次崩；教育容忍度高于通用助手（不追极致秒回）。理想参照轮替 200ms，<span class="hard">绝对值待横评</span></td>
+  <td class="obj">端到端响应延迟 P50 / P90</td>
+  <td class="subj">节奏顺畅度评分</td>
+</tr>
+<tr class="core">
+  <td class="env"><span class="code">09</span><span class="nm">打断</span><span class="def">AI 正在说话时孩子插话,系统能实时听到并停下当前播报、转去接住孩子的新话(barge-in 处理)。</span></td>
+  <td class="std">孩子插话能停下来接，不硬把自己说完</td>
+  <td class="arg">人被打断会停是尊重表达的本能；AI 不停＝无视孩子。证据：会话分析"重叠→让步修复"；技术可行性<span class="hard">待横评</span></td>
+  <td class="obj">误打断率、打断响应成功率</td>
+  <td class="subj">被打断能否接住的主观感受分</td>
+</tr>
+<tr class="core">
+  <td class="env"><span class="code">10</span><span class="nm">轮次 / 状态</span><span class="def">管理"现在轮到谁说"的对话状态,并通过灯光、声音等信号让孩子随时清楚该听还是该说(轮替管理)。</span></td>
+  <td class="std">孩子随时清楚该不该自己说</td>
+  <td class="arg">状态不明→迟疑、重复开头、卡壳。人靠眼神隐式传状态，<span class="hard">AI 需显式信号（可能要多模态补）</span></td>
+  <td class="obj">轮次完成率、状态误解率</td>
+  <td class="subj">"知不知道该谁说"主观分</td>
+</tr>
+
+</tbody>
+</table>
+
+</div>
+</body>
+</html>
