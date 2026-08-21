@@ -37,7 +37,7 @@ body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; bac
 
 .q { padding:14px 0 4px; border-bottom:1px dashed #eee7dc; }
 .q:last-child { border-bottom:none; }
-.q .qhead { display:flex; gap:8px; margin-bottom:12px; }
+.q .qhead { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
 .q .qn { flex-shrink:0; width:24px; height:24px; background:#eef3f0; color:#2f5e45; border-radius:7px; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; }
 .q .qt { font-size:15px; color:#1f2937; font-weight:600; }
 .q .qt .star { color:#e07a3f; font-size:13px; }
@@ -111,6 +111,13 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 #verPanel .vitem .vv { font-size:12px; font-weight:700; color:#1f2937; }
 #verPanel .vitem .vd { font-size:10.5px; color:#a8a293; }
 #verPanel .vitem .vt { font-size:12px; color:#4b5563; margin-top:2px; }
+
+/* ===== 考察点标注（仅审阅可见）===== */
+#envToggle { position:fixed; left:16px; bottom:16px; z-index:9000; background:#8a6d3b; color:#fff; border:none; border-radius:24px; padding:11px 16px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(138,109,59,.35); font-family:inherit; }
+#envToggle.on { background:#b8860b; }
+.env-note { display:none; margin:9px 0 2px; font-size:11.5px; color:#8a5a1a; font-weight:500;
+  background:#fbf3e3; border:1px solid #e8cf9f; border-left:3px solid #b8860b; border-radius:7px; padding:5px 11px; line-height:1.55; }
+body.showenv .env-note { display:block; }
 </style>
 </head>
 <body>
@@ -155,7 +162,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 
   <div class="sec-band" data-name="学生-整体区标题">先聊整体感觉</div>
   <div class="card" data-name="学生-整体题组">
-    <div class="q" data-name="S1喜欢程度">
+    <div class="q" data-name="S1喜欢程度" data-env="整体基线 · 使用意愿（愿不愿意开口用）— 追踪总分用">
       <div class="qhead"><span class="qn">1</span><span class="qt">你喜欢用说话的方式跟 AI 老师聊吗？</span></div>
       <div class="opts freq" data-single>
         <div class="opt" data-v="超喜欢"><span class="emo">😄</span><span class="lb">超喜欢</span></div>
@@ -164,7 +171,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="不喜欢"><span class="emo">😞</span><span class="lb">不喜欢</span></div>
       </div>
     </div>
-    <div class="q" data-name="S2费力度">
+    <div class="q" data-name="S2费力度" data-env="整体基线 · 费力度／心理负担 — 对齐北极星『不额外消耗注意力』，交叉分析的核心因变量">
       <div class="qhead"><span class="qn">2</span><span class="qt">跟 AI 老师说话，累不累？（要不要很费劲才能让它听懂你）</span></div>
       <div class="opts freq" data-single>
         <div class="opt" data-v="很轻松"><span class="lb">很轻松</span></div>
@@ -176,7 +183,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 
   <div class="sec-band" data-name="学生-频率区标题">最近这节课，发生过下面的事吗？<span class="sec-hint">想想最近的一次课</span></div>
   <div class="card" data-name="学生-频率题组">
-    <div class="q" data-name="S3误收">
+    <div class="q" data-name="S3误收" data-env="01 收麦 · 误收（噪音／家长／自言自语被当回答）— 入口错则全错，权重×1.5">
       <div class="qhead"><span class="qn">3</span><span class="qt">旁边有别的声音（爸妈说话、开电视），AI 老师把它当成你说的话。</span></div>
       <div class="opts freq" data-single>
         <div class="opt" data-v="好几次"><span class="lb">这节课好几次</span></div>
@@ -184,7 +191,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="没有"><span class="lb">没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="S4漏收">
+    <div class="q" data-name="S4漏收" data-env="01 收麦 · 漏收（说了却没被收进来）— 入口环节，权重×1.5">
       <div class="qhead"><span class="qn">4</span><span class="qt">你说了话，AI 老师却像没听见。</span></div>
       <div class="opts freq" data-single>
         <div class="opt" data-v="好几次"><span class="lb">这节课好几次</span></div>
@@ -192,7 +199,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="没有"><span class="lb">没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="S5切早">
+    <div class="q" data-name="S5切早" data-env="02 端点检测 · 切早（没说完就被收束）— ★KR4重点，守护『从容地想』，入口权重×1.5">
       <div class="qhead"><span class="qn">5</span><span class="qt">你还在想词、还没说完，AI 老师就开始说话了。<span class="star">★</span></span></div>
       <div class="opts freq" data-single>
         <div class="opt" data-v="好几次"><span class="lb">这节课好几次</span></div>
@@ -200,7 +207,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="没有"><span class="lb">没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="S6切晚">
+    <div class="q" data-name="S6切晚" data-env="02 端点检测 · 切晚／超时（说完了AI半天不出声）— 也叠加 08 播报延迟，靠客观指标拆分">
       <div class="qhead"><span class="qn">6</span><span class="qt">你已经说完了，AI 老师半天不出声，让你干等。</span></div>
       <div class="opts freq" data-single>
         <div class="opt" data-v="好几次"><span class="lb">这节课好几次</span></div>
@@ -208,7 +215,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="没有"><span class="lb">没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="S7识别错">
+    <div class="q" data-name="S7识别错" data-env="03 ASR识别 · 听错（转写有误导致答非所问）— 客观CER已达标<4%，若主观仍高优先怀疑是切早造成的错觉">
       <div class="qhead"><span class="qn">7</span><span class="qt">你说的话，AI 老师听错了，回答的不是你的意思。</span></div>
       <div class="opts freq" data-single>
         <div class="opt" data-v="好几次"><span class="lb">这节课好几次</span></div>
@@ -220,7 +227,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 
   <div class="sec-band" data-name="学生-感受区标题">这几件，你觉得怎么样？</div>
   <div class="card" data-name="学生-感受题组">
-    <div class="q" data-name="S8打断">
+    <div class="q" data-name="S8打断" data-env="09 打断 · 插话能否被接住（孩子插话AI停不停）— ★KR4重点">
       <div class="qhead"><span class="qn">8</span><span class="qt">AI 老师正在说话，你插一句，它会停下来听你吗？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="会停下来听"><span class="lb">会停下来听我说</span></div>
@@ -228,7 +235,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="根本不停"><span class="lb">根本不停，硬要说完</span></div>
       </div>
     </div>
-    <div class="q" data-name="S9轮次">
+    <div class="q" data-name="S9轮次" data-env="10 轮次／状态 · 知不知道该谁说（轮次是否清晰）— 与感知层S15动效交叉印证">
       <div class="qhead"><span class="qn">9</span><span class="qt">说话的时候，你知道什么时候轮到你说吗？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="一直很清楚"><span class="lb">一直很清楚</span></div>
@@ -236,7 +243,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="经常不知道"><span class="lb">经常不知道该谁说</span></div>
       </div>
     </div>
-    <div class="q" data-name="S10语气">
+    <div class="q" data-name="S10语气" data-env="07 合成TTS · 语气自然度（像真人还是很机器）— 影响敢不敢开口">
       <div class="qhead"><span class="qn">10</span><span class="qt">AI 老师说话的声音，你觉得像什么？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="像真人亲切"><span class="lb">像真人，挺亲切</span></div>
@@ -244,7 +251,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="很机器"><span class="lb">很机器、硬邦邦</span></div>
       </div>
     </div>
-    <div class="q" data-name="S11情绪匹配">
+    <div class="q" data-name="S11情绪匹配" data-env="07 合成TTS · 情绪匹配（卡住时是否鼓励）— 认知安全感的核心，对齐『敢不敢开口』">
       <div class="qhead"><span class="qn">11</span><span class="qt">你答错了、或者卡住不会的时候，AI 老师会怎么样？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="会鼓励安慰"><span class="lb">会鼓励我、安慰我</span></div>
@@ -252,7 +259,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="语气怪让我慌"><span class="lb">语气怪怪的，让我更慌</span></div>
       </div>
     </div>
-    <div class="q" data-name="S12紧张度">
+    <div class="q" data-name="S12紧张度" data-env="07 合成TTS · 认知安全感（紧不紧张、敢不敢说）— 交叉分析因变量，衡量交互问题对学习意愿的影响">
       <div class="qhead"><span class="qn">12</span><span class="qt">跟 AI 老师说话，你紧不紧张？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="不紧张"><span class="lb">不紧张，想说就说</span></div>
@@ -264,7 +271,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 
   <div class="sec-band" data-name="学生-感知区标题">看得见的部分<span class="sec-hint">AI 长什么样、说话时的动画</span></div>
   <div class="card" data-name="学生-感知题组">
-    <div class="q" data-name="S13AI形象">
+    <div class="q" data-name="S13AI形象" data-env="感知层（表现层视觉）· AI形象好感度 — 拆解表未单列，属表现层新增调研">
       <div class="qhead"><span class="qn">13</span><span class="qt">屏幕上 AI 老师的样子（长相、表情），你喜欢吗？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="很喜欢"><span class="lb">很喜欢，看着舒服</span></div>
@@ -272,7 +279,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="不喜欢"><span class="lb">不喜欢 / 有点怪</span></div>
       </div>
     </div>
-    <div class="q" data-name="S14AI说话动效">
+    <div class="q" data-name="S14AI说话动效" data-env="感知层 · AI说话动效（知不知道『它正在说』）— 侧面验证 10 轮次的显式状态信号">
       <div class="qhead"><span class="qn">14</span><span class="qt">AI 老师说话的时候，屏幕上有没有动画（嘴动、波纹、亮光），让你知道"它正在说"？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="有很清楚"><span class="lb">有，很清楚它在说</span></div>
@@ -280,7 +287,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="没注意到"><span class="lb">没注意到有动画</span></div>
       </div>
     </div>
-    <div class="q" data-name="S15自己说话动效">
+    <div class="q" data-name="S15自己说话动效" data-env="感知层 · 学生说话动效（知不知道『该我说、它在听』）— 显式状态信号，与S9轮次交叉印证">
       <div class="qhead"><span class="qn">15</span><span class="qt">轮到你说话的时候，屏幕上有没有动画（话筒亮起、波纹），让你知道"该我说、它在听"？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="有很清楚"><span class="lb">有，一看就知道该我说</span></div>
@@ -292,11 +299,11 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 
   <div class="sec-band" data-name="学生-开放区标题">说说你的想法<span class="sec-hint">不想写可以跳过</span></div>
   <div class="card" data-name="学生-开放题组">
-    <div class="q" data-name="S16最烦">
+    <div class="q" data-name="S16最烦" data-env="开放题 · 兜底暴露未覆盖问题 — 用于开放题编码，补量化题盲区">
       <div class="qhead"><span class="qn">16</span><span class="qt">跟 AI 老师说话，最让你烦的是哪件事？<span class="optional">选填</span></span></div>
       <textarea placeholder="随便说说，比如……"></textarea>
     </div>
-    <div class="q" data-name="S17放弃案例">
+    <div class="q" data-name="S17放弃案例" data-env="开放题 · 学习意愿受损铁证（因交互问题不想再说）— 立项文档现状问题章节的典型案例来源">
       <div class="qhead"><span class="qn">17</span><span class="qt">有没有哪一次，AI 老师没听懂你、或者打断了你，你就不想再说了？那次发生了什么？<span class="optional">选填</span></span></div>
       <textarea placeholder="讲讲那一次的事……"></textarea>
     </div>
@@ -326,7 +333,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 
   <div class="sec-band" data-name="家长-整体区标题">先看整体</div>
   <div class="card" data-name="家长-整体题组">
-    <div class="q" data-name="P1整体顺畅">
+    <div class="q" data-name="P1整体顺畅" data-env="整体基线 · 家长视角整体顺畅度 — 与学生S1/S2对照">
       <div class="qhead"><span class="qn">1</span><span class="qt">孩子用语音跟 AI 老师互动，顺畅吗？</span></div>
       <div class="opts freq" data-single>
         <div class="opt" data-v="很顺"><span class="lb">很顺</span></div>
@@ -338,7 +345,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 
   <div class="sec-band" data-name="家长-观察区标题">最近孩子上课时，您在旁边见过这些吗？<span class="sec-hint">按最近的印象</span></div>
   <div class="card" data-name="家长-观察题组">
-    <div class="q" data-name="P2切早">
+    <div class="q" data-name="P2切早" data-env="02 端点检测 · 切早（旁观视角）— ★KR4，与学生S5对照，两边都高=铁实问题">
       <div class="qhead"><span class="qn">2</span><span class="qt">孩子话没说完，AI 就抢着接话、自己往下说了。<span class="star">★</span></span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
@@ -347,7 +354,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="P3打断">
+    <div class="q" data-name="P3打断" data-env="09 打断（旁观视角）— ★KR4，与学生S8对照">
       <div class="qhead"><span class="qn">3</span><span class="qt">孩子想插话打断 AI，AI 不停下来、硬把自己那段说完。<span class="star">★</span></span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
@@ -356,7 +363,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="P4识别错">
+    <div class="q" data-name="P4识别错" data-env="03 ASR识别（旁观视角）· 用『重复说好几遍』这一可观察行为侧面反映，家长判断不了CER本身">
       <div class="qhead"><span class="qn">4</span><span class="qt">孩子因为 AI 没听懂，把同一句话重复说好几遍。</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
@@ -365,7 +372,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="P5误收">
+    <div class="q" data-name="P5误收" data-env="01 收麦 · 误收（家长最能观察：自己或电视声被当成孩子回答）— 与学生S3对照">
       <div class="qhead"><span class="qn">5</span><span class="qt">您说话或电视的声音，被 AI 当成了孩子的回答。</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
@@ -374,7 +381,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="P6情绪信号">
+    <div class="q" data-name="P6情绪信号" data-env="学习意愿信号 · 孩子烦躁／放弃（家长最能捕捉的外显情绪）— 把交互问题挂到学习效果上">
       <div class="qhead"><span class="qn">6</span><span class="qt">孩子因为 AI 听不懂或被打断，表现出烦躁、不耐烦、甚至不想说了。</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
@@ -387,7 +394,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 
   <div class="sec-band" data-name="家长-感知区标题">看得见的部分<span class="sec-hint">AI 形象与画面反馈</span></div>
   <div class="card" data-name="家长-感知题组">
-    <div class="q" data-name="P7AI形象动效">
+    <div class="q" data-name="P7AI形象动效" data-env="感知层 · AI形象／说话动效接受度（旁观视角）— 与学生S13对照">
       <div class="qhead"><span class="qn">7</span><span class="qt">屏幕上 AI 老师的形象、以及说话时的动画（嘴动、波纹），您觉得孩子接受度如何？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="很喜欢"><span class="lb">挺喜欢，愿意看</span></div>
@@ -395,7 +402,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="不喜欢"><span class="lb">不太喜欢 / 有点抵触</span></div>
       </div>
     </div>
-    <div class="q" data-name="P8状态迟疑">
+    <div class="q" data-name="P8状态迟疑" data-env="10 轮次／状态 · 状态不明导致迟疑（旁观视角）— 与学生S9/S15对照，验证显式信号是否够">
       <div class="qhead"><span class="qn">8</span><span class="qt">孩子是不是常常搞不清"该自己说了没"，对着屏幕迟疑、不敢开口？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
@@ -408,7 +415,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 
   <div class="sec-band" data-name="家长-影响区标题">影响判断</div>
   <div class="card" data-name="家长-影响题组">
-    <div class="q" data-name="P9学习意愿">
+    <div class="q" data-name="P9学习意愿" data-env="学习意愿 · 交互问题是否影响用AI学习的意愿 — 交叉分析核心因变量，论证优化的价值">
       <div class="qhead"><span class="qn">9</span><span class="qt">这些问题会不会影响孩子用 AI 学习的意愿？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="明显影响"><span class="lb">明显影响</span></div>
@@ -416,7 +423,7 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="没影响"><span class="lb">没影响</span></div>
       </div>
     </div>
-    <div class="q" data-name="P10开放案例">
+    <div class="q" data-name="P10开放案例" data-env="开放题 · 典型案例采集（家长视角的卡壳／打断／听错场景）— 开放题编码素材">
       <div class="qhead"><span class="qn">10</span><span class="qt">印象最深的一次卡壳 / 被打断 / 听错，当时发生了什么？<span class="optional">选填</span></span></div>
       <textarea placeholder="描述那次的场景……"></textarea>
     </div>
@@ -442,6 +449,9 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 <!-- 版本条 -->
 <button id="verBadge" onclick="toggleVer()">版本 v1</button>
 <div id="verPanel"><h4>版本历史</h4><div id="verList"></div></div>
+
+<!-- 考察点开关（仅审阅可见，发出前请关闭）-->
+<button id="envToggle" onclick="toggleEnv()">🔍 考察点</button>
 
 <!-- 批注层 -->
 <button id="annToggle" onclick="toggleAnn()">✏️ 批注模式</button>
@@ -482,7 +492,8 @@ document.querySelectorAll('.opts[data-single]').forEach(g=>{
 const VERSIONS=[
   {v:1,date:'2026-08-21',desc:'首版：身份分流 + 学生14题 / 家长9题；频率题锚定"最近这节课"；切早·打断拆分（KR4重点★）；表情打分；内置批注层'},
   {v:2,date:'2026-08-21',desc:'补 07 情绪匹配题（S11）；新增感知层区：AI形象·AI说话动效·学生说话动效（S13-15），家长补 AI形象接受度·状态迟疑（P7-8）。学生17题 / 家长11题'},
-  {v:3,date:'2026-08-21',desc:'S2"顺不顺"升级为费力度"累不累"，更贴"不额外消耗注意力"的北极星（意愿+心理负担双整体指标）'}
+  {v:3,date:'2026-08-21',desc:'S2"顺不顺"升级为费力度"累不累"，更贴"不额外消耗注意力"的北极星（意愿+心理负担双整体指标）'},
+  {v:4,date:'2026-08-21',desc:'每题加"🔍 考察点"标注（对应拆解表哪个环节/哪个问题，仅审阅可见）；左下角开关默认关闭，发给受访者前保持关闭即可隐藏'}
 ];
 (function renderVer(){
   const last=VERSIONS[VERSIONS.length-1];
@@ -491,6 +502,25 @@ const VERSIONS=[
     `<div class="vitem"><span class="vv">v${x.v}</span> <span class="vd">${x.date}</span><div class="vt">${x.desc}</div></div>`).join('');
 })();
 function toggleVer(){ document.getElementById('verPanel').classList.toggle('show'); }
+
+/* ===== 考察点标注（仅审阅可见）===== */
+let envOn=false;
+(function buildEnvNotes(){
+  document.querySelectorAll('.q[data-env]').forEach(q=>{
+    const note=document.createElement('div');
+    note.className='env-note';
+    note.textContent='🔍 考察点：'+q.getAttribute('data-env');
+    const head=q.querySelector('.qhead');
+    head.insertAdjacentElement('afterend',note);
+  });
+})();
+function toggleEnv(){
+  envOn=!envOn;
+  document.body.classList.toggle('showenv',envOn);
+  const b=document.getElementById('envToggle');
+  b.classList.toggle('on',envOn);
+  b.textContent=envOn?'🔍 考察点·已显示':'🔍 考察点';
+}
 
 /* ===== 批注层 ===== */
 let annOn=false, anns=[], curTarget=null, seq=0;
