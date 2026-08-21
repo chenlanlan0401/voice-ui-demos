@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 语音老师·体验问卷</title>
+<style>
+:root { color-scheme: light; }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:#f5f3ee; color:#2b2b2b; line-height:1.6; padding:0 0 80px; }
+.wrap { max-width:640px; margin:0 auto; padding:20px 18px; }
+
+/* 顶部 */
+.topbar { background:linear-gradient(135deg,#2f5e45,#3d7a58); color:#fff; padding:26px 18px 22px; text-align:center; }
+.topbar h1 { font-size:22px; font-weight:700; letter-spacing:-.3px; }
+.topbar .sub { font-size:13px; opacity:.9; margin-top:7px; }
+
+/* 屏切换 */
+.screen { display:none; }
+.screen.active { display:block; animation:fade .35s ease; }
+@keyframes fade { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:none;} }
+
+/* 分流 */
+.role-pick { display:flex; flex-direction:column; gap:14px; margin-top:30px; }
+.role-card { background:#fff; border:2px solid #ece9e2; border-radius:16px; padding:22px 20px; cursor:pointer; transition:all .18s; display:flex; align-items:center; gap:16px; }
+.role-card:hover { border-color:#3d7a58; transform:translateY(-2px); box-shadow:0 8px 24px rgba(47,94,69,.12); }
+.role-card .emo { font-size:38px; }
+.role-card .txt b { font-size:17px; color:#1f2937; display:block; }
+.role-card .txt span { font-size:12.5px; color:#8a8578; }
+.role-intro { text-align:center; color:#6b7280; font-size:13px; margin-top:22px; }
+
+/* 卡片/题 */
+.card { background:#fff; border-radius:16px; padding:18px 18px 6px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,.05),0 8px 22px rgba(0,0,0,.04); border:1px solid #ece9e2; }
+.sec-band { font-size:13px; font-weight:700; color:#2f5e45; margin:26px 4px 12px; letter-spacing:.3px; display:flex; align-items:center; gap:8px; }
+.sec-band::before { content:""; width:4px; height:16px; background:#3d7a58; border-radius:3px; }
+.sec-hint { font-size:11.5px; color:#a8a293; font-weight:400; margin-left:2px; }
+
+.q { padding:14px 0 4px; border-bottom:1px dashed #eee7dc; }
+.q:last-child { border-bottom:none; }
+.q .qhead { display:flex; gap:8px; margin-bottom:12px; }
+.q .qn { flex-shrink:0; width:24px; height:24px; background:#eef3f0; color:#2f5e45; border-radius:7px; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+.q .qt { font-size:15px; color:#1f2937; font-weight:600; }
+.q .qt .star { color:#e07a3f; font-size:13px; }
+
+/* 选项 */
+.opts { display:flex; gap:8px; flex-wrap:wrap; }
+.opt { flex:1; min-width:0; border:1.5px solid #e6e2d9; background:#fbfaf7; border-radius:11px; padding:11px 6px; text-align:center; cursor:pointer; transition:all .15s; font-size:13px; color:#4b5563; }
+.opt:hover { border-color:#8fc4a8; }
+.opt.sel { border-color:#2f5e45; background:#eef7f1; color:#2f5e45; font-weight:600; }
+.opt .emo { font-size:26px; display:block; margin-bottom:3px; line-height:1; }
+.opt .lb { font-size:12.5px; }
+.opts.freq .opt { flex:1; }
+.opts.wide { flex-direction:column; gap:8px; }
+.opts.wide .opt { text-align:left; padding:12px 14px; display:flex; align-items:center; gap:10px; }
+.opts.wide .opt .lb { font-size:14px; }
+.opts.wide .opt::before { content:""; width:16px; height:16px; border-radius:50%; border:2px solid #cbd5cf; flex-shrink:0; }
+.opts.wide .opt.sel::before { border-color:#2f5e45; background:#2f5e45; box-shadow:inset 0 0 0 3px #eef7f1; }
+
+/* 开放题 */
+.q textarea { width:100%; border:1.5px solid #e6e2d9; border-radius:11px; padding:11px 13px; font-size:14px; font-family:inherit; resize:vertical; min-height:64px; background:#fbfaf7; color:#2b2b2b; }
+.q textarea:focus { outline:none; border-color:#8fc4a8; background:#fff; }
+.optional { font-size:11px; color:#a8a293; font-weight:400; margin-left:4px; }
+
+/* 年级 */
+.grade { display:flex; gap:8px; }
+.grade .opt { padding:12px 4px; font-size:15px; font-weight:600; }
+
+/* 导航按钮 */
+.nav { display:flex; gap:12px; margin-top:24px; }
+.btn { flex:1; padding:15px; border-radius:13px; border:none; font-size:15px; font-weight:700; cursor:pointer; transition:all .15s; font-family:inherit; }
+.btn-primary { background:#2f5e45; color:#fff; }
+.btn-primary:hover { background:#26503a; }
+.btn-ghost { background:#fff; color:#6b7280; border:1.5px solid #e6e2d9; flex:0 0 90px; }
+.btn-ghost:hover { border-color:#c9c4b8; }
+
+/* 完成页 */
+.done { text-align:center; padding:50px 20px; }
+.done .big { font-size:56px; }
+.done h2 { font-size:20px; color:#1f2937; margin:14px 0 8px; }
+.done p { color:#6b7280; font-size:14px; }
+
+/* ===== 批注层 ===== */
+#annToggle { position:fixed; right:16px; bottom:16px; z-index:9000; background:#2f5e45; color:#fff; border:none; border-radius:24px; padding:11px 16px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(47,94,69,.35); font-family:inherit; }
+#annToggle.on { background:#e07a3f; box-shadow:0 4px 14px rgba(224,122,63,.4); }
+body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; cursor:crosshair; }
+.ann-mark { position:absolute; width:22px; height:22px; background:#e07a3f; color:#fff; border-radius:50%; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; z-index:8500; box-shadow:0 2px 6px rgba(0,0,0,.3); transform:translate(-50%,-50%); }
+#annPanel { position:fixed; right:16px; bottom:64px; width:300px; max-height:60vh; background:#fff; border-radius:14px; box-shadow:0 10px 40px rgba(0,0,0,.22); z-index:9000; display:none; flex-direction:column; overflow:hidden; border:1px solid #ece9e2; }
+#annPanel.show { display:flex; }
+#annPanel .ph { background:#2f5e45; color:#fff; padding:11px 14px; font-size:13px; font-weight:700; display:flex; justify-content:space-between; align-items:center; }
+#annPanel .plist { overflow-y:auto; padding:8px; flex:1; }
+#annPanel .pitem { background:#f8f6f1; border-radius:9px; padding:9px 11px; margin-bottom:7px; font-size:12.5px; }
+#annPanel .pitem .pi-h { display:flex; justify-content:space-between; color:#a4501f; font-weight:700; margin-bottom:3px; }
+#annPanel .pitem .pi-h .del { cursor:pointer; color:#c0392b; font-size:11px; }
+#annPanel .pitem .pi-t { color:#4b5563; word-break:break-word; }
+#annPanel .pfoot { padding:10px; border-top:1px solid #eee7dc; }
+#annPanel .pfoot button { width:100%; background:#e07a3f; color:#fff; border:none; border-radius:9px; padding:10px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
+#annEditor { position:fixed; z-index:9500; background:#fff; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.28); padding:12px; width:260px; display:none; border:1px solid #ece9e2; }
+#annEditor textarea { width:100%; border:1.5px solid #e6e2d9; border-radius:8px; padding:8px; font-size:13px; font-family:inherit; resize:vertical; min-height:56px; }
+#annEditor .ae-tip { font-size:10.5px; color:#a8a293; margin:5px 2px 0; }
+#toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); background:#2f5e45; color:#fff; padding:11px 20px; border-radius:24px; font-size:13px; z-index:9999; opacity:0; transition:all .3s; pointer-events:none; }
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+#toast.err { background:#c0392b; }
+
+/* ===== 版本条 ===== */
+#verBadge { position:fixed; right:16px; top:16px; z-index:9000; background:#6d5bd0; color:#fff; border:none; border-radius:20px; padding:6px 13px; font-size:12px; font-weight:700; cursor:pointer; box-shadow:0 3px 10px rgba(109,91,208,.32); font-family:inherit; }
+#verPanel { position:fixed; right:16px; top:52px; width:290px; max-height:60vh; overflow-y:auto; background:#fff; border-radius:14px; box-shadow:0 10px 40px rgba(0,0,0,.2); z-index:9000; display:none; padding:14px; border:1px solid #ece9e2; }
+#verPanel.show { display:block; }
+#verPanel h4 { font-size:13px; color:#6d5bd0; margin-bottom:10px; }
+#verPanel .vitem { border-left:2px solid #6d5bd0; padding:2px 0 12px 12px; position:relative; }
+#verPanel .vitem::before { content:""; position:absolute; left:-5px; top:3px; width:8px; height:8px; border-radius:50%; background:#6d5bd0; }
+#verPanel .vitem .vv { font-size:12px; font-weight:700; color:#1f2937; }
+#verPanel .vitem .vd { font-size:10.5px; color:#a8a293; }
+#verPanel .vitem .vt { font-size:12px; color:#4b5563; margin-top:2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar" data-name="问卷标题栏">
+  <h1>AI 语音老师·体验问卷</h1>
+  <div class="sub">花 3 分钟，帮我们把 AI 老师变得更好听懂你</div>
+</div>
+
+<div class="wrap">
+
+<!-- 屏 0：身份分流 -->
+<div class="screen active" id="screen-role" data-name="身份分流页">
+  <div class="role-pick">
+    <div class="role-card" onclick="pickRole('student')" data-name="学生身份卡">
+      <span class="emo">🧒</span>
+      <span class="txt"><b>我是学生，自己填</b><span>说说你跟 AI 老师聊天的感觉</span></span>
+    </div>
+    <div class="role-card" onclick="pickRole('parent')" data-name="家长身份卡">
+      <span class="emo">👨‍👩‍👧</span>
+      <span class="txt"><b>我是家长，帮孩子填</b><span>说说你在旁边看到的情况</span></span>
+    </div>
+  </div>
+  <div class="role-intro">选好身份后，题目会不一样哦</div>
+</div>
+
+<!-- 屏 1：学生问卷 -->
+<div class="screen" id="screen-student" data-name="学生问卷页">
+
+  <div class="card" data-name="学生-年级题">
+    <div class="q">
+      <div class="qhead"><span class="qn">0</span><span class="qt">你上几年级？</span></div>
+      <div class="grade opts" data-single>
+        <div class="opt" data-v="2"><span class="lb">2年级</span></div>
+        <div class="opt" data-v="3"><span class="lb">3年级</span></div>
+        <div class="opt" data-v="4"><span class="lb">4年级</span></div>
+        <div class="opt" data-v="5"><span class="lb">5年级</span></div>
+        <div class="opt" data-v="6"><span class="lb">6年级</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-band" data-name="学生-整体区标题">先聊整体感觉</div>
+  <div class="card" data-name="学生-整体题组">
+    <div class="q" data-name="S1喜欢程度">
+      <div class="qhead"><span class="qn">1</span><span class="qt">你喜欢用说话的方式跟 AI 老师聊吗？</span></div>
+      <div class="opts freq" data-single>
+        <div class="opt" data-v="超喜欢"><span class="emo">😄</span><span class="lb">超喜欢</span></div>
+        <div class="opt" data-v="还行"><span class="emo">🙂</span><span class="lb">还行</span></div>
+        <div class="opt" data-v="不太喜欢"><span class="emo">😐</span><span class="lb">不太喜欢</span></div>
+        <div class="opt" data-v="不喜欢"><span class="emo">😞</span><span class="lb">不喜欢</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="S2顺畅度">
+      <div class="qhead"><span class="qn">2</span><span class="qt">跟 AI 老师说话，顺不顺？</span></div>
+      <div class="opts freq" data-single>
+        <div class="opt" data-v="很顺"><span class="lb">很顺</span></div>
+        <div class="opt" data-v="一般"><span class="lb">一般</span></div>
+        <div class="opt" data-v="老是卡"><span class="lb">老是卡</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-band" data-name="学生-频率区标题">最近这节课，发生过下面的事吗？<span class="sec-hint">想想最近的一次课</span></div>
+  <div class="card" data-name="学生-频率题组">
+    <div class="q" data-name="S3误收">
+      <div class="qhead"><span class="qn">3</span><span class="qt">旁边有别的声音（爸妈说话、开电视），AI 老师把它当成你说的话。</span></div>
+      <div class="opts freq" data-single>
+        <div class="opt" data-v="好几次"><span class="lb">这节课好几次</span></div>
+        <div class="opt" data-v="一两次"><span class="lb">就一两次</span></div>
+        <div class="opt" data-v="没有"><span class="lb">没有</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="S4漏收">
+      <div class="qhead"><span class="qn">4</span><span class="qt">你说了话，AI 老师却像没听见。</span></div>
+      <div class="opts freq" data-single>
+        <div class="opt" data-v="好几次"><span class="lb">这节课好几次</span></div>
+        <div class="opt" data-v="一两次"><span class="lb">就一两次</span></div>
+        <div class="opt" data-v="没有"><span class="lb">没有</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="S5切早">
+      <div class="qhead"><span class="qn">5</span><span class="qt">你还在想词、还没说完，AI 老师就开始说话了。<span class="star">★</span></span></div>
+      <div class="opts freq" data-single>
+        <div class="opt" data-v="好几次"><span class="lb">这节课好几次</span></div>
+        <div class="opt" data-v="一两次"><span class="lb">就一两次</span></div>
+        <div class="opt" data-v="没有"><span class="lb">没有</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="S6切晚">
+      <div class="qhead"><span class="qn">6</span><span class="qt">你已经说完了，AI 老师半天不出声，让你干等。</span></div>
+      <div class="opts freq" data-single>
+        <div class="opt" data-v="好几次"><span class="lb">这节课好几次</span></div>
+        <div class="opt" data-v="一两次"><span class="lb">就一两次</span></div>
+        <div class="opt" data-v="没有"><span class="lb">没有</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="S7识别错">
+      <div class="qhead"><span class="qn">7</span><span class="qt">你说的话，AI 老师听错了，回答的不是你的意思。</span></div>
+      <div class="opts freq" data-single>
+        <div class="opt" data-v="好几次"><span class="lb">这节课好几次</span></div>
+        <div class="opt" data-v="一两次"><span class="lb">就一两次</span></div>
+        <div class="opt" data-v="没有"><span class="lb">没有</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-band" data-name="学生-感受区标题">这几件，你觉得怎么样？</div>
+  <div class="card" data-name="学生-感受题组">
+    <div class="q" data-name="S8打断">
+      <div class="qhead"><span class="qn">8</span><span class="qt">AI 老师正在说话，你插一句，它会停下来听你吗？</span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="会停下来听"><span class="lb">会停下来听我说</span></div>
+        <div class="opt" data-v="有时理有时不理"><span class="lb">有时理、有时不理</span></div>
+        <div class="opt" data-v="根本不停"><span class="lb">根本不停，硬要说完</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="S9轮次">
+      <div class="qhead"><span class="qn">9</span><span class="qt">说话的时候，你知道什么时候轮到你说吗？</span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="一直很清楚"><span class="lb">一直很清楚</span></div>
+        <div class="opt" data-v="有时搞不清"><span class="lb">有时搞不清</span></div>
+        <div class="opt" data-v="经常不知道"><span class="lb">经常不知道该谁说</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="S10语气">
+      <div class="qhead"><span class="qn">10</span><span class="qt">AI 老师说话的声音，你觉得像什么？</span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="像真人亲切"><span class="lb">像真人，挺亲切</span></div>
+        <div class="opt" data-v="一般般"><span class="lb">一般般</span></div>
+        <div class="opt" data-v="很机器"><span class="lb">很机器、硬邦邦</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="S11紧张度">
+      <div class="qhead"><span class="qn">11</span><span class="qt">跟 AI 老师说话，你紧不紧张？</span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="不紧张"><span class="lb">不紧张，想说就说</span></div>
+        <div class="opt" data-v="有一点"><span class="lb">有一点</span></div>
+        <div class="opt" data-v="挺紧张"><span class="lb">挺紧张的</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-band" data-name="学生-开放区标题">说说你的想法<span class="sec-hint">不想写可以跳过</span></div>
+  <div class="card" data-name="学生-开放题组">
+    <div class="q" data-name="S12最烦">
+      <div class="qhead"><span class="qn">12</span><span class="qt">跟 AI 老师说话，最让你烦的是哪件事？<span class="optional">选填</span></span></div>
+      <textarea placeholder="随便说说，比如……"></textarea>
+    </div>
+    <div class="q" data-name="S13放弃案例">
+      <div class="qhead"><span class="qn">13</span><span class="qt">有没有哪一次，AI 老师没听懂你、或者打断了你，你就不想再说了？那次发生了什么？<span class="optional">选填</span></span></div>
+      <textarea placeholder="讲讲那一次的事……"></textarea>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn btn-ghost" onclick="backToRole()">返回</button>
+    <button class="btn btn-primary" onclick="submitSurvey()">提交问卷</button>
+  </div>
+</div>
+
+<!-- 屏 2：家长问卷 -->
+<div class="screen" id="screen-parent" data-name="家长问卷页">
+
+  <div class="card" data-name="家长-年级题">
+    <div class="q">
+      <div class="qhead"><span class="qn">0</span><span class="qt">孩子上几年级？</span></div>
+      <div class="grade opts" data-single>
+        <div class="opt" data-v="2"><span class="lb">2年级</span></div>
+        <div class="opt" data-v="3"><span class="lb">3年级</span></div>
+        <div class="opt" data-v="4"><span class="lb">4年级</span></div>
+        <div class="opt" data-v="5"><span class="lb">5年级</span></div>
+        <div class="opt" data-v="6"><span class="lb">6年级</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-band" data-name="家长-整体区标题">先看整体</div>
+  <div class="card" data-name="家长-整体题组">
+    <div class="q" data-name="P1整体顺畅">
+      <div class="qhead"><span class="qn">1</span><span class="qt">孩子用语音跟 AI 老师互动，顺畅吗？</span></div>
+      <div class="opts freq" data-single>
+        <div class="opt" data-v="很顺"><span class="lb">很顺</span></div>
+        <div class="opt" data-v="一般"><span class="lb">一般</span></div>
+        <div class="opt" data-v="常卡壳"><span class="lb">常卡壳</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-band" data-name="家长-观察区标题">最近孩子上课时，您在旁边见过这些吗？<span class="sec-hint">按最近的印象</span></div>
+  <div class="card" data-name="家长-观察题组">
+    <div class="q" data-name="P2切早">
+      <div class="qhead"><span class="qn">2</span><span class="qt">孩子话没说完，AI 就抢着接话、自己往下说了。<span class="star">★</span></span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
+        <div class="opt" data-v="偶尔一两次"><span class="lb">偶尔一两次</span></div>
+        <div class="opt" data-v="没注意"><span class="lb">没注意</span></div>
+        <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="P3打断">
+      <div class="qhead"><span class="qn">3</span><span class="qt">孩子想插话打断 AI，AI 不停下来、硬把自己那段说完。<span class="star">★</span></span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
+        <div class="opt" data-v="偶尔一两次"><span class="lb">偶尔一两次</span></div>
+        <div class="opt" data-v="没注意"><span class="lb">没注意</span></div>
+        <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="P4识别错">
+      <div class="qhead"><span class="qn">4</span><span class="qt">孩子因为 AI 没听懂，把同一句话重复说好几遍。</span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
+        <div class="opt" data-v="偶尔一两次"><span class="lb">偶尔一两次</span></div>
+        <div class="opt" data-v="没注意"><span class="lb">没注意</span></div>
+        <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="P5误收">
+      <div class="qhead"><span class="qn">5</span><span class="qt">您说话或电视的声音，被 AI 当成了孩子的回答。</span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
+        <div class="opt" data-v="偶尔一两次"><span class="lb">偶尔一两次</span></div>
+        <div class="opt" data-v="没注意"><span class="lb">没注意</span></div>
+        <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="P6情绪信号">
+      <div class="qhead"><span class="qn">6</span><span class="qt">孩子因为 AI 听不懂或被打断，表现出烦躁、不耐烦、甚至不想说了。</span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
+        <div class="opt" data-v="偶尔一两次"><span class="lb">偶尔一两次</span></div>
+        <div class="opt" data-v="没注意"><span class="lb">没注意</span></div>
+        <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-band" data-name="家长-影响区标题">影响判断</div>
+  <div class="card" data-name="家长-影响题组">
+    <div class="q" data-name="P7学习意愿">
+      <div class="qhead"><span class="qn">7</span><span class="qt">这些问题会不会影响孩子用 AI 学习的意愿？</span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="明显影响"><span class="lb">明显影响</span></div>
+        <div class="opt" data-v="有一点"><span class="lb">有一点</span></div>
+        <div class="opt" data-v="没影响"><span class="lb">没影响</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="P8开放案例">
+      <div class="qhead"><span class="qn">8</span><span class="qt">印象最深的一次卡壳 / 被打断 / 听错，当时发生了什么？<span class="optional">选填</span></span></div>
+      <textarea placeholder="描述那次的场景……"></textarea>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="btn btn-ghost" onclick="backToRole()">返回</button>
+    <button class="btn btn-primary" onclick="submitSurvey()">提交问卷</button>
+  </div>
+</div>
+
+<!-- 屏 3：完成 -->
+<div class="screen" id="screen-done" data-name="完成页">
+  <div class="done">
+    <div class="big">🎉</div>
+    <h2>提交成功，谢谢你！</h2>
+    <p>你的反馈会帮 AI 老师变得更会听、更会等。</p>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<!-- 版本条 -->
+<button id="verBadge" onclick="toggleVer()">版本 v1</button>
+<div id="verPanel"><h4>版本历史</h4><div id="verList"></div></div>
+
+<!-- 批注层 -->
+<button id="annToggle" onclick="toggleAnn()">✏️ 批注模式</button>
+<div id="annPanel">
+  <div class="ph"><span>批注清单</span><span id="annCount">0</span></div>
+  <div class="plist" id="annList"></div>
+  <div class="pfoot"><button onclick="exportAnn()">📋 导出给 Claude</button></div>
+</div>
+<div id="annEditor">
+  <textarea id="annText" placeholder="写下你的修改意见…"></textarea>
+  <div class="ae-tip">回车保存 · Shift+回车换行 · Esc 取消</div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* ===== 问卷交互 ===== */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function pickRole(r){ showScreen(r==='student'?'screen-student':'screen-parent'); }
+function backToRole(){ showScreen('screen-role'); }
+function submitSurvey(){ showScreen('screen-done'); }
+
+/* 单选 */
+document.querySelectorAll('.opts[data-single]').forEach(g=>{
+  g.querySelectorAll('.opt').forEach(o=>{
+    o.addEventListener('click',()=>{
+      if(annOn) return; // 批注模式下不触发答题
+      g.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));
+      o.classList.add('sel');
+    });
+  });
+});
+
+/* ===== 版本历史 ===== */
+const VERSIONS=[
+  {v:1,date:'2026-08-21',desc:'首版：身份分流 + 学生14题 / 家长9题；频率题锚定"最近这节课"；切早·打断拆分（KR4重点★）；表情打分；内置批注层'}
+];
+(function renderVer(){
+  const last=VERSIONS[VERSIONS.length-1];
+  document.getElementById('verBadge').textContent='版本 v'+last.v;
+  document.getElementById('verList').innerHTML=VERSIONS.slice().reverse().map(x=>
+    `<div class="vitem"><span class="vv">v${x.v}</span> <span class="vd">${x.date}</span><div class="vt">${x.desc}</div></div>`).join('');
+})();
+function toggleVer(){ document.getElementById('verPanel').classList.toggle('show'); }
+
+/* ===== 批注层 ===== */
+let annOn=false, anns=[], curTarget=null, seq=0;
+const toggleBtn=document.getElementById('annToggle');
+const panel=document.getElementById('annPanel');
+const editor=document.getElementById('annEditor');
+const editArea=document.getElementById('annText');
+
+function toggleAnn(){
+  annOn=!annOn;
+  document.body.classList.toggle('annon',annOn);
+  toggleBtn.classList.toggle('on',annOn);
+  toggleBtn.textContent=annOn?'✅ 批注中·点元素':'✏️ 批注模式';
+  panel.classList.toggle('show',annOn);
+  if(!annOn) hideEditor();
+}
+
+document.addEventListener('click',e=>{
+  if(!annOn) return;
+  const el=e.target.closest('[data-name]');
+  if(!el || editor.contains(e.target) || panel.contains(e.target) || e.target===toggleBtn) return;
+  e.preventDefault(); e.stopPropagation();
+  curTarget=el;
+  const r=el.getBoundingClientRect();
+  let x=r.left+r.width/2, y=window.scrollY+r.top+8;
+  editor.style.left=Math.min(x,window.innerWidth-280)+'px';
+  editor.style.top=y+'px';
+  editor.style.display='block';
+  editArea.value=''; editArea.focus();
+},true);
+
+editArea.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); saveAnn(); }
+  else if(e.key==='Escape'){ hideEditor(); }
+});
+function hideEditor(){ editor.style.display='none'; curTarget=null; }
+
+function saveAnn(){
+  const txt=editArea.value.trim();
+  if(!txt||!curTarget){ hideEditor(); return; }
+  seq++;
+  const name=curTarget.getAttribute('data-name');
+  const r=curTarget.getBoundingClientRect();
+  const mark=document.createElement('div');
+  mark.className='ann-mark'; mark.textContent=seq;
+  mark.style.left=(window.scrollX+r.right-6)+'px';
+  mark.style.top=(window.scrollY+r.top+6)+'px';
+  document.body.appendChild(mark);
+  anns.push({n:seq,name,txt,mark});
+  renderAnnList();
+  hideEditor();
+}
+function renderAnnList(){
+  document.getElementById('annCount').textContent=anns.length;
+  document.getElementById('annList').innerHTML=anns.map(a=>
+    `<div class="pitem"><div class="pi-h"><span>#${a.n} ${a.name}</span><span class="del" onclick="delAnn(${a.n})">删除</span></div><div class="pi-t">${a.txt.replace(/</g,'&lt;')}</div></div>`).join('')
+    || '<div style="color:#a8a293;font-size:12px;text-align:center;padding:14px 0;">点页面上任意区块添加批注</div>';
+}
+function delAnn(n){
+  const i=anns.findIndex(a=>a.n===n);
+  if(i>-1){ anns[i].mark.remove(); anns.splice(i,1); renderAnnList(); }
+}
+
+function exportAnn(){
+  if(!anns.length){ showToast('还没有批注',true); return; }
+  const text='【问卷修改意见】\n'+anns.map(a=>`#${a.n} [${a.name}]\n${a.txt}`).join('\n\n');
+  copyText(text);
+}
+function copyText(text){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>showToast('✅ 已复制，回对话框 Cmd/Ctrl+V 粘贴'))
+      .catch(()=>fallbackCopy(text));
+  } else { fallbackCopy(text); }
+}
+function fallbackCopy(text){
+  const ta=document.createElement('textarea');
+  ta.value=text; ta.style.position='fixed'; ta.style.left='-9999px';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); showToast('✅ 已复制，回对话框 Cmd/Ctrl+V 粘贴'); }
+  catch(e){ showToast('复制失败，请重试',true); }
+  document.body.removeChild(ta);
+}
+let toastT;
+function showToast(msg,err){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='show'+(err?' err':'');
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>t.className=err?'err':'',2600);
+}
+</script>
+</body>
+</html>
