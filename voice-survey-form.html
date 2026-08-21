@@ -494,7 +494,8 @@ const VERSIONS=[
   {v:2,date:'2026-08-21',desc:'补 07 情绪匹配题（S11）；新增感知层区：AI形象·AI说话动效·学生说话动效（S13-15），家长补 AI形象接受度·状态迟疑（P7-8）。学生17题 / 家长11题'},
   {v:3,date:'2026-08-21',desc:'S2"顺不顺"升级为费力度"累不累"，更贴"不额外消耗注意力"的北极星（意愿+心理负担双整体指标）'},
   {v:4,date:'2026-08-21',desc:'每题加"🔍 考察点"标注（对应拆解表哪个环节/哪个问题，仅审阅可见）；左下角开关默认关闭，发给受访者前保持关闭即可隐藏'},
-  {v:5,date:'2026-08-21',desc:'修复批注bug：①编号标记加pointer-events:none，不再挡住后续点击（此前只能标一个）；②显示考察点时可正常标注，点注解本身不误触发'}
+  {v:5,date:'2026-08-21',desc:'修复批注bug：①编号标记加pointer-events:none，不再挡住后续点击（此前只能标一个）；②显示考察点时可正常标注，点注解本身不误触发'},
+  {v:6,date:'2026-08-21',desc:'修复真正的批注bug：编辑框是position:fixed却用了文档坐标(scrollY+top)定位，滚到下方题目时编辑框跑到屏幕外看不见（误以为"没反应"）。改用视口坐标并做边界收敛，任意位置点击都在视口内弹出'}
 ];
 (function renderVer(){
   const last=VERSIONS[VERSIONS.length-1];
@@ -551,9 +552,11 @@ document.addEventListener('click',e=>{
   e.preventDefault(); e.stopPropagation();
   curTarget=el;
   const r=el.getBoundingClientRect();
-  let x=r.left+r.width/2, y=window.scrollY+r.top+8;
-  editor.style.left=Math.min(x,window.innerWidth-280)+'px';
-  editor.style.top=y+'px';
+  // editor 是 position:fixed，用视口坐标（不能加 scrollY，否则滚动后跑到屏幕外）
+  let x=Math.max(10, Math.min(r.left, window.innerWidth-270));
+  let y=Math.min(r.bottom+6, window.innerHeight-180);
+  editor.style.left=x+'px';
+  editor.style.top=Math.max(10,y)+'px';
   editor.style.display='block';
   editArea.value=''; editArea.focus();
 },true);
