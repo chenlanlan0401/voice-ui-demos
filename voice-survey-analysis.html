@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 语音交互问卷·数据分析方法</title>
+<style>
+:root { color-scheme: light; }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:#f5f3ee; color:#2b2b2b; line-height:1.65; padding:0 0 90px; }
+.topbar { background:linear-gradient(135deg,#2f5e45,#3d7a58); color:#fff; padding:30px 20px 26px; text-align:center; }
+.topbar h1 { font-size:23px; font-weight:700; letter-spacing:-.3px; }
+.topbar .sub { font-size:13.5px; opacity:.92; margin-top:8px; }
+.wrap { max-width:860px; margin:0 auto; padding:26px 20px; }
+
+.anchor { background:#fff2ea; border:1px solid #f0c9ad; border-left:4px solid #e07a3f; border-radius:0 12px 12px 0; padding:15px 18px; margin-bottom:26px; font-size:13.5px; color:#a4501f; }
+.anchor b { color:#c2410c; }
+
+.step { background:#fff; border-radius:16px; padding:20px 22px; margin-bottom:18px; box-shadow:0 1px 3px rgba(0,0,0,.05),0 8px 22px rgba(0,0,0,.04); border:1px solid #ece9e2; }
+.step .sh { display:flex; align-items:baseline; gap:10px; margin-bottom:6px; }
+.step .snum { flex-shrink:0; width:30px; height:30px; background:#2f5e45; color:#fff; border-radius:9px; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+.step h2 { font-size:17px; color:#1f2937; font-weight:700; }
+.step .stag { font-size:11.5px; color:#6fae8f; font-weight:600; margin-left:auto; align-self:center; }
+.step .sq { font-size:12.5px; color:#8a8578; margin:2px 0 12px 40px; font-style:italic; }
+.step .body { padding-left:40px; font-size:14px; color:#374151; }
+.step .body p { margin-bottom:10px; }
+.step .body ul { margin:0 0 10px 18px; }
+.step .body li { margin-bottom:6px; }
+.step .body b { color:#1f2937; }
+.hl { color:#a4501f; font-weight:600; }
+
+table { width:100%; border-collapse:collapse; margin:12px 0; font-size:12.5px; border-radius:10px; overflow:hidden; box-shadow:0 1px 2px rgba(0,0,0,.05); }
+th,td { text-align:left; padding:9px 12px; border-bottom:1px solid #eee7dc; vertical-align:top; }
+thead th { background:#eef3f0; color:#2f5e45; font-weight:700; }
+tbody tr:last-child td { border-bottom:none; }
+.badge { display:inline-block; font-size:11px; font-weight:700; padding:2px 9px; border-radius:20px; color:#fff; }
+.b-green { background:#5aa87a; } .b-yellow { background:#d9a534; } .b-red { background:#d2603a; }
+.formula { background:#f2f0ea; border-radius:10px; padding:12px 16px; margin:10px 0; font-size:14px; color:#2f5e45; font-weight:600; text-align:center; }
+.matrix { font-family:"SF Mono",Menlo,monospace; font-size:11.5px; background:#2b3a30; color:#d7e6dc; padding:16px; border-radius:10px; margin:10px 0; white-space:pre; overflow-x:auto; line-height:1.5; }
+.redline { background:#fbeaea; border:1px solid #e6b8b8; border-radius:12px; padding:16px 18px; margin-top:8px; font-size:13.5px; color:#8a3232; }
+.redline b { color:#a02020; }
+
+/* ===== 批注层 ===== */
+#annToggle { position:fixed; right:16px; bottom:16px; z-index:9000; background:#2f5e45; color:#fff; border:none; border-radius:24px; padding:11px 16px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(47,94,69,.35); font-family:inherit; }
+#annToggle.on { background:#e07a3f; box-shadow:0 4px 14px rgba(224,122,63,.4); }
+body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; cursor:crosshair; }
+.ann-mark { position:absolute; width:22px; height:22px; background:#e07a3f; color:#fff; border-radius:50%; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; z-index:8500; box-shadow:0 2px 6px rgba(0,0,0,.3); transform:translate(-50%,-50%); }
+#annPanel { position:fixed; right:16px; bottom:64px; width:300px; max-height:60vh; background:#fff; border-radius:14px; box-shadow:0 10px 40px rgba(0,0,0,.22); z-index:9000; display:none; flex-direction:column; overflow:hidden; border:1px solid #ece9e2; }
+#annPanel.show { display:flex; }
+#annPanel .ph { background:#2f5e45; color:#fff; padding:11px 14px; font-size:13px; font-weight:700; display:flex; justify-content:space-between; align-items:center; }
+#annPanel .plist { overflow-y:auto; padding:8px; flex:1; }
+#annPanel .pitem { background:#f8f6f1; border-radius:9px; padding:9px 11px; margin-bottom:7px; font-size:12.5px; }
+#annPanel .pitem .pi-h { display:flex; justify-content:space-between; color:#a4501f; font-weight:700; margin-bottom:3px; }
+#annPanel .pitem .pi-h .del { cursor:pointer; color:#c0392b; font-size:11px; }
+#annPanel .pitem .pi-t { color:#4b5563; word-break:break-word; }
+#annPanel .pfoot { padding:10px; border-top:1px solid #eee7dc; }
+#annPanel .pfoot button { width:100%; background:#e07a3f; color:#fff; border:none; border-radius:9px; padding:10px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
+#annEditor { position:fixed; z-index:9500; background:#fff; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.28); padding:12px; width:260px; display:none; border:1px solid #ece9e2; }
+#annEditor textarea { width:100%; border:1.5px solid #e6e2d9; border-radius:8px; padding:8px; font-size:13px; font-family:inherit; resize:vertical; min-height:56px; }
+#annEditor .ae-tip { font-size:10.5px; color:#a8a293; margin:5px 2px 0; }
+#toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); background:#2f5e45; color:#fff; padding:11px 20px; border-radius:24px; font-size:13px; z-index:9999; opacity:0; transition:all .3s; pointer-events:none; }
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+#toast.err { background:#c0392b; }
+#verBadge { position:fixed; right:16px; top:16px; z-index:9000; background:#6d5bd0; color:#fff; border:none; border-radius:20px; padding:6px 13px; font-size:12px; font-weight:700; cursor:pointer; box-shadow:0 3px 10px rgba(109,91,208,.32); font-family:inherit; }
+#verPanel { position:fixed; right:16px; top:52px; width:290px; max-height:60vh; overflow-y:auto; background:#fff; border-radius:14px; box-shadow:0 10px 40px rgba(0,0,0,.2); z-index:9000; display:none; padding:14px; border:1px solid #ece9e2; }
+#verPanel.show { display:block; }
+#verPanel h4 { font-size:13px; color:#6d5bd0; margin-bottom:10px; }
+#verPanel .vitem { border-left:2px solid #6d5bd0; padding:2px 0 12px 12px; position:relative; }
+#verPanel .vitem::before { content:""; position:absolute; left:-5px; top:3px; width:8px; height:8px; border-radius:50%; background:#6d5bd0; }
+#verPanel .vitem .vv { font-size:12px; font-weight:700; color:#1f2937; }
+#verPanel .vitem .vd { font-size:10.5px; color:#a8a293; }
+#verPanel .vitem .vt { font-size:12px; color:#4b5563; margin-top:2px; }
+</style>
+</head>
+<body>
+
+<div class="topbar" data-name="标题栏">
+  <h1>问卷回收后·数据分析方法</h1>
+  <div class="sub">从原始答案 → 现状记分卡 → 问题优先级 → 下一步优化方向</div>
+</div>
+
+<div class="wrap">
+<div class="anchor" data-name="锚点说明">
+  全程只锚一句判断逻辑（来自你的拆解表）：<b>这个环节有没有在损害孩子"完整地说、从容地想"</b>。七步走完，直接产出能填进立项文档第五、六章的结论。
+</div>
+
+<div class="step" data-name="第1步-打分">
+  <div class="sh"><span class="snum">1</span><h2>把答案变成分数</h2><span class="stag">数据清洗</span></div>
+  <div class="sq">让不同题能横向比较</div>
+  <div class="body">
+    <p>三档题统一打分，方向都是"好 = 高分"：</p>
+    <table>
+      <thead><tr><th>题型</th><th>好</th><th>一般</th><th>差</th></tr></thead>
+      <tbody>
+        <tr><td>3 档量表</td><td>100</td><td>50</td><td>0</td></tr>
+        <tr><td>表情 4 档（S1）</td><td>100</td><td>67</td><td>33 / 0</td></tr>
+        <tr><td>频率题（好几次/一两次/没有）</td><td colspan="3">反向：没有=100 · 一两次=50 · 好几次=0</td></tr>
+      </tbody>
+    </table>
+    <p><span class="hl">家长四档里的"没注意"是缺失值</span>——不打分、从分母里剔除。它是"没观察到"，不是"没发生"，混进去会稀释真实信号。</p>
+  </div>
+</div>
+
+<div class="step" data-name="第2步-记分卡">
+  <div class="sh"><span class="snum">2</span><h2>每个环节的"体验现状记分卡"</h2><span class="stag">回答：做到什么程度了</span></div>
+  <div class="sq">对照你拆解表里每个环节的"好的标准"</div>
+  <div class="body">
+    <p>每个环节算三个数：</p>
+    <ul>
+      <li><b>均分</b> —— 整体水平</li>
+      <li><b>达标率</b> = 选最好选项的人 ÷ 有效样本（对照"好的标准"，这才算达标）</li>
+      <li><b>问题暴露率</b> = 选最差选项的人 ÷ 有效样本</li>
+    </ul>
+    <p>按达标率给红黄绿判定（阈值随样本量微调）：</p>
+    <table>
+      <thead><tr><th>判定</th><th>达标率</th><th>含义</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge b-green">达标</span></td><td>≥ 80%</td><td>没在损害体验，维持</td></tr>
+        <tr><td><span class="badge b-yellow">待改进</span></td><td>50–80%</td><td>部分场景掉链子</td></tr>
+        <tr><td><span class="badge b-red">未达标</span></td><td>&lt; 50%</td><td>高频损害，重点</td></tr>
+      </tbody>
+    </table>
+    <p>这张卡直接回答"产品做到什么程度"——<span class="hl">一眼看出哪几个环节绿了、哪几个还红着</span>。</p>
+  </div>
+</div>
+
+<div class="step" data-name="第3步-优先级">
+  <div class="sh"><span class="snum">3</span><h2>问题优先级排序</h2><span class="stag">回答：先修谁</span></div>
+  <div class="sq">不能只看谁抱怨最多，要乘上"伤得有多重"</div>
+  <div class="body">
+    <div class="formula">优先级 = 问题暴露率 × 影响权重</div>
+    <p><b>影响权重</b>两个来源，呼应你文档里的论证：</p>
+    <ul>
+      <li><b>误差传播位置</b>：文档写了"入口错则全错"。01 收麦、02 端点是入口，错了污染后面所有环节 → 入口环节权重 ×1.5。</li>
+      <li><b>对学习意愿的实测关联</b>：不拍脑袋，用第 4 步算出的"该问题与 P9 学习意愿 / S12 紧张度的关联强度"当权重。</li>
+    </ul>
+    <div class="matrix">影响 高 │  盯防区            先修区
+        │ (少人遇到但       (多人遇到且
+        │  一遇就伤学习)     重伤学习) ★
+        │
+影响 低 │  暂缓区            顺手修
+        │ (少又不重)        (多但不太伤)
+        └──────────────────────────────
+             低      问题暴露率      高</div>
+    <p><span class="hl">右上"先修区"就是下一步优化方向的第一梯队。</span>结合 KR4，大概率 02 切早 / 09 打断会落这里。</p>
+  </div>
+</div>
+
+<div class="step" data-name="第4步-交叉分析">
+  <div class="sh"><span class="snum">4</span><h2>交叉分析</h2><span class="stag">找规律、锁人群</span></div>
+  <div class="sq">同一问题多个视角对照，把交互问题和学习效果挂钩</div>
+  <div class="body">
+    <ul>
+      <li><b>学生 × 家长对照</b>：同环节两边都问了（S5切早↔P2、S8打断↔P3、S7识别↔P4、S3↔P5、感知层 S13↔P7 / S15↔P8）。两边都高 = 铁实真问题；<span class="hl">只学生高、家长没注意 = 隐性受挫，更该关注</span>（家长发现不了的流失）。</li>
+      <li><b>年级分层</b>（S0/P0）：按 2–3 / 4–6 年级切开。低年级往往切早、识别错更重（表达慢、口齿不清），定位"先给谁优化"。</li>
+      <li><b>关联分析（最关键）</b>：把"遇到某问题的孩子"和"没遇到的"分两组，比他们的 <b>S12 紧张度 / P9 学习意愿</b> 差多少。差越大 → 该环节越伤学习 → 影响权重越高（反哺第 3 步）。这一步把交互问题真正挂到学习效果上，是立项文档最想要的论证。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-name="第5步-开放题编码">
+  <div class="sh"><span class="snum">5</span><h2>开放题编码</h2><span class="stag">S16 / S17 / P10</span></div>
+  <div class="sq">量化题的血肉补充</div>
+  <div class="body">
+    <p>给每条开放回答打环节标签（切早/识别/打断/语气/形象/动效…），做两件事：</p>
+    <ul>
+      <li>补充量化题没覆盖到的新问题；</li>
+      <li>每个高优先级环节挑 1–2 条<b>典型案例原话</b>，写进立项文档"现状问题"章节——比数字更有说服力，尤其 S17/P10 里"因此就不想说了"，直接是学习意愿受损的铁证。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="step" data-name="第6步-客观对照">
+  <div class="sh"><span class="snum">6</span><h2>和客观指标对照</h2><span class="stag">闭环验证·防投错</span></div>
+  <div class="sq">主观暴露率 × 拆解表里的客观指标</div>
+  <div class="body">
+    <p>拆解表每个环节都配了客观指标（误收麦率、延迟 P90、CER…）。两两摆一起，四种组合四种处置：</p>
+    <table>
+      <thead><tr><th>主观抱怨</th><th>客观指标</th><th>结论与动作</th></tr></thead>
+      <tbody>
+        <tr><td>高</td><td>差</td><td>✅ 确认真问题，<b>优先修</b></td></tr>
+        <tr><td>高</td><td>达标</td><td>🔍 感知/预期问题——如 CER&lt;4% 已达标却仍觉"听不准"，很可能是<span class="hl">切早把话截断</span>造成的错觉，别去动 ASR</td></tr>
+        <tr><td>低</td><td>差</td><td>用户没感知，暂缓，埋点盯着</td></tr>
+        <tr><td>低</td><td>达标</td><td>🟢 真没问题</td></tr>
+      </tbody>
+    </table>
+    <p>第二行最关键：<span class="hl">防止把资源投错环节</span>。ASR 已达标、用户还抱怨"听不懂"，要修的是端点检测，不是识别。</p>
+  </div>
+</div>
+
+<div class="step" data-name="第7步-产出">
+  <div class="sh"><span class="snum">7</span><h2>产出三样东西</h2><span class="stag">直接填进立项文档</span></div>
+  <div class="body">
+    <ul>
+      <li><b>一页现状记分卡</b> —— 各环节红黄绿 + 达标率</li>
+      <li><b>优先级清单</b> —— 先修区环节排序，每个配一条开放题原话</li>
+      <li><b>下一步方向</b> —— "先修 X（暴露率 __%、显著拉低学习意愿），客观指标 __ 佐证"</li>
+    </ul>
+  </div>
+</div>
+
+<div class="redline" data-name="红线提醒">
+  <b>两条数据可信度红线（用之前必须知道）：</b>
+  <ul style="margin:8px 0 0 18px;">
+    <li><b>只做相对排序，不当绝对发生率</b>：题干在描述"出问题"的场景，有轻微引导，会抬高检出率。所以结论说"切早比漏收更突出"，别说"切早发生率 40%"。绝对值归客观指标管。</li>
+    <li><b>样本量</b>：每个年级分层至少 30 份再做分层结论，否则只看总体。</li>
+  </ul>
+</div>
+
+</div><!-- /wrap -->
+
+<button id="verBadge" onclick="toggleVer()">版本 v1</button>
+<div id="verPanel"><h4>版本历史</h4><div id="verList"></div></div>
+<button id="annToggle" onclick="toggleAnn()">✏️ 批注模式</button>
+<div id="annPanel">
+  <div class="ph"><span>批注清单</span><span id="annCount">0</span></div>
+  <div class="plist" id="annList"></div>
+  <div class="pfoot"><button onclick="exportAnn()">📋 导出给 Claude</button></div>
+</div>
+<div id="annEditor">
+  <textarea id="annText" placeholder="写下你的修改意见…"></textarea>
+  <div class="ae-tip">回车保存 · Shift+回车换行 · Esc 取消</div>
+</div>
+<div id="toast"></div>
+
+<script>
+const VERSIONS=[
+  {v:1,date:'2026-08-21',desc:'首版：7步分析法（打分→记分卡→优先级矩阵→交叉分析→开放题编码→客观对照→产出），锚定拆解表判断逻辑，含2条可信度红线'}
+];
+(function(){
+  const last=VERSIONS[VERSIONS.length-1];
+  document.getElementById('verBadge').textContent='版本 v'+last.v;
+  document.getElementById('verList').innerHTML=VERSIONS.slice().reverse().map(x=>
+    `<div class="vitem"><span class="vv">v${x.v}</span> <span class="vd">${x.date}</span><div class="vt">${x.desc}</div></div>`).join('');
+})();
+function toggleVer(){ document.getElementById('verPanel').classList.toggle('show'); }
+
+let annOn=false, anns=[], curTarget=null, seq=0;
+const toggleBtn=document.getElementById('annToggle');
+const panel=document.getElementById('annPanel');
+const editor=document.getElementById('annEditor');
+const editArea=document.getElementById('annText');
+function toggleAnn(){
+  annOn=!annOn;
+  document.body.classList.toggle('annon',annOn);
+  toggleBtn.classList.toggle('on',annOn);
+  toggleBtn.textContent=annOn?'✅ 批注中·点区块':'✏️ 批注模式';
+  panel.classList.toggle('show',annOn);
+  if(!annOn) hideEditor();
+}
+document.addEventListener('click',e=>{
+  if(!annOn) return;
+  const el=e.target.closest('[data-name]');
+  if(!el || editor.contains(e.target) || panel.contains(e.target) || e.target===toggleBtn) return;
+  e.preventDefault(); e.stopPropagation();
+  curTarget=el;
+  const r=el.getBoundingClientRect();
+  let x=r.left+r.width/2, y=window.scrollY+r.top+8;
+  editor.style.left=Math.min(x,window.innerWidth-280)+'px';
+  editor.style.top=y+'px';
+  editor.style.display='block';
+  editArea.value=''; editArea.focus();
+},true);
+editArea.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); saveAnn(); }
+  else if(e.key==='Escape'){ hideEditor(); }
+});
+function hideEditor(){ editor.style.display='none'; curTarget=null; }
+function saveAnn(){
+  const txt=editArea.value.trim();
+  if(!txt||!curTarget){ hideEditor(); return; }
+  seq++;
+  const name=curTarget.getAttribute('data-name');
+  const r=curTarget.getBoundingClientRect();
+  const mark=document.createElement('div');
+  mark.className='ann-mark'; mark.textContent=seq;
+  mark.style.left=(window.scrollX+r.right-6)+'px';
+  mark.style.top=(window.scrollY+r.top+6)+'px';
+  document.body.appendChild(mark);
+  anns.push({n:seq,name,txt,mark});
+  renderAnnList(); hideEditor();
+}
+function renderAnnList(){
+  document.getElementById('annCount').textContent=anns.length;
+  document.getElementById('annList').innerHTML=anns.map(a=>
+    `<div class="pitem"><div class="pi-h"><span>#${a.n} ${a.name}</span><span class="del" onclick="delAnn(${a.n})">删除</span></div><div class="pi-t">${a.txt.replace(/</g,'&lt;')}</div></div>`).join('')
+    || '<div style="color:#a8a293;font-size:12px;text-align:center;padding:14px 0;">点页面上任意区块添加批注</div>';
+}
+function delAnn(n){
+  const i=anns.findIndex(a=>a.n===n);
+  if(i>-1){ anns[i].mark.remove(); anns.splice(i,1); renderAnnList(); }
+}
+function exportAnn(){
+  if(!anns.length){ showToast('还没有批注',true); return; }
+  const text='【分析方法修改意见】\n'+anns.map(a=>`#${a.n} [${a.name}]\n${a.txt}`).join('\n\n');
+  copyText(text);
+}
+function copyText(text){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>showToast('✅ 已复制，回对话框 Cmd/Ctrl+V 粘贴')).catch(()=>fallbackCopy(text));
+  } else { fallbackCopy(text); }
+}
+function fallbackCopy(text){
+  const ta=document.createElement('textarea');
+  ta.value=text; ta.style.position='fixed'; ta.style.left='-9999px';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); showToast('✅ 已复制，回对话框 Cmd/Ctrl+V 粘贴'); }
+  catch(e){ showToast('复制失败，请重试',true); }
+  document.body.removeChild(ta);
+}
+let toastT;
+function showToast(msg,err){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='show'+(err?' err':'');
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>t.className=err?'err':'',2600);
+}
+</script>
+</body>
+</html>
