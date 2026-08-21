@@ -83,7 +83,12 @@ body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; bac
 #annToggle { position:fixed; right:16px; bottom:16px; z-index:9000; background:#2f5e45; color:#fff; border:none; border-radius:24px; padding:11px 16px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(47,94,69,.35); font-family:inherit; }
 #annToggle.on { background:#e07a3f; box-shadow:0 4px 14px rgba(224,122,63,.4); }
 body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; cursor:crosshair; }
-.ann-mark { position:absolute; width:22px; height:22px; background:#e07a3f; color:#fff; border-radius:50%; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; z-index:8500; box-shadow:0 2px 6px rgba(0,0,0,.3); transform:translate(-50%,-50%); pointer-events:none; }
+.ann-mark { position:absolute; width:22px; height:22px; background:#e07a3f; color:#fff; border-radius:50%; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; z-index:8500; box-shadow:0 2px 6px rgba(0,0,0,.3); transform:translate(-50%,-50%); cursor:pointer; }
+.ann-mark:hover { transform:translate(-50%,-50%) scale(1.15); }
+[data-name].ann-focus { animation:annPulse 1.4s ease; }
+@keyframes annPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(224,122,63,0); } 30%{ box-shadow:0 0 0 4px rgba(224,122,63,.5); } }
+.pitem { cursor:pointer; }
+.pitem.active { outline:2px solid #e07a3f; }
 #annPanel { position:fixed; right:16px; bottom:64px; width:300px; max-height:60vh; background:#fff; border-radius:14px; box-shadow:0 10px 40px rgba(0,0,0,.22); z-index:9000; display:none; flex-direction:column; overflow:hidden; border:1px solid #ece9e2; }
 #annPanel.show { display:flex; }
 #annPanel .ph { background:#2f5e45; color:#fff; padding:11px 14px; font-size:13px; font-weight:700; display:flex; justify-content:space-between; align-items:center; }
@@ -495,7 +500,8 @@ const VERSIONS=[
   {v:3,date:'2026-08-21',desc:'S2"顺不顺"升级为费力度"累不累"，更贴"不额外消耗注意力"的北极星（意愿+心理负担双整体指标）'},
   {v:4,date:'2026-08-21',desc:'每题加"🔍 考察点"标注（对应拆解表哪个环节/哪个问题，仅审阅可见）；左下角开关默认关闭，发给受访者前保持关闭即可隐藏'},
   {v:5,date:'2026-08-21',desc:'修复批注bug：①编号标记加pointer-events:none，不再挡住后续点击（此前只能标一个）；②显示考察点时可正常标注，点注解本身不误触发'},
-  {v:6,date:'2026-08-21',desc:'修复真正的批注bug：编辑框是position:fixed却用了文档坐标(scrollY+top)定位，滚到下方题目时编辑框跑到屏幕外看不见（误以为"没反应"）。改用视口坐标并做边界收敛，任意位置点击都在视口内弹出'}
+  {v:6,date:'2026-08-21',desc:'修复真正的批注bug：编辑框是position:fixed却用了文档坐标(scrollY+top)定位，滚到下方题目时编辑框跑到屏幕外看不见（误以为"没反应"）。改用视口坐标并做边界收敛，任意位置点击都在视口内弹出'},
+  {v:7,date:'2026-08-21',desc:'批注清单三项升级：①编号改为按清单顺序动态生成，删除后自动重排不断号，计数/标记/清单三处一致；②标记与清单项均可点击→平滑滚动定位到对应题目并高亮；③标记随页面滚动跟随题目'}
 ];
 (function renderVer(){
   const last=VERSIONS[VERSIONS.length-1];
@@ -525,7 +531,7 @@ function toggleEnv(){
 }
 
 /* ===== 批注层 ===== */
-let annOn=false, anns=[], curTarget=null, seq=0;
+let annOn=false, anns=[], curTarget=null;
 const toggleBtn=document.getElementById('annToggle');
 const envToggleBtn=document.getElementById('envToggle');
 const panel=document.getElementById('annPanel');
@@ -570,32 +576,62 @@ function hideEditor(){ editor.style.display='none'; curTarget=null; }
 function saveAnn(){
   const txt=editArea.value.trim();
   if(!txt||!curTarget){ hideEditor(); return; }
-  seq++;
-  const name=curTarget.getAttribute('data-name');
-  const r=curTarget.getBoundingClientRect();
-  const mark=document.createElement('div');
-  mark.className='ann-mark'; mark.textContent=seq;
-  mark.style.left=(window.scrollX+r.right-6)+'px';
-  mark.style.top=(window.scrollY+r.top+6)+'px';
-  document.body.appendChild(mark);
-  anns.push({n:seq,name,txt,mark});
-  renderAnnList();
+  // 只存题目引用和文字，编号/坐标都在渲染时动态算，保证删除后重排
+  anns.push({name:curTarget.getAttribute('data-name'), txt, target:curTarget, mark:null});
+  renderAll();
   hideEditor();
+}
+
+// 统一重绘：清单编号 + 页面标记，都按 anns 顺序 1..N
+function renderAll(){
+  // 清掉旧标记
+  document.querySelectorAll('.ann-mark').forEach(m=>m.remove());
+  anns.forEach((a,i)=>{
+    const n=i+1;
+    const r=a.target.getBoundingClientRect();
+    const mark=document.createElement('div');
+    mark.className='ann-mark'; mark.textContent=n;
+    mark.style.left=(window.scrollX+r.right-6)+'px';
+    mark.style.top=(window.scrollY+r.top+6)+'px';
+    mark.onclick=()=>focusAnn(i);
+    document.body.appendChild(mark);
+    a.mark=mark;
+  });
+  renderAnnList();
 }
 function renderAnnList(){
   document.getElementById('annCount').textContent=anns.length;
-  document.getElementById('annList').innerHTML=anns.map(a=>
-    `<div class="pitem"><div class="pi-h"><span>#${a.n} ${a.name}</span><span class="del" onclick="delAnn(${a.n})">删除</span></div><div class="pi-t">${a.txt.replace(/</g,'&lt;')}</div></div>`).join('')
+  document.getElementById('annList').innerHTML=anns.map((a,i)=>
+    `<div class="pitem" data-idx="${i}" onclick="focusAnn(${i})"><div class="pi-h"><span>#${i+1} ${a.name}</span><span class="del" onclick="event.stopPropagation();delAnn(${i})">删除</span></div><div class="pi-t">${a.txt.replace(/</g,'&lt;')}</div></div>`).join('')
     || '<div style="color:#a8a293;font-size:12px;text-align:center;padding:14px 0;">点页面上任意区块添加批注</div>';
 }
-function delAnn(n){
-  const i=anns.findIndex(a=>a.n===n);
-  if(i>-1){ anns[i].mark.remove(); anns.splice(i,1); renderAnnList(); }
+function delAnn(i){
+  if(i>-1 && i<anns.length){ anns.splice(i,1); renderAll(); }
+}
+// 点标记或清单项 → 滚动到对应题目并高亮，清单项高亮
+function focusAnn(i){
+  const a=anns[i]; if(!a) return;
+  a.target.scrollIntoView({block:'center',behavior:'smooth'});
+  a.target.classList.remove('ann-focus'); void a.target.offsetWidth; a.target.classList.add('ann-focus');
+  document.querySelectorAll('#annList .pitem').forEach(p=>p.classList.remove('active'));
+  const item=document.querySelector('#annList .pitem[data-idx="'+i+'"]');
+  if(item) item.classList.add('active');
+}
+// 滚动/缩放时标记跟随题目
+window.addEventListener('scroll',()=>{ if(anns.length) repositionMarks(); },{passive:true});
+window.addEventListener('resize',()=>{ if(anns.length) repositionMarks(); });
+function repositionMarks(){
+  anns.forEach(a=>{
+    if(!a.mark) return;
+    const r=a.target.getBoundingClientRect();
+    a.mark.style.left=(window.scrollX+r.right-6)+'px';
+    a.mark.style.top=(window.scrollY+r.top+6)+'px';
+  });
 }
 
 function exportAnn(){
   if(!anns.length){ showToast('还没有批注',true); return; }
-  const text='【问卷修改意见】\n'+anns.map(a=>`#${a.n} [${a.name}]\n${a.txt}`).join('\n\n');
+  const text='【问卷修改意见】\n'+anns.map((a,i)=>`#${i+1} [${a.name}]\n${a.txt}`).join('\n\n');
   copyText(text);
 }
 function copyText(text){
