@@ -41,6 +41,8 @@ body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; bac
 .q .qn { flex-shrink:0; width:24px; height:24px; background:#eef3f0; color:#2f5e45; border-radius:7px; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; }
 .q .qt { font-size:15px; color:#1f2937; font-weight:600; }
 .q .qt .star { color:#e07a3f; font-size:13px; }
+.q .drop-tag { display:inline-block; font-size:11px; font-weight:700; color:#fff; background:#c0603a; border-radius:6px; padding:2px 8px; margin-left:6px; vertical-align:middle; }
+.q .drop-note { font-size:12px; color:#a04628; background:#fbe9e2; border:1px solid #eec3b3; border-radius:8px; padding:6px 11px; margin-bottom:10px; }
 
 /* 选项 */
 .opts { display:flex; gap:8px; flex-wrap:wrap; }
@@ -216,12 +218,12 @@ body.showenv .env-note { display:block; }
         <div class="opt" data-v="没有"><span class="lb">没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="S6切晚" data-env="02 端点检测 · 切晚／超时（说完了AI要等很久才回应）— 也叠加 08 播报延迟，靠客观指标拆分">
-      <div class="qhead"><span class="qn">6</span><span class="qt">你说完以后，要等一会儿 AI 老师才开始回应。</span></div>
-      <div class="opts freq" data-single>
-        <div class="opt" data-v="好几次"><span class="lb">这节课好几次</span></div>
-        <div class="opt" data-v="一两次"><span class="lb">就一两次</span></div>
-        <div class="opt" data-v="没有"><span class="lb">没有</span></div>
+    <div class="q" data-name="S6切晚" data-env="02 端点检测／08 播报 · 回应等待时长的主观感受（线上必有等待，问快慢感受而非有无）">
+      <div class="qhead"><span class="qn">6</span><span class="qt">你说完以后，AI 老师开始回应的快慢，你觉得怎么样？</span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="很快"><span class="lb">很快，不用等</span></div>
+        <div class="opt" data-v="还行"><span class="lb">还行，等一下下</span></div>
+        <div class="opt" data-v="太慢"><span class="lb">太慢了，等得着急</span></div>
       </div>
     </div>
     <div class="q" data-name="S7识别错" data-env="03 ASR识别 · 听错（转写有误导致答非所问）— 客观CER已达标<4%，若主观仍高优先怀疑是切早造成的错觉">
@@ -236,8 +238,9 @@ body.showenv .env-note { display:block; }
 
   <div class="sec-band" data-name="学生-感受区标题">这几件，你觉得怎么样？</div>
   <div class="card" data-name="学生-感受题组">
-    <div class="q" data-name="S8打断" data-env="⚠️待剔除：线上暂无打断逻辑，该题不投放。（原映射：09 打断 · 插话能否被接住 · ★KR4）">
-      <div class="qhead"><span class="qn">8</span><span class="qt">AI 老师正在说话，你插一句，它会停下来听你吗？</span></div>
+    <div class="q" data-name="S8打断" data-env="09 打断 · 插话能否被接住（孩子插话AI停不停）— ★KR4重点">
+      <div class="qhead"><span class="qn">8</span><span class="qt">AI 老师正在说话，你插一句，它会停下来听你吗？<span class="drop-tag">待剔除</span></span></div>
+      <div class="drop-note">⚠️ 线上暂无打断逻辑，该题暂不投放</div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="会停下来听"><span class="lb">会停下来听我说</span></div>
         <div class="opt" data-v="有时理有时不理"><span class="lb">有时理、有时不理</span></div>
@@ -252,12 +255,12 @@ body.showenv .env-note { display:block; }
         <div class="opt" data-v="经常不知道"><span class="lb">经常不知道该谁说</span></div>
       </div>
     </div>
-    <div class="q" data-name="S10语气" data-env="07 合成TTS · 声音好感度（喜不喜欢AI的声音）— 影响敢不敢开口">
-      <div class="qhead"><span class="qn">10</span><span class="qt">AI 老师说话的声音，你喜欢吗？</span></div>
+    <div class="q" data-name="S10语气" data-env="07 合成TTS · 语音好感度（声音+语调语气整体好不好听、自不自然）— 影响敢不敢开口">
+      <div class="qhead"><span class="qn">10</span><span class="qt">AI 老师说话好不好听？（声音、语气、语调像不像真人）</span></div>
       <div class="opts wide" data-single>
-        <div class="opt" data-v="喜欢"><span class="lb">挺喜欢，听着舒服</span></div>
+        <div class="opt" data-v="好听自然"><span class="lb">好听，像真人一样自然</span></div>
         <div class="opt" data-v="一般"><span class="lb">一般</span></div>
-        <div class="opt" data-v="不喜欢"><span class="lb">不喜欢，听着别扭</span></div>
+        <div class="opt" data-v="别扭机械"><span class="lb">别扭，很机械 / 怪怪的</span></div>
       </div>
     </div>
     <div class="q" data-name="S11紧张度" data-env="认知安全感（紧不紧张、敢不敢说）— 交叉分析因变量，衡量交互问题对学习意愿的影响">
@@ -288,12 +291,12 @@ body.showenv .env-note { display:block; }
         <div class="opt" data-v="看不出"><span class="lb">看不出来它在不在说</span></div>
       </div>
     </div>
-    <div class="q" data-name="S14自己说话动效" data-env="感知层 · 学生说话状态可感知（直接问知不知道该我说、它在听）— 与S9轮次交叉印证">
-      <div class="qhead"><span class="qn">14</span><span class="qt">轮到你说话的时候，你知不知道"现在该我说了、AI 正在听我"？</span></div>
+    <div class="q" data-name="S14说话卡顿经历" data-env="感知层／10 轮次 · 状态不明的实际经历（问是否愣住过，而非问当下知不知道）— 与S9认知题互补">
+      <div class="qhead"><span class="qn">14</span><span class="qt">有没有过这样：轮到你说了，你却对着屏幕愣了一下，不确定该不该开口？</span></div>
       <div class="opts wide" data-single>
-        <div class="opt" data-v="一直知道"><span class="lb">一直知道</span></div>
-        <div class="opt" data-v="有时不确定"><span class="lb">有时候不太确定</span></div>
-        <div class="opt" data-v="不知道"><span class="lb">不知道该不该说</span></div>
+        <div class="opt" data-v="没有过"><span class="lb">没有，一直很清楚</span></div>
+        <div class="opt" data-v="偶尔"><span class="lb">偶尔会愣一下</span></div>
+        <div class="opt" data-v="经常"><span class="lb">经常搞不清</span></div>
       </div>
     </div>
   </div>
@@ -462,12 +465,12 @@ body.showenv .env-note { display:block; }
   <div class="pfoot"><button onclick="exportAnn()">📋 导出给 Claude</button></div>
 </div>
 <div id="annEditor">
-  <textarea id="annText" placeholder="写下你的修改意见…（回车换行）"></textarea>
+  <textarea id="annText" placeholder="写下你的修改意见…"></textarea>
   <div class="ae-actions">
     <button class="ae-cancel" onclick="hideEditor()">取消</button>
     <button class="ae-save" onclick="saveAnn()">保存</button>
   </div>
-  <div class="ae-tip">回车换行 · Cmd/Ctrl+回车 快捷保存 · Esc 取消</div>
+  <div class="ae-tip">回车保存 · Shift+回车换行 · Esc 取消（打字选字的回车不会误提交）</div>
 </div>
 <div id="toast"></div>
 
@@ -502,7 +505,8 @@ const VERSIONS=[
   {v:5,date:'2026-08-21',desc:'修复批注bug：①编号标记加pointer-events:none，不再挡住后续点击（此前只能标一个）；②显示考察点时可正常标注，点注解本身不误触发'},
   {v:6,date:'2026-08-21',desc:'修复真正的批注bug：编辑框是position:fixed却用了文档坐标(scrollY+top)定位，滚到下方题目时编辑框跑到屏幕外看不见（误以为"没反应"）。改用视口坐标并做边界收敛，任意位置点击都在视口内弹出'},
   {v:7,date:'2026-08-21',desc:'批注清单三项升级：①编号改为按清单顺序动态生成，删除后自动重排不断号，计数/标记/清单三处一致；②标记与清单项均可点击→平滑滚动定位到对应题目并高亮；③标记随页面滚动跟随题目'},
-  {v:8,date:'2026-08-21',desc:'按反馈改问卷：S4/S6改中性表达；S8打断标待剔除(线上无打断逻辑)；S10改『喜不喜欢AI声音』；删S11情绪匹配(属对话策略非交互层)；S12形象改问『是否影响学习』；S13/S14动效直接问『知不知道在说/该我说』；S16改『最想改哪里』。家长版P3待剔除、P7同步改。学生17→16题。批注编辑框：回车改为换行、Cmd/Ctrl+回车才提交，加保存/取消按钮，区分输入与确认'}
+  {v:8,date:'2026-08-21',desc:'按反馈改问卷：S4/S6改中性表达；S8打断标待剔除(线上无打断逻辑)；S10改『喜不喜欢AI声音』；删S11情绪匹配(属对话策略非交互层)；S12形象改问『是否影响学习』；S13/S14动效直接问『知不知道在说/该我说』；S16改『最想改哪里』。家长版P3待剔除、P7同步改。学生17→16题。批注编辑框：回车改为换行、Cmd/Ctrl+回车才提交，加保存/取消按钮，区分输入与确认'},
+  {v:9,date:'2026-08-21',desc:'再改：S6从有无改为问回应快慢感受(线上必有等待)；S8待剔除备注移到题目旁醒目显示、考察点恢复原映射；S10声音好感加入语调语气维度；S14从『知不知道』改为问『有没有愣住过』的实际经历。批注回车改回仿Claude：回车提交+输入法组合态(isComposing/keyCode229)保护，中文选字的回车不误提交'}
 ];
 (function renderVer(){
   const last=VERSIONS[VERSIONS.length-1];
@@ -569,8 +573,9 @@ document.addEventListener('click',e=>{
 },true);
 
 editArea.addEventListener('keydown',e=>{
-  // 回车＝换行（默认行为，不拦截）；只有 Cmd/Ctrl+回车 才提交，彻底区分"输入"与"确认"
-  if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); saveAnn(); }
+  // 仿 Claude：回车提交，但输入法组合中的回车（选字/确认候选词）不提交。
+  // e.isComposing 或 keyCode 229 = 正在用输入法组字，此时回车只是确认候选词。
+  if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){ e.preventDefault(); saveAnn(); }
   else if(e.key==='Escape'){ e.preventDefault(); hideEditor(); }
 });
 function hideEditor(){ editor.style.display='none'; curTarget=null; }
