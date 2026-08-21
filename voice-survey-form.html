@@ -164,12 +164,12 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
         <div class="opt" data-v="不喜欢"><span class="emo">😞</span><span class="lb">不喜欢</span></div>
       </div>
     </div>
-    <div class="q" data-name="S2顺畅度">
-      <div class="qhead"><span class="qn">2</span><span class="qt">跟 AI 老师说话，顺不顺？</span></div>
+    <div class="q" data-name="S2费力度">
+      <div class="qhead"><span class="qn">2</span><span class="qt">跟 AI 老师说话，累不累？（要不要很费劲才能让它听懂你）</span></div>
       <div class="opts freq" data-single>
-        <div class="opt" data-v="很顺"><span class="lb">很顺</span></div>
-        <div class="opt" data-v="一般"><span class="lb">一般</span></div>
-        <div class="opt" data-v="老是卡"><span class="lb">老是卡</span></div>
+        <div class="opt" data-v="很轻松"><span class="lb">很轻松</span></div>
+        <div class="opt" data-v="还行"><span class="lb">还行</span></div>
+        <div class="opt" data-v="挺累"><span class="lb">挺累的</span></div>
       </div>
     </div>
   </div>
@@ -481,7 +481,8 @@ document.querySelectorAll('.opts[data-single]').forEach(g=>{
 /* ===== 版本历史 ===== */
 const VERSIONS=[
   {v:1,date:'2026-08-21',desc:'首版：身份分流 + 学生14题 / 家长9题；频率题锚定"最近这节课"；切早·打断拆分（KR4重点★）；表情打分；内置批注层'},
-  {v:2,date:'2026-08-21',desc:'补 07 情绪匹配题（S11）；新增感知层区：AI形象·AI说话动效·学生说话动效（S13-15），家长补 AI形象接受度·状态迟疑（P7-8）。学生17题 / 家长11题'}
+  {v:2,date:'2026-08-21',desc:'补 07 情绪匹配题（S11）；新增感知层区：AI形象·AI说话动效·学生说话动效（S13-15），家长补 AI形象接受度·状态迟疑（P7-8）。学生17题 / 家长11题'},
+  {v:3,date:'2026-08-21',desc:'S2"顺不顺"升级为费力度"累不累"，更贴"不额外消耗注意力"的北极星（意愿+心理负担双整体指标）'}
 ];
 (function renderVer(){
   const last=VERSIONS[VERSIONS.length-1];
