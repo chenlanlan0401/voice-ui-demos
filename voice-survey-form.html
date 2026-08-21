@@ -83,7 +83,7 @@ body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; bac
 #annToggle { position:fixed; right:16px; bottom:16px; z-index:9000; background:#2f5e45; color:#fff; border:none; border-radius:24px; padding:11px 16px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(47,94,69,.35); font-family:inherit; }
 #annToggle.on { background:#e07a3f; box-shadow:0 4px 14px rgba(224,122,63,.4); }
 body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; cursor:crosshair; }
-.ann-mark { position:absolute; width:22px; height:22px; background:#e07a3f; color:#fff; border-radius:50%; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; z-index:8500; box-shadow:0 2px 6px rgba(0,0,0,.3); transform:translate(-50%,-50%); }
+.ann-mark { position:absolute; width:22px; height:22px; background:#e07a3f; color:#fff; border-radius:50%; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; z-index:8500; box-shadow:0 2px 6px rgba(0,0,0,.3); transform:translate(-50%,-50%); pointer-events:none; }
 #annPanel { position:fixed; right:16px; bottom:64px; width:300px; max-height:60vh; background:#fff; border-radius:14px; box-shadow:0 10px 40px rgba(0,0,0,.22); z-index:9000; display:none; flex-direction:column; overflow:hidden; border:1px solid #ece9e2; }
 #annPanel.show { display:flex; }
 #annPanel .ph { background:#2f5e45; color:#fff; padding:11px 14px; font-size:13px; font-weight:700; display:flex; justify-content:space-between; align-items:center; }
@@ -493,7 +493,8 @@ const VERSIONS=[
   {v:1,date:'2026-08-21',desc:'首版：身份分流 + 学生14题 / 家长9题；频率题锚定"最近这节课"；切早·打断拆分（KR4重点★）；表情打分；内置批注层'},
   {v:2,date:'2026-08-21',desc:'补 07 情绪匹配题（S11）；新增感知层区：AI形象·AI说话动效·学生说话动效（S13-15），家长补 AI形象接受度·状态迟疑（P7-8）。学生17题 / 家长11题'},
   {v:3,date:'2026-08-21',desc:'S2"顺不顺"升级为费力度"累不累"，更贴"不额外消耗注意力"的北极星（意愿+心理负担双整体指标）'},
-  {v:4,date:'2026-08-21',desc:'每题加"🔍 考察点"标注（对应拆解表哪个环节/哪个问题，仅审阅可见）；左下角开关默认关闭，发给受访者前保持关闭即可隐藏'}
+  {v:4,date:'2026-08-21',desc:'每题加"🔍 考察点"标注（对应拆解表哪个环节/哪个问题，仅审阅可见）；左下角开关默认关闭，发给受访者前保持关闭即可隐藏'},
+  {v:5,date:'2026-08-21',desc:'修复批注bug：①编号标记加pointer-events:none，不再挡住后续点击（此前只能标一个）；②显示考察点时可正常标注，点注解本身不误触发'}
 ];
 (function renderVer(){
   const last=VERSIONS[VERSIONS.length-1];
@@ -525,6 +526,7 @@ function toggleEnv(){
 /* ===== 批注层 ===== */
 let annOn=false, anns=[], curTarget=null, seq=0;
 const toggleBtn=document.getElementById('annToggle');
+const envToggleBtn=document.getElementById('envToggle');
 const panel=document.getElementById('annPanel');
 const editor=document.getElementById('annEditor');
 const editArea=document.getElementById('annText');
@@ -540,8 +542,12 @@ function toggleAnn(){
 
 document.addEventListener('click',e=>{
   if(!annOn) return;
+  // 点在批注 UI 自身上（输入框/清单/开关/已有标记/考察点注解）不触发新批注
+  if(editor.contains(e.target) || panel.contains(e.target) ||
+     e.target===toggleBtn || e.target===envToggleBtn ||
+     e.target.closest('.ann-mark') || e.target.closest('.env-note')) return;
   const el=e.target.closest('[data-name]');
-  if(!el || editor.contains(e.target) || panel.contains(e.target) || e.target===toggleBtn) return;
+  if(!el) return;
   e.preventDefault(); e.stopPropagation();
   curTarget=el;
   const r=el.getBoundingClientRect();
