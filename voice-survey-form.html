@@ -101,7 +101,11 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 #annPanel .pfoot button { width:100%; background:#e07a3f; color:#fff; border:none; border-radius:9px; padding:10px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
 #annEditor { position:fixed; z-index:9500; background:#fff; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.28); padding:12px; width:260px; display:none; border:1px solid #ece9e2; }
 #annEditor textarea { width:100%; border:1.5px solid #e6e2d9; border-radius:8px; padding:8px; font-size:13px; font-family:inherit; resize:vertical; min-height:56px; }
-#annEditor .ae-tip { font-size:10.5px; color:#a8a293; margin:5px 2px 0; }
+#annEditor .ae-tip { font-size:10.5px; color:#a8a293; margin:6px 2px 0; }
+#annEditor .ae-actions { display:flex; gap:8px; margin-top:8px; }
+#annEditor .ae-actions button { flex:1; border:none; border-radius:8px; padding:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
+#annEditor .ae-cancel { background:#f0ede6; color:#6b7280; flex:0 0 72px; }
+#annEditor .ae-save { background:#e07a3f; color:#fff; }
 #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); background:#2f5e45; color:#fff; padding:11px 20px; border-radius:24px; font-size:13px; z-index:9999; opacity:0; transition:all .3s; pointer-events:none; }
 #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 #toast.err { background:#c0392b; }
@@ -197,7 +201,7 @@ body.showenv .env-note { display:block; }
       </div>
     </div>
     <div class="q" data-name="S4漏收" data-env="01 收麦 · 漏收（说了却没被收进来）— 入口环节，权重×1.5">
-      <div class="qhead"><span class="qn">4</span><span class="qt">你说了话，AI 老师却像没听见。</span></div>
+      <div class="qhead"><span class="qn">4</span><span class="qt">你说了话，AI 老师没有反应。</span></div>
       <div class="opts freq" data-single>
         <div class="opt" data-v="好几次"><span class="lb">这节课好几次</span></div>
         <div class="opt" data-v="一两次"><span class="lb">就一两次</span></div>
@@ -212,8 +216,8 @@ body.showenv .env-note { display:block; }
         <div class="opt" data-v="没有"><span class="lb">没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="S6切晚" data-env="02 端点检测 · 切晚／超时（说完了AI半天不出声）— 也叠加 08 播报延迟，靠客观指标拆分">
-      <div class="qhead"><span class="qn">6</span><span class="qt">你已经说完了，AI 老师半天不出声，让你干等。</span></div>
+    <div class="q" data-name="S6切晚" data-env="02 端点检测 · 切晚／超时（说完了AI要等很久才回应）— 也叠加 08 播报延迟，靠客观指标拆分">
+      <div class="qhead"><span class="qn">6</span><span class="qt">你说完以后，要等一会儿 AI 老师才开始回应。</span></div>
       <div class="opts freq" data-single>
         <div class="opt" data-v="好几次"><span class="lb">这节课好几次</span></div>
         <div class="opt" data-v="一两次"><span class="lb">就一两次</span></div>
@@ -232,7 +236,7 @@ body.showenv .env-note { display:block; }
 
   <div class="sec-band" data-name="学生-感受区标题">这几件，你觉得怎么样？</div>
   <div class="card" data-name="学生-感受题组">
-    <div class="q" data-name="S8打断" data-env="09 打断 · 插话能否被接住（孩子插话AI停不停）— ★KR4重点">
+    <div class="q" data-name="S8打断" data-env="⚠️待剔除：线上暂无打断逻辑，该题不投放。（原映射：09 打断 · 插话能否被接住 · ★KR4）">
       <div class="qhead"><span class="qn">8</span><span class="qt">AI 老师正在说话，你插一句，它会停下来听你吗？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="会停下来听"><span class="lb">会停下来听我说</span></div>
@@ -248,24 +252,16 @@ body.showenv .env-note { display:block; }
         <div class="opt" data-v="经常不知道"><span class="lb">经常不知道该谁说</span></div>
       </div>
     </div>
-    <div class="q" data-name="S10语气" data-env="07 合成TTS · 语气自然度（像真人还是很机器）— 影响敢不敢开口">
-      <div class="qhead"><span class="qn">10</span><span class="qt">AI 老师说话的声音，你觉得像什么？</span></div>
+    <div class="q" data-name="S10语气" data-env="07 合成TTS · 声音好感度（喜不喜欢AI的声音）— 影响敢不敢开口">
+      <div class="qhead"><span class="qn">10</span><span class="qt">AI 老师说话的声音，你喜欢吗？</span></div>
       <div class="opts wide" data-single>
-        <div class="opt" data-v="像真人亲切"><span class="lb">像真人，挺亲切</span></div>
-        <div class="opt" data-v="一般般"><span class="lb">一般般</span></div>
-        <div class="opt" data-v="很机器"><span class="lb">很机器、硬邦邦</span></div>
+        <div class="opt" data-v="喜欢"><span class="lb">挺喜欢，听着舒服</span></div>
+        <div class="opt" data-v="一般"><span class="lb">一般</span></div>
+        <div class="opt" data-v="不喜欢"><span class="lb">不喜欢，听着别扭</span></div>
       </div>
     </div>
-    <div class="q" data-name="S11情绪匹配" data-env="07 合成TTS · 情绪匹配（卡住时是否鼓励）— 认知安全感的核心，对齐『敢不敢开口』">
-      <div class="qhead"><span class="qn">11</span><span class="qt">你答错了、或者卡住不会的时候，AI 老师会怎么样？</span></div>
-      <div class="opts wide" data-single>
-        <div class="opt" data-v="会鼓励安慰"><span class="lb">会鼓励我、安慰我</span></div>
-        <div class="opt" data-v="没反应往下走"><span class="lb">没什么反应，直接往下讲</span></div>
-        <div class="opt" data-v="语气怪让我慌"><span class="lb">语气怪怪的，让我更慌</span></div>
-      </div>
-    </div>
-    <div class="q" data-name="S12紧张度" data-env="07 合成TTS · 认知安全感（紧不紧张、敢不敢说）— 交叉分析因变量，衡量交互问题对学习意愿的影响">
-      <div class="qhead"><span class="qn">12</span><span class="qt">跟 AI 老师说话，你紧不紧张？</span></div>
+    <div class="q" data-name="S11紧张度" data-env="认知安全感（紧不紧张、敢不敢说）— 交叉分析因变量，衡量交互问题对学习意愿的影响">
+      <div class="qhead"><span class="qn">11</span><span class="qt">跟 AI 老师说话，你紧不紧张？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="不紧张"><span class="lb">不紧张，想说就说</span></div>
         <div class="opt" data-v="有一点"><span class="lb">有一点</span></div>
@@ -276,41 +272,41 @@ body.showenv .env-note { display:block; }
 
   <div class="sec-band" data-name="学生-感知区标题">看得见的部分<span class="sec-hint">AI 长什么样、说话时的动画</span></div>
   <div class="card" data-name="学生-感知题组">
-    <div class="q" data-name="S13AI形象" data-env="感知层（表现层视觉）· AI形象好感度 — 拆解表未单列，属表现层新增调研">
-      <div class="qhead"><span class="qn">13</span><span class="qt">屏幕上 AI 老师的样子（长相、表情），你喜欢吗？</span></div>
+    <div class="q" data-name="S12AI形象" data-env="感知层 · AI形象是否妨碍学习（不是单纯好恶，重点是有没有影响学习）— 表现层视觉">
+      <div class="qhead"><span class="qn">12</span><span class="qt">屏幕上 AI 老师说话的样子，有没有哪里让你不舒服、或者影响你学习？</span></div>
       <div class="opts wide" data-single>
-        <div class="opt" data-v="很喜欢"><span class="lb">很喜欢，看着舒服</span></div>
-        <div class="opt" data-v="一般"><span class="lb">一般</span></div>
-        <div class="opt" data-v="不喜欢"><span class="lb">不喜欢 / 有点怪</span></div>
+        <div class="opt" data-v="很好没影响"><span class="lb">挺好的，不影响</span></div>
+        <div class="opt" data-v="有点但还行"><span class="lb">有点怪，但还能学</span></div>
+        <div class="opt" data-v="影响学习"><span class="lb">会分心 / 影响我学习</span></div>
       </div>
     </div>
-    <div class="q" data-name="S14AI说话动效" data-env="感知层 · AI说话动效（知不知道『它正在说』）— 侧面验证 10 轮次的显式状态信号">
-      <div class="qhead"><span class="qn">14</span><span class="qt">AI 老师说话的时候，屏幕上有没有动画（嘴动、波纹、亮光），让你知道"它正在说"？</span></div>
+    <div class="q" data-name="S13AI说话动效" data-env="感知层 · AI说话状态可感知（屏幕本就有动画，直接问知不知道它在说）— 侧面验证 10 轮次显式信号">
+      <div class="qhead"><span class="qn">13</span><span class="qt">AI 老师说话的时候，你能不能一眼看出"它正在说话"？</span></div>
       <div class="opts wide" data-single>
-        <div class="opt" data-v="有很清楚"><span class="lb">有，很清楚它在说</span></div>
-        <div class="opt" data-v="有但不明显"><span class="lb">有，但不太明显</span></div>
-        <div class="opt" data-v="没注意到"><span class="lb">没注意到有动画</span></div>
+        <div class="opt" data-v="一眼能看出"><span class="lb">能，一眼就知道</span></div>
+        <div class="opt" data-v="有时不确定"><span class="lb">有时候不太确定</span></div>
+        <div class="opt" data-v="看不出"><span class="lb">看不出来它在不在说</span></div>
       </div>
     </div>
-    <div class="q" data-name="S15自己说话动效" data-env="感知层 · 学生说话动效（知不知道『该我说、它在听』）— 显式状态信号，与S9轮次交叉印证">
-      <div class="qhead"><span class="qn">15</span><span class="qt">轮到你说话的时候，屏幕上有没有动画（话筒亮起、波纹），让你知道"该我说、它在听"？</span></div>
+    <div class="q" data-name="S14自己说话动效" data-env="感知层 · 学生说话状态可感知（直接问知不知道该我说、它在听）— 与S9轮次交叉印证">
+      <div class="qhead"><span class="qn">14</span><span class="qt">轮到你说话的时候，你知不知道"现在该我说了、AI 正在听我"？</span></div>
       <div class="opts wide" data-single>
-        <div class="opt" data-v="有很清楚"><span class="lb">有，一看就知道该我说</span></div>
-        <div class="opt" data-v="有但不明显"><span class="lb">有，但不太明显</span></div>
-        <div class="opt" data-v="没注意到"><span class="lb">没注意到 / 搞不清该不该说</span></div>
+        <div class="opt" data-v="一直知道"><span class="lb">一直知道</span></div>
+        <div class="opt" data-v="有时不确定"><span class="lb">有时候不太确定</span></div>
+        <div class="opt" data-v="不知道"><span class="lb">不知道该不该说</span></div>
       </div>
     </div>
   </div>
 
   <div class="sec-band" data-name="学生-开放区标题">说说你的想法<span class="sec-hint">不想写可以跳过</span></div>
   <div class="card" data-name="学生-开放题组">
-    <div class="q" data-name="S16最烦" data-env="开放题 · 兜底暴露未覆盖问题 — 用于开放题编码，补量化题盲区">
-      <div class="qhead"><span class="qn">16</span><span class="qt">跟 AI 老师说话，最让你烦的是哪件事？<span class="optional">选填</span></span></div>
+    <div class="q" data-name="S15最烦" data-env="开放题 · 兜底暴露未覆盖问题 — 用于开放题编码，补量化题盲区">
+      <div class="qhead"><span class="qn">15</span><span class="qt">跟 AI 老师说话，最让你烦的是哪件事？<span class="optional">选填</span></span></div>
       <textarea placeholder="随便说说，比如……"></textarea>
     </div>
-    <div class="q" data-name="S17放弃案例" data-env="开放题 · 学习意愿受损铁证（因交互问题不想再说）— 立项文档现状问题章节的典型案例来源">
-      <div class="qhead"><span class="qn">17</span><span class="qt">有没有哪一次，AI 老师没听懂你、或者打断了你，你就不想再说了？那次发生了什么？<span class="optional">选填</span></span></div>
-      <textarea placeholder="讲讲那一次的事……"></textarea>
+    <div class="q" data-name="S16最想改" data-env="开放题 · 收集改进方向（最想让AI改哪里）— 补充第2条开放题，聚焦优化诉求">
+      <div class="qhead"><span class="qn">16</span><span class="qt">如果能让 AI 老师改一个地方，你最想它改哪里？<span class="optional">选填</span></span></div>
+      <textarea placeholder="比如：说话慢一点、多等我一会儿……"></textarea>
     </div>
   </div>
 
@@ -359,7 +355,7 @@ body.showenv .env-note { display:block; }
         <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="P3打断" data-env="09 打断（旁观视角）— ★KR4，与学生S8对照">
+    <div class="q" data-name="P3打断" data-env="⚠️待剔除：线上暂无打断逻辑，该题不投放。（原映射：09 打断 · 旁观视角 · 对应学生S8）">
       <div class="qhead"><span class="qn">3</span><span class="qt">孩子想插话打断 AI，AI 不停下来、硬把自己那段说完。<span class="star">★</span></span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
@@ -399,12 +395,12 @@ body.showenv .env-note { display:block; }
 
   <div class="sec-band" data-name="家长-感知区标题">看得见的部分<span class="sec-hint">AI 形象与画面反馈</span></div>
   <div class="card" data-name="家长-感知题组">
-    <div class="q" data-name="P7AI形象动效" data-env="感知层 · AI形象／说话动效接受度（旁观视角）— 与学生S13对照">
-      <div class="qhead"><span class="qn">7</span><span class="qt">屏幕上 AI 老师的形象、以及说话时的动画（嘴动、波纹），您觉得孩子接受度如何？</span></div>
+    <div class="q" data-name="P7AI形象" data-env="感知层 · AI形象是否妨碍学习（旁观视角，重点是有没有影响学习而非好恶）— 与学生S12对照">
+      <div class="qhead"><span class="qn">7</span><span class="qt">屏幕上 AI 老师说话的样子，有没有让孩子分心、或影响到学习？</span></div>
       <div class="opts wide" data-single>
-        <div class="opt" data-v="很喜欢"><span class="lb">挺喜欢，愿意看</span></div>
-        <div class="opt" data-v="无所谓"><span class="lb">无所谓 / 没在意</span></div>
-        <div class="opt" data-v="不喜欢"><span class="lb">不太喜欢 / 有点抵触</span></div>
+        <div class="opt" data-v="没影响"><span class="lb">没影响，挺好的</span></div>
+        <div class="opt" data-v="偶尔分心"><span class="lb">偶尔会分心</span></div>
+        <div class="opt" data-v="明显影响"><span class="lb">明显影响学习</span></div>
       </div>
     </div>
     <div class="q" data-name="P8状态迟疑" data-env="10 轮次／状态 · 状态不明导致迟疑（旁观视角）— 与学生S9/S15对照，验证显式信号是否够">
@@ -466,8 +462,12 @@ body.showenv .env-note { display:block; }
   <div class="pfoot"><button onclick="exportAnn()">📋 导出给 Claude</button></div>
 </div>
 <div id="annEditor">
-  <textarea id="annText" placeholder="写下你的修改意见…"></textarea>
-  <div class="ae-tip">回车保存 · Shift+回车换行 · Esc 取消</div>
+  <textarea id="annText" placeholder="写下你的修改意见…（回车换行）"></textarea>
+  <div class="ae-actions">
+    <button class="ae-cancel" onclick="hideEditor()">取消</button>
+    <button class="ae-save" onclick="saveAnn()">保存</button>
+  </div>
+  <div class="ae-tip">回车换行 · Cmd/Ctrl+回车 快捷保存 · Esc 取消</div>
 </div>
 <div id="toast"></div>
 
@@ -501,7 +501,8 @@ const VERSIONS=[
   {v:4,date:'2026-08-21',desc:'每题加"🔍 考察点"标注（对应拆解表哪个环节/哪个问题，仅审阅可见）；左下角开关默认关闭，发给受访者前保持关闭即可隐藏'},
   {v:5,date:'2026-08-21',desc:'修复批注bug：①编号标记加pointer-events:none，不再挡住后续点击（此前只能标一个）；②显示考察点时可正常标注，点注解本身不误触发'},
   {v:6,date:'2026-08-21',desc:'修复真正的批注bug：编辑框是position:fixed却用了文档坐标(scrollY+top)定位，滚到下方题目时编辑框跑到屏幕外看不见（误以为"没反应"）。改用视口坐标并做边界收敛，任意位置点击都在视口内弹出'},
-  {v:7,date:'2026-08-21',desc:'批注清单三项升级：①编号改为按清单顺序动态生成，删除后自动重排不断号，计数/标记/清单三处一致；②标记与清单项均可点击→平滑滚动定位到对应题目并高亮；③标记随页面滚动跟随题目'}
+  {v:7,date:'2026-08-21',desc:'批注清单三项升级：①编号改为按清单顺序动态生成，删除后自动重排不断号，计数/标记/清单三处一致；②标记与清单项均可点击→平滑滚动定位到对应题目并高亮；③标记随页面滚动跟随题目'},
+  {v:8,date:'2026-08-21',desc:'按反馈改问卷：S4/S6改中性表达；S8打断标待剔除(线上无打断逻辑)；S10改『喜不喜欢AI声音』；删S11情绪匹配(属对话策略非交互层)；S12形象改问『是否影响学习』；S13/S14动效直接问『知不知道在说/该我说』；S16改『最想改哪里』。家长版P3待剔除、P7同步改。学生17→16题。批注编辑框：回车改为换行、Cmd/Ctrl+回车才提交，加保存/取消按钮，区分输入与确认'}
 ];
 (function renderVer(){
   const last=VERSIONS[VERSIONS.length-1];
@@ -568,8 +569,9 @@ document.addEventListener('click',e=>{
 },true);
 
 editArea.addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); saveAnn(); }
-  else if(e.key==='Escape'){ hideEditor(); }
+  // 回车＝换行（默认行为，不拦截）；只有 Cmd/Ctrl+回车 才提交，彻底区分"输入"与"确认"
+  if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){ e.preventDefault(); saveAnn(); }
+  else if(e.key==='Escape'){ e.preventDefault(); hideEditor(); }
 });
 function hideEditor(){ editor.style.display='none'; curTarget=null; }
 
