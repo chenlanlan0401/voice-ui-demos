@@ -104,10 +104,6 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 #annEditor { position:fixed; z-index:9500; background:#fff; border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.28); padding:12px; width:260px; display:none; border:1px solid #ece9e2; }
 #annEditor textarea { width:100%; border:1.5px solid #e6e2d9; border-radius:8px; padding:8px; font-size:13px; font-family:inherit; resize:vertical; min-height:56px; }
 #annEditor .ae-tip { font-size:10.5px; color:#a8a293; margin:6px 2px 0; }
-#annEditor .ae-actions { display:flex; gap:8px; margin-top:8px; }
-#annEditor .ae-actions button { flex:1; border:none; border-radius:8px; padding:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
-#annEditor .ae-cancel { background:#f0ede6; color:#6b7280; flex:0 0 72px; }
-#annEditor .ae-save { background:#e07a3f; color:#fff; }
 #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); background:#2f5e45; color:#fff; padding:11px 20px; border-radius:24px; font-size:13px; z-index:9999; opacity:0; transition:all .3s; pointer-events:none; }
 #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 #toast.err { background:#c0392b; }
@@ -466,10 +462,6 @@ body.showenv .env-note { display:block; }
 </div>
 <div id="annEditor">
   <textarea id="annText" placeholder="写下你的修改意见…"></textarea>
-  <div class="ae-actions">
-    <button class="ae-cancel" onclick="hideEditor()">取消</button>
-    <button class="ae-save" onclick="saveAnn()">保存</button>
-  </div>
   <div class="ae-tip">回车保存 · Shift+回车换行 · Esc 取消（打字选字的回车不会误提交）</div>
 </div>
 <div id="toast"></div>
@@ -506,7 +498,8 @@ const VERSIONS=[
   {v:6,date:'2026-08-21',desc:'修复真正的批注bug：编辑框是position:fixed却用了文档坐标(scrollY+top)定位，滚到下方题目时编辑框跑到屏幕外看不见（误以为"没反应"）。改用视口坐标并做边界收敛，任意位置点击都在视口内弹出'},
   {v:7,date:'2026-08-21',desc:'批注清单三项升级：①编号改为按清单顺序动态生成，删除后自动重排不断号，计数/标记/清单三处一致；②标记与清单项均可点击→平滑滚动定位到对应题目并高亮；③标记随页面滚动跟随题目'},
   {v:8,date:'2026-08-21',desc:'按反馈改问卷：S4/S6改中性表达；S8打断标待剔除(线上无打断逻辑)；S10改『喜不喜欢AI声音』；删S11情绪匹配(属对话策略非交互层)；S12形象改问『是否影响学习』；S13/S14动效直接问『知不知道在说/该我说』；S16改『最想改哪里』。家长版P3待剔除、P7同步改。学生17→16题。批注编辑框：回车改为换行、Cmd/Ctrl+回车才提交，加保存/取消按钮，区分输入与确认'},
-  {v:9,date:'2026-08-21',desc:'再改：S6从有无改为问回应快慢感受(线上必有等待)；S8待剔除备注移到题目旁醒目显示、考察点恢复原映射；S10声音好感加入语调语气维度；S14从『知不知道』改为问『有没有愣住过』的实际经历。批注回车改回仿Claude：回车提交+输入法组合态(isComposing/keyCode229)保护，中文选字的回车不误提交'}
+  {v:9,date:'2026-08-21',desc:'再改：S6从有无改为问回应快慢感受(线上必有等待)；S8待剔除备注移到题目旁醒目显示、考察点恢复原映射；S10声音好感加入语调语气维度；S14从『知不知道』改为问『有没有愣住过』的实际经历。批注回车改回仿Claude：回车提交+输入法组合态(isComposing/keyCode229)保护，中文选字的回车不误提交'},
+  {v:10,date:'2026-08-21',desc:'批注弹窗删掉取消/保存按钮，只留输入框+提示：回车保存、Esc取消'}
 ];
 (function renderVer(){
   const last=VERSIONS[VERSIONS.length-1];
