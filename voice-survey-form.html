@@ -215,11 +215,11 @@ body.showenv .env-note { display:block; }
       </div>
     </div>
     <div class="q" data-name="S6切晚" data-env="02 端点检测／08 播报 · 回应等待时长的主观感受（线上必有等待，问快慢感受而非有无）">
-      <div class="qhead"><span class="qn">6</span><span class="qt">你说完以后，AI 老师开始回应的快慢，你觉得怎么样？</span></div>
+      <div class="qhead"><span class="qn">6</span><span class="qt">你说完话，AI 老师多久开口回答你？</span></div>
       <div class="opts wide" data-single>
-        <div class="opt" data-v="很快"><span class="lb">很快，不用等</span></div>
-        <div class="opt" data-v="还行"><span class="lb">还行，等一下下</span></div>
-        <div class="opt" data-v="太慢"><span class="lb">太慢了，等得着急</span></div>
+        <div class="opt" data-v="很快"><span class="lb">很快就回答</span></div>
+        <div class="opt" data-v="还行"><span class="lb">要等一下下</span></div>
+        <div class="opt" data-v="太慢"><span class="lb">等好久，很着急</span></div>
       </div>
     </div>
     <div class="q" data-name="S7识别错" data-env="03 ASR识别 · 听错（转写有误导致答非所问）— 客观CER已达标<4%，若主观仍高优先怀疑是切早造成的错觉">
@@ -499,7 +499,8 @@ const VERSIONS=[
   {v:7,date:'2026-08-21',desc:'批注清单三项升级：①编号改为按清单顺序动态生成，删除后自动重排不断号，计数/标记/清单三处一致；②标记与清单项均可点击→平滑滚动定位到对应题目并高亮；③标记随页面滚动跟随题目'},
   {v:8,date:'2026-08-21',desc:'按反馈改问卷：S4/S6改中性表达；S8打断标待剔除(线上无打断逻辑)；S10改『喜不喜欢AI声音』；删S11情绪匹配(属对话策略非交互层)；S12形象改问『是否影响学习』；S13/S14动效直接问『知不知道在说/该我说』；S16改『最想改哪里』。家长版P3待剔除、P7同步改。学生17→16题。批注编辑框：回车改为换行、Cmd/Ctrl+回车才提交，加保存/取消按钮，区分输入与确认'},
   {v:9,date:'2026-08-21',desc:'再改：S6从有无改为问回应快慢感受(线上必有等待)；S8待剔除备注移到题目旁醒目显示、考察点恢复原映射；S10声音好感加入语调语气维度；S14从『知不知道』改为问『有没有愣住过』的实际经历。批注回车改回仿Claude：回车提交+输入法组合态(isComposing/keyCode229)保护，中文选字的回车不误提交'},
-  {v:10,date:'2026-08-21',desc:'批注弹窗删掉取消/保存按钮，只留输入框+提示：回车保存、Esc取消'}
+  {v:10,date:'2026-08-21',desc:'批注弹窗删掉取消/保存按钮，只留输入框+提示：回车保存、Esc取消'},
+  {v:11,date:'2026-08-21',desc:'S6改口语化：『多久开口回答你』替掉绕口的『开始回应的快慢』，选项也改大白话'}
 ];
 (function renderVer(){
   const last=VERSIONS[VERSIONS.length-1];
