@@ -333,7 +333,7 @@ body.showenv .env-note { display:block; }
 
   <div class="sec-band" data-name="家长-整体区标题">先看整体</div>
   <div class="card" data-name="家长-整体题组">
-    <div class="q" data-name="P1整体顺畅" data-env="整体基线 · 家长视角整体顺畅度 — 与学生S1/S2对照">
+    <div class="q" data-name="P1整体顺畅" data-env="整体基线 · 家长视角整体顺畅度 — 与学生S1对照">
       <div class="qhead"><span class="qn">1</span><span class="qt">孩子用语音跟 AI 老师互动，顺畅吗？</span></div>
       <div class="opts freq" data-single>
         <div class="opt" data-v="很顺"><span class="lb">很顺</span></div>
@@ -341,12 +341,20 @@ body.showenv .env-note { display:block; }
         <div class="opt" data-v="常卡壳"><span class="lb">常卡壳</span></div>
       </div>
     </div>
+    <div class="q" data-name="P1b费力度" data-env="整体基线 · 费力度（旁观视角：孩子要不要费劲反复弄才能让AI听懂）— 对齐学生S2北极星，交叉分析因变量">
+      <div class="qhead"><span class="qn">2</span><span class="qt">孩子要费不少劲（反复说、重来）才能让 AI 听懂吗？</span></div>
+      <div class="opts freq" data-single>
+        <div class="opt" data-v="很轻松"><span class="lb">不费劲，挺轻松</span></div>
+        <div class="opt" data-v="还行"><span class="lb">还行</span></div>
+        <div class="opt" data-v="挺费劲"><span class="lb">挺费劲的</span></div>
+      </div>
+    </div>
   </div>
 
   <div class="sec-band" data-name="家长-观察区标题">最近孩子上课时，您在旁边见过这些吗？<span class="sec-hint">按最近的印象</span></div>
   <div class="card" data-name="家长-观察题组">
     <div class="q" data-name="P2切早" data-env="02 端点检测 · 切早（旁观视角）— ★KR4，与学生S5对照，两边都高=铁实问题">
-      <div class="qhead"><span class="qn">2</span><span class="qt">孩子话没说完，AI 就抢着接话、自己往下说了。<span class="star">★</span></span></div>
+      <div class="qhead"><span class="qn">3</span><span class="qt">孩子话没说完，AI 就抢着接话、自己往下说了。<span class="star">★</span></span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
         <div class="opt" data-v="偶尔一两次"><span class="lb">偶尔一两次</span></div>
@@ -355,7 +363,8 @@ body.showenv .env-note { display:block; }
       </div>
     </div>
     <div class="q" data-name="P3打断" data-env="⚠️待剔除：线上暂无打断逻辑，该题不投放。（原映射：09 打断 · 旁观视角 · 对应学生S8）">
-      <div class="qhead"><span class="qn">3</span><span class="qt">孩子想插话打断 AI，AI 不停下来、硬把自己那段说完。<span class="star">★</span></span></div>
+      <div class="qhead"><span class="qn">4</span><span class="qt">孩子想插话打断 AI，AI 不停下来、硬把自己那段说完。<span class="drop-tag">待剔除</span></span></div>
+      <div class="drop-note">⚠️ 线上暂无打断逻辑，该题暂不投放</div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
         <div class="opt" data-v="偶尔一两次"><span class="lb">偶尔一两次</span></div>
@@ -363,8 +372,8 @@ body.showenv .env-note { display:block; }
         <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="P4识别错" data-env="03 ASR识别（旁观视角）· 用『重复说好几遍』这一可观察行为侧面反映，家长判断不了CER本身">
-      <div class="qhead"><span class="qn">4</span><span class="qt">孩子因为 AI 没听懂，把同一句话重复说好几遍。</span></div>
+    <div class="q" data-name="P4漏收" data-env="01 收麦 · 漏收（旁观视角）— 与学生S4对照，孩子说了AI没反应">
+      <div class="qhead"><span class="qn">5</span><span class="qt">孩子明明说了话，AI 却没有反应、像没收到。</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
         <div class="opt" data-v="偶尔一两次"><span class="lb">偶尔一两次</span></div>
@@ -372,8 +381,8 @@ body.showenv .env-note { display:block; }
         <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="P5误收" data-env="01 收麦 · 误收（家长最能观察：自己或电视声被当成孩子回答）— 与学生S3对照">
-      <div class="qhead"><span class="qn">5</span><span class="qt">您说话或电视的声音，被 AI 当成了孩子的回答。</span></div>
+    <div class="q" data-name="P5识别错" data-env="03 ASR识别（旁观视角）· 用『重复说好几遍』这一可观察行为侧面反映，家长判断不了CER本身 — 与学生S7对照">
+      <div class="qhead"><span class="qn">6</span><span class="qt">孩子因为 AI 没听懂，把同一句话重复说好几遍。</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
         <div class="opt" data-v="偶尔一两次"><span class="lb">偶尔一两次</span></div>
@@ -381,8 +390,26 @@ body.showenv .env-note { display:block; }
         <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
       </div>
     </div>
-    <div class="q" data-name="P6情绪信号" data-env="学习意愿信号 · 孩子烦躁／放弃（家长最能捕捉的外显情绪）— 把交互问题挂到学习效果上">
-      <div class="qhead"><span class="qn">6</span><span class="qt">孩子因为 AI 听不懂或被打断，表现出烦躁、不耐烦、甚至不想说了。</span></div>
+    <div class="q" data-name="P6误收" data-env="01 收麦 · 误收（家长最能观察：自己或电视声被当成孩子回答）— 与学生S3对照">
+      <div class="qhead"><span class="qn">7</span><span class="qt">您说话或电视的声音，被 AI 当成了孩子的回答。</span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
+        <div class="opt" data-v="偶尔一两次"><span class="lb">偶尔一两次</span></div>
+        <div class="opt" data-v="没注意"><span class="lb">没注意</span></div>
+        <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="P7等待" data-env="02 端点检测／08 播报 · 回应等待时长（旁观视角）— 与学生S6对照，问是否见过孩子等AI回应">
+      <div class="qhead"><span class="qn">8</span><span class="qt">孩子说完话，要等挺久 AI 才开口回答。</span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
+        <div class="opt" data-v="偶尔一两次"><span class="lb">偶尔一两次</span></div>
+        <div class="opt" data-v="没注意"><span class="lb">没注意</span></div>
+        <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="P8情绪信号" data-env="学习意愿信号 · 孩子烦躁／放弃（家长最能捕捉的外显情绪）— 把交互问题挂到学习效果上">
+      <div class="qhead"><span class="qn">9</span><span class="qt">孩子因为 AI 听不懂、或没接住，表现出烦躁、不耐烦、甚至不想说了。</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
         <div class="opt" data-v="偶尔一两次"><span class="lb">偶尔一两次</span></div>
@@ -392,23 +419,39 @@ body.showenv .env-note { display:block; }
     </div>
   </div>
 
-  <div class="sec-band" data-name="家长-感知区标题">看得见的部分<span class="sec-hint">AI 形象与画面反馈</span></div>
+  <div class="sec-band" data-name="家长-感知区标题">看得见、听得到的部分<span class="sec-hint">AI 的声音和形象</span></div>
   <div class="card" data-name="家长-感知题组">
+    <div class="q" data-name="P-语音好感" data-env="07 合成TTS · 语音好感度（旁观视角：AI说话自不自然、像不像真人）— 与学生S10对照">
+      <div class="qhead"><span class="qn">10</span><span class="qt">您觉得 AI 老师说话好不好听？（声音、语气、语调像不像真人）</span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="好听自然"><span class="lb">好听，比较自然</span></div>
+        <div class="opt" data-v="一般"><span class="lb">一般</span></div>
+        <div class="opt" data-v="别扭机械"><span class="lb">别扭，很机械</span></div>
+      </div>
+    </div>
     <div class="q" data-name="P7AI形象" data-env="感知层 · AI形象是否妨碍学习（旁观视角，重点是有没有影响学习而非好恶）— 与学生S12对照">
-      <div class="qhead"><span class="qn">7</span><span class="qt">屏幕上 AI 老师说话的样子，有没有让孩子分心、或影响到学习？</span></div>
+      <div class="qhead"><span class="qn">11</span><span class="qt">屏幕上 AI 老师说话的样子，有没有让孩子分心、或影响到学习？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="没影响"><span class="lb">没影响，挺好的</span></div>
         <div class="opt" data-v="偶尔分心"><span class="lb">偶尔会分心</span></div>
         <div class="opt" data-v="明显影响"><span class="lb">明显影响学习</span></div>
       </div>
     </div>
-    <div class="q" data-name="P8状态迟疑" data-env="10 轮次／状态 · 状态不明导致迟疑（旁观视角）— 与学生S9/S15对照，验证显式信号是否够">
-      <div class="qhead"><span class="qn">8</span><span class="qt">孩子是不是常常搞不清"该自己说了没"，对着屏幕迟疑、不敢开口？</span></div>
+    <div class="q" data-name="P8状态迟疑" data-env="10 轮次／状态 · 状态不明导致迟疑（旁观视角）— 与学生S9/S14对照，验证显式信号是否够">
+      <div class="qhead"><span class="qn">12</span><span class="qt">孩子是不是常常搞不清"该自己说了没"，对着屏幕迟疑、不敢开口？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="每次课都有"><span class="lb">基本每次课都有</span></div>
         <div class="opt" data-v="偶尔一两次"><span class="lb">偶尔一两次</span></div>
         <div class="opt" data-v="没注意"><span class="lb">没注意</span></div>
         <div class="opt" data-v="确实没有"><span class="lb">确实没有</span></div>
+      </div>
+    </div>
+    <div class="q" data-name="P-认知安全感" data-env="认知安全感（旁观视角：孩子跟AI说话紧不紧张、放不放得开）— 与学生S11对照，交叉分析因变量">
+      <div class="qhead"><span class="qn">13</span><span class="qt">孩子跟 AI 老师说话时，紧张、拘束吗？还是挺放得开？</span></div>
+      <div class="opts wide" data-single>
+        <div class="opt" data-v="放得开"><span class="lb">挺放得开，想说就说</span></div>
+        <div class="opt" data-v="有点拘束"><span class="lb">有点拘束</span></div>
+        <div class="opt" data-v="明显紧张"><span class="lb">明显紧张 / 不太敢说</span></div>
       </div>
     </div>
   </div>
@@ -416,7 +459,7 @@ body.showenv .env-note { display:block; }
   <div class="sec-band" data-name="家长-影响区标题">影响判断</div>
   <div class="card" data-name="家长-影响题组">
     <div class="q" data-name="P9学习意愿" data-env="学习意愿 · 交互问题是否影响用AI学习的意愿 — 交叉分析核心因变量，论证优化的价值">
-      <div class="qhead"><span class="qn">9</span><span class="qt">这些问题会不会影响孩子用 AI 学习的意愿？</span></div>
+      <div class="qhead"><span class="qn">14</span><span class="qt">这些问题会不会影响孩子用 AI 学习的意愿？</span></div>
       <div class="opts wide" data-single>
         <div class="opt" data-v="明显影响"><span class="lb">明显影响</span></div>
         <div class="opt" data-v="有一点"><span class="lb">有一点</span></div>
@@ -424,7 +467,7 @@ body.showenv .env-note { display:block; }
       </div>
     </div>
     <div class="q" data-name="P10开放案例" data-env="开放题 · 典型案例采集（家长视角的卡壳／打断／听错场景）— 开放题编码素材">
-      <div class="qhead"><span class="qn">10</span><span class="qt">印象最深的一次卡壳 / 被打断 / 听错，当时发生了什么？<span class="optional">选填</span></span></div>
+      <div class="qhead"><span class="qn">15</span><span class="qt">印象最深的一次卡壳 / 听错 / 等太久，当时发生了什么？<span class="optional">选填</span></span></div>
       <textarea placeholder="描述那次的场景……"></textarea>
     </div>
   </div>
@@ -500,7 +543,8 @@ const VERSIONS=[
   {v:8,date:'2026-08-21',desc:'按反馈改问卷：S4/S6改中性表达；S8打断标待剔除(线上无打断逻辑)；S10改『喜不喜欢AI声音』；删S11情绪匹配(属对话策略非交互层)；S12形象改问『是否影响学习』；S13/S14动效直接问『知不知道在说/该我说』；S16改『最想改哪里』。家长版P3待剔除、P7同步改。学生17→16题。批注编辑框：回车改为换行、Cmd/Ctrl+回车才提交，加保存/取消按钮，区分输入与确认'},
   {v:9,date:'2026-08-21',desc:'再改：S6从有无改为问回应快慢感受(线上必有等待)；S8待剔除备注移到题目旁醒目显示、考察点恢复原映射；S10声音好感加入语调语气维度；S14从『知不知道』改为问『有没有愣住过』的实际经历。批注回车改回仿Claude：回车提交+输入法组合态(isComposing/keyCode229)保护，中文选字的回车不误提交'},
   {v:10,date:'2026-08-21',desc:'批注弹窗删掉取消/保存按钮，只留输入框+提示：回车保存、Esc取消'},
-  {v:11,date:'2026-08-21',desc:'S6改口语化：『多久开口回答你』替掉绕口的『开始回应的快慢』，选项也改大白话'}
+  {v:11,date:'2026-08-21',desc:'S6改口语化：『多久开口回答你』替掉绕口的『开始回应的快慢』，选项也改大白话'},
+  {v:12,date:'2026-08-21',desc:'家长版参照学生版对齐优化：补费力度(对齐S2)、漏收(S4)、等待(S6)、语音好感(S10)、认知安全感(S11)共5题；全部转成家长可观察的行为问法；打断题同步标待剔除+题旁备注；考察点标注补齐『与学生Sx对照』交叉指向。家长版10→15题'}
 ];
 (function renderVer(){
   const last=VERSIONS[VERSIONS.length-1];
