@@ -299,13 +299,9 @@ body.showenv .env-note { display:block; }
 
   <div class="sec-band" data-name="学生-开放区标题">说说你的想法<span class="sec-hint">不想写可以跳过</span></div>
   <div class="card" data-name="学生-开放题组">
-    <div class="q" data-name="S15最烦" data-env="开放题 · 兜底暴露未覆盖问题 — 用于开放题编码，补量化题盲区">
-      <div class="qhead"><span class="qn">15</span><span class="qt">跟 AI 老师说话，最让你烦的是哪件事？<span class="optional">选填</span></span></div>
-      <textarea placeholder="随便说说，比如……"></textarea>
-    </div>
-    <div class="q" data-name="S16最想改" data-env="开放题 · 收集改进方向（最想让AI改哪里）— 补充第2条开放题，聚焦优化诉求">
-      <div class="qhead"><span class="qn">16</span><span class="qt">如果能让 AI 老师改一个地方，你最想它改哪里？<span class="optional">选填</span></span></div>
-      <textarea placeholder="比如：说话慢一点、多等我一会儿……"></textarea>
+    <div class="q" data-name="S15最想改" data-env="开放题 · 兜底暴露问题+改进方向（想改的即是烦的，合并原最烦/最想改两题）— 开放题编码素材，正向问法降低小学生负担">
+      <div class="qhead"><span class="qn">15</span><span class="qt">跟 AI 老师说话，你最想让它改哪个地方？<span class="optional">选填</span></span></div>
+      <textarea placeholder="比如：说话慢一点、多等我一会儿、别打断我……"></textarea>
     </div>
   </div>
 
@@ -470,13 +466,9 @@ body.showenv .env-note { display:block; }
 
   <div class="sec-band" data-name="家长-开放区标题">说说您的想法<span class="sec-hint">不想写可以跳过</span></div>
   <div class="card" data-name="家长-开放题组">
-    <div class="q" data-name="P10开放案例" data-env="开放题 · 典型案例采集（家长视角的卡壳／听错／等太久场景）— 对齐学生S15，开放题编码素材，立项文档现状问题章节引用">
-      <div class="qhead"><span class="qn">15</span><span class="qt">印象最深的一次卡壳 / 听错 / 等太久，当时发生了什么？<span class="optional">选填</span></span></div>
-      <textarea placeholder="描述那次的场景……"></textarea>
-    </div>
-    <div class="q" data-name="P11期望改进" data-env="开放题 · 收集改进方向（家长期望AI改进哪里）— 对齐学生S16，聚焦优化诉求">
-      <div class="qhead"><span class="qn">16</span><span class="qt">您最希望 AI 老师在哪方面改进，好让孩子学得更顺？<span class="optional">选填</span></span></div>
-      <textarea placeholder="比如：多等孩子几秒、声音再自然点……"></textarea>
+    <div class="q" data-name="P10期望改进" data-env="开放题 · 改进方向+具体场景（合并原案例/期望改进两题）— 对齐学生S15，开放题编码素材，可引导家长附带描述真实场景">
+      <div class="qhead"><span class="qn">15</span><span class="qt">您最希望 AI 老师改进哪个地方，好让孩子学得更顺？（可举一次具体的事）<span class="optional">选填</span></span></div>
+      <textarea placeholder="比如：多等孩子几秒、声音再自然点；上次孩子说了三遍它还没听懂……"></textarea>
     </div>
   </div>
 
@@ -553,7 +545,8 @@ const VERSIONS=[
   {v:10,date:'2026-08-21',desc:'批注弹窗删掉取消/保存按钮，只留输入框+提示：回车保存、Esc取消'},
   {v:11,date:'2026-08-21',desc:'S6改口语化：『多久开口回答你』替掉绕口的『开始回应的快慢』，选项也改大白话'},
   {v:12,date:'2026-08-21',desc:'家长版参照学生版对齐优化：补费力度(对齐S2)、漏收(S4)、等待(S6)、语音好感(S10)、认知安全感(S11)共5题；全部转成家长可观察的行为问法；打断题同步标待剔除+题旁备注；考察点标注补齐『与学生Sx对照』交叉指向。家长版10→15题'},
-  {v:13,date:'2026-08-21',desc:'家长版开放区对齐学生版双题分工：独立成『说说您的想法』板块，保留P15具体案例(对齐S15问题表达)，新增P16期望改进(对齐S16)。家长版15→16题'}
+  {v:13,date:'2026-08-21',desc:'家长版开放区对齐学生版双题分工：独立成『说说您的想法』板块，保留P15具体案例(对齐S15问题表达)，新增P16期望改进(对齐S16)。家长版15→16题'},
+  {v:14,date:'2026-08-21',desc:'开放题去冗余：『最烦哪件事』和『最想改哪里』信息高度重合，合并为一道『最想让AI改哪里』(正向问法、含抱怨、降小学生负担)。学生版16→15题、家长版16→15题，两版对称'}
 ];
 (function renderVer(){
   const last=VERSIONS[VERSIONS.length-1];
