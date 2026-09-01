@@ -96,6 +96,19 @@ li b{color:var(--txt)}
   th,td{padding:7px 8px}
 }
 
+/* 折叠块 */
+details.fold{background:var(--panel);border:1px solid var(--line);border-radius:9px;margin:16px 0;overflow:hidden}
+details.fold>summary{cursor:pointer;padding:13px 17px;font-size:14px;font-weight:600;color:var(--blue);list-style:none;user-select:none}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary::before{content:"▸";color:var(--dim);margin-right:8px;display:inline-block}
+details.fold[open]>summary::before{content:"▾"}
+details.fold>summary:hover{background:var(--panel2)}
+details.fold>summary .sc{color:var(--dim);font-weight:400;font-size:12.5px;margin-left:8px}
+details.fold .fbody{padding:2px 17px 14px;border-top:1px solid var(--line)}
+details.fold .fbody h3{font-size:14px;margin:18px 0 8px}
+details.fold .fbody p{font-size:13px;color:var(--txt2);margin:9px 0}
+details.fold .fbody table{margin:8px 0}
+
 /* ===== 批注层 ===== */
 #annToggle { position:fixed; right:16px; bottom:16px; z-index:9000; background:#2f5e45; color:#fff; border:none; border-radius:24px; padding:11px 16px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(47,94,69,.35); font-family:inherit; }
 #annToggle.on { background:#e07a3f; box-shadow:0 4px 14px rgba(224,122,63,.4); }
@@ -164,11 +177,52 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
     <div class="t">投放口径</div>
     <p>问卷在 2558 课后弹出,8 道必答单选 + 1 道选填开放题;按 60 个班课 ID 定向投放,零越界。回收率分母 454 = 落在这 60 个班课的完课人数。</p>
   </div>
+
+  <details class="fold" data-name="问卷全貌折叠块">
+    <summary>📋 展开看问卷全貌:9 道题 + 客观题完整数据<span class="sc">题目 / 选项 / 逐题结果</span></summary>
+    <div class="fbody">
+      <h3>① 问卷题目结构(8 道必答单选 + 1 道选填)</h3>
+      <table>
+        <thead><tr><th>题号</th><th>题目</th><th>选项</th><th>简称</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>跟 AI 伴读人说话累不累?</td><td>很轻松 / 还行 / 挺累的</td><td>说话省力</td></tr>
+          <tr><td>2</td><td>说话时你紧张吗?</td><td>不紧张 / 有一点 / 紧张</td><td>不紧张</td></tr>
+          <tr><td>3</td><td>你说完话,AI 多久开口对话?</td><td>很快 / 要等一下 / 等很久</td><td>响应速度</td></tr>
+          <tr><td>4</td><td>旁边有别的声音,会当成你说的吗?</td><td>经常 / 偶尔 / <b>没有</b></td><td>抗噪不误拾</td></tr>
+          <tr><td>5</td><td>你还在想、话没说完,它就开口了?</td><td>经常 / 偶尔 / <b>没有</b></td><td>不抢话</td></tr>
+          <tr><td>6</td><td>它没理解对、答非所问?</td><td>经常 / 偶尔 / <b>没有</b></td><td>理解正确</td></tr>
+          <tr><td>7</td><td>说话(声音语气语调)好不好听?</td><td>好听 / 一般 / 不好听</td><td>声音好听</td></tr>
+          <tr><td>8</td><td>它说话的样子有没有影响你阅读?</td><td>不影响 / 有一点 / 影响</td><td>形象不干扰</td></tr>
+          <tr><td>9</td><td>最希望它改进哪里?</td><td>开放填写(非必答)</td><td>开放建议</td></tr>
+        </tbody>
+      </table>
+      <p style="color:var(--dim)">第 4/5/6 题问"故障多不多",选"没有"才算好评,下表已统一换算成好 / 中 / 差三档。</p>
+
+      <h3>② 8 道客观题逐题结果(按不满率降序)</h3>
+      <table>
+        <thead><tr><th>题 · 简称</th><th class="r">好</th><th class="r">中</th><th class="r">差</th><th class="r">好评率</th><th class="r">不满率</th><th class="r">旧版好评</th></tr></thead>
+        <tbody>
+          <tr><td>3 · 响应速度</td><td class="r">44</td><td class="r">33</td><td class="r">1</td><td class="r">56.4%</td><td class="r hi">43.6%</td><td class="r">54.0%</td></tr>
+          <tr><td>4 · 抗噪不误拾</td><td class="r">51</td><td class="r">15</td><td class="r hi">12</td><td class="r">65.4%</td><td class="r hi">34.6%</td><td class="r">61.9%</td></tr>
+          <tr><td>1 · 说话省力</td><td class="r">54</td><td class="r">23</td><td class="r">1</td><td class="r">69.2%</td><td class="r">30.8%</td><td class="r">63.5%</td></tr>
+          <tr><td>6 · 理解正确</td><td class="r">55</td><td class="r">13</td><td class="r hi">10</td><td class="r">70.5%</td><td class="r">29.5%</td><td class="r">65.1%</td></tr>
+          <tr><td>2 · 不紧张</td><td class="r">55</td><td class="r">20</td><td class="r">3</td><td class="r">70.5%</td><td class="r">29.5%</td><td class="r">66.7%</td></tr>
+          <tr><td>5 · 不抢话</td><td class="r">55</td><td class="r">15</td><td class="r hi">8</td><td class="r">70.5%</td><td class="r">29.5%</td><td class="r">69.8%</td></tr>
+          <tr><td>7 · 声音好听</td><td class="r">57</td><td class="r">18</td><td class="r">3</td><td class="r">73.1%</td><td class="r">26.9%</td><td class="r">68.3%</td></tr>
+          <tr><td>8 · 形象不干扰</td><td class="r">70</td><td class="r">6</td><td class="r">2</td><td class="r ok">89.7%</td><td class="r">10.3%</td><td class="r">87.3%</td></tr>
+        </tbody>
+      </table>
+      <p>整体好评率比旧版涨 0.7~5.7 个百分点,但<b>不代表体验变好</b>——是 08-31 新答孩子好评偏高(人均 6.65 vs 整体 5.45)拉高了均值。真正有说服力的是<b>相对排序一格未动</b>。</p>
+
+      <h3>③ 开放题(第 9 题)概况</h3>
+      <p>78 人中:<b>40 人整段留空、16 人纯客套、22 人有实质表达</b>。其中 9 名重度识别故障用户里 6 人一字未写——<b>只读开放题会漏掉受损最严重的人</b>,必答封闭题反而把他们捞了出来,说明"8 必答 + 1 选填"的设计是对的。开放题里出现"AI 贩毒人""半路人""妹头"等怪字,是<b>语音转写错误</b>,本身也是识别质量差的旁证。</p>
+    </div>
+  </details>
 </section>
 
 <section data-name="核心结论区">
   <h2>三条核心结论(论据附在下方)</h2>
-  <div class="h2sub">一句话总览:说话和长相过关,"听"还没有——但真正该修的,不是抱怨最多的两项</div>
+  <div class="h2sub">一句话总览:说话和长相过关,"听"还没有——但真正该修的,不是不满最多的两项</div>
 
   <div class="concl" data-name="结论1">
     <span class="tag">结论 1</span>
@@ -194,38 +248,65 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 
   <div class="concl" data-name="结论2">
     <span class="tag">结论 2</span>
-    <h3>抱怨最多的"答非所问"和"反应慢",不是技术问题</h3>
-    <p class="why">孩子的痛感全是真的,被否掉的只是"技术归因"。答非所问的真因是 <b>AI 不接受答案、反复追问</b>;反应慢的真因是 <b>等待期没有任何反馈</b>。</p>
+    <h3>不满最多的"理解正确"和"响应速度",不是技术问题</h3>
+    <p class="why">孩子的痛感全是真的,被否掉的只是"技术归因"。"理解正确"差评的真因是 <b>AI 不接受答案、反复追问</b>;"响应速度"差评的真因是 <b>等待期没有任何反馈</b>。</p>
     <div class="ev">
-      <div class="evh">论据 A · "答非所问":机器听得清,是 AI 不认可答案</div>
-      <div>读完 77 段追问对话,<b>AI 从未答错</b>,只是不认可、反复追问(60 段出现追问共 118 次,单段最多 5 次)。答非所问最多的 10 人,机器识别失败率<b>并不更高</b>。教案已写"第二轮不再追问""不否定学生感受",但<span class="amber">缺代码兜底</span>:全库 2,572 题中 498 题教案写了停止规则,真正配置追问上限的 <b>0 题</b>;而闪耀时刻 338 题里 294 题已用该开关,伴读课没启用。</div>
-      <div class="evh" style="margin-top:12px">论据 B · "反应慢":实际不慢,是等待期无反馈</div>
-      <div>测"孩子说完 → AI 开口"耗时:说"很快"的 44 人 p50 = <b>2.08 秒</b>,说"要等"的 33 人 = <b>2.13 秒</b>——只差 <b>0.05 秒</b>。43.6% 不满是最普遍的抱怨,但速度本身并不慢。附带发现:"说不出话"会被体验成"反应慢"(听不到比例随不满档 6.5%→7.9%→33.3% 单调上升)。</div>
+      <div class="evh">论据 A · "理解正确":机器听得清,是 AI 不认可答案</div>
+      <div>读完 77 段追问对话,<b>AI 从未答错</b>,只是不认可、反复追问(60 段出现追问共 118 次,单段最多 5 次)。"理解正确"差评最多的 10 人,机器识别失败率<b>并不更高</b>。</div>
+      <div class="box warn" style="margin:11px 0;background:var(--panel2);border-color:transparent">
+        <div class="t">⚠ 核心矛盾:教案写了"不追问",代码没兜底</div>
+        <p style="margin:5px 0">教案已明确写"第二轮不再追问""不否定学生感受",但只是话术、<b>没有代码层面的硬约束</b>。数字为证:</p>
+        <p style="margin:5px 0">· 全库 <b>2,572</b> 题中,<b>498</b> 题教案写了"停止追问"规则,真正配置了追问上限的 <b class="amber">0 题</b><br>· 反观闪耀时刻,<b>338</b> 题里 <b>294</b> 题已启用这个追问上限开关,伴读课<b>没接上</b></p>
+        <p style="margin:5px 0;color:var(--txt2)">→ 开关是现成的,只是伴读课没用。这是"能马上做"的动作,不动模型、不发版。</p>
+      </div>
+      <div class="evh" style="margin-top:12px">论据 B · "响应速度":实际不慢,是等待期无反馈</div>
+      <div>测"孩子说完 → AI 开口"耗时:说"很快"的 44 人 p50 = <b>2.08 秒</b>,说"要等"的 33 人 = <b>2.13 秒</b>——只差 <b>0.05 秒</b>。43.6% 不满是最普遍的抱怨,但速度本身并不慢。附带发现:"说不出话"会被体验成"响应慢"。</div>
     </div>
   </div>
 
   <div class="concl" data-name="结论3">
     <span class="tag">结论 3</span>
     <h3>真正的技术问题是"听不清",一条动作解三方面</h3>
-    <p class="why">说话费劲、被抢话、紧张三项,机器数据一档比一档差,根子都是<b>识别灵敏度不够</b>。"紧张"不是性格,而是反复听不懂形成的预期。提高识别灵敏度,一条动作同时解决这三方面。</p>
+    <p class="why">"说话费劲、被抢话、紧张"这三项差评,<b>是有技术依据的</b>——把孩子按主观答案分成好 / 中 / 差三档,每档的客观识别数据一档比一档差。识别不够灵敏是根子。提高识别灵敏度,一条动作同时解决这三方面。</p>
     <div class="ev">
-      <div class="evh">论据 · 三项主观差评,客观机器数据同向恶化</div>
+      <div class="evh">怎么判断一条差评是不是"真技术问题"?</div>
+      <div style="margin-bottom:10px">按孩子的主观答案分好 / 中 / 差三档,看每档对应的客观识别数据:<br>· 客观数据<b>随主观变差而单调恶化</b> → 差评有技术依据,是真技术问题(结论 3)<br>· 客观数据<b>不随主观单调变化</b> → 差评没技术依据,是感受 / 策略问题(结论 2)<br><span style="color:var(--dim)">选用的客观信号是<b>"机器听不到声音的比例"</b>——孩子开了麦、说了话,系统却一个字都没识别出来。它最直接反映"有没有听清",不掺加工。</span></div>
+      <div class="evh">论据 · 三项主观差评,"听不到比例"逐档恶化(好 → 中 → 差)</div>
       <table>
-        <thead><tr><th>主观题</th><th class="r">好档听不到</th><th class="r">差档听不到</th><th class="r">差档开麦次数</th></tr></thead>
+        <thead><tr><th>主观题</th><th class="r">好档</th><th class="r">中档</th><th class="r">差档</th><th>是否单调</th></tr></thead>
         <tbody>
-          <tr><td>说话省力</td><td class="r">10.4%</td><td class="r hi">31.0%</td><td class="r">4.83 次/题</td></tr>
-          <tr><td>不紧张</td><td class="r">9.9%</td><td class="r hi">19.4%</td><td class="r hi">3.94 次/题</td></tr>
-          <tr><td>不抢话</td><td class="r">8.7%</td><td class="r hi">21.5%</td><td class="r">3.02 次/题</td></tr>
+          <tr><td>说话省力</td><td class="r">10.4%</td><td class="r">11.3%</td><td class="r hi">31.0%</td><td class="ok">✓ 单调恶化</td></tr>
+          <tr><td>不紧张</td><td class="r">9.9%</td><td class="r">12.3%</td><td class="r hi">19.4%</td><td class="ok">✓ 单调恶化</td></tr>
+          <tr><td>不抢话</td><td class="r">8.7%</td><td class="r">13.2%</td><td class="r hi">21.5%</td><td class="ok">✓ 单调恶化</td></tr>
         </tbody>
       </table>
-      <div style="margin-top:8px">"机器听不到声音的比例"= 开了麦、说了话却一字未识别;"开麦次数"越多说明越费劲。三项都是<b>越不满、客观信号越差</b>,归因一致。说"紧张"的孩子每题开 3.94 次麦(全场最高)——<b>修识别就是修紧张</b>。</div>
+      <div style="margin-top:8px">三项都是"越说不好、越听不到",客观印证了孩子的差评。其中"紧张"不是性格问题:说"紧张"的孩子客观信号最强(每题开 <b>3.94 次麦</b>,全场最高,反复重说)——<b>它是反复听不懂憋出来的,修识别就是修紧张</b>。</div>
+    </div>
+  </div>
+
+  <div class="concl" data-name="主客观交叉验证">
+    <span class="tag">交叉验证</span>
+    <h3>5 个维度一起看:哪些差评有技术依据,哪些没有</h3>
+    <p class="why">同一套方法(看"听不到比例"是否随主观单调恶化)跑完 5 个维度,正好把结论 2、结论 3 一次性验完:前两行不单调=感受 / 策略问题,后三行单调=真技术问题。</p>
+    <div class="ev">
+      <table>
+        <thead><tr><th>维度</th><th>客观是否单调</th><th>归因</th></tr></thead>
+        <tbody>
+          <tr><td>理解正确</td><td>✗ 否(3.0% / 4.5% / 1.6%,乱序)</td><td>非技术 → 对话策略</td></tr>
+          <tr><td>响应速度</td><td>✗ 否(2.08s vs 2.13s,差 0.05s)</td><td>非技术 → 等待体感</td></tr>
+          <tr><td><b>说话省力</b></td><td class="ok">✓ 是(10.4 → 11.3 → 31.0%)</td><td><b>真技术问题</b></td></tr>
+          <tr><td><b>不抢话</b></td><td class="ok">✓ 是(8.7 → 13.2 → 21.5%)</td><td><b>真技术问题</b></td></tr>
+          <tr><td><b>不紧张</b></td><td class="ok">✓ 是(9.9 → 12.3 → 19.4%)</td><td>第 1 题的下游产物</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px">5 个维度的归因<b>全部与上版一致</b>,多收的 23 份没有推翻任何一条结论。</div>
     </div>
   </div>
 
   <div class="box warn" data-name="收敛动作">
     <div class="t">⚡ 三条结论收敛成两个动作</div>
-    <p>① <b>让追问上限真正生效</b>(解答非所问)&nbsp;&nbsp; ② <b>提高识别灵敏度</b>(解说话费劲 / 紧张 / 被抢话,并顺带抬高速度评分)。</p>
-    <p style="color:var(--dim)">最反直觉的产出:抱怨最普遍的"反应慢"(43.6%),恰恰是最<b style="color:var(--amber)">不该动</b>的——2.08 秒并不慢,只需在等待期给个反馈信号。</p>
+    <p>① <b>让追问上限真正生效</b>(解"理解正确")&nbsp;&nbsp; ② <b>提高识别灵敏度</b>(解说话费劲 / 紧张 / 被抢话,并顺带抬高速度评分)。</p>
+    <p style="color:var(--dim)">最反直觉的产出:不满最普遍的"响应速度"(43.6%),恰恰是最<b style="color:var(--amber)">不该动</b>的——2.08 秒并不慢,只需在等待期给个反馈信号。</p>
   </div>
 
   <blockquote data-name="孩子原话">孩子原话:"希望不要把旁边的声音给录进去,等我们说完了再关闭。"<br><span style="color:var(--dim);font-size:12.5px">另一孩子被追问 14 次、识别出乱码后放弃;还有孩子自己提方案——想要一个按钮,点了再回答、可以先思考。</span></blockquote>
@@ -291,7 +372,8 @@ body.annon [data-name]:hover { outline:2px dashed #e07a3f; outline-offset:2px; c
 
 <script>
 const VERSIONS=[
-  {v:1,date:'2026-09-01',desc:'精简汇报版:从详细版提炼为给老板/组内同事看的版本。结构=数据范围+用户特点(新用户)→三条核心结论(论据直接附在每条结论下方,含问卷数据与客观行为数据)→未来行动(产品动作+验证动作)。内置点选批注层。'}
+  {v:1,date:'2026-09-01',desc:'精简汇报版:从详细版提炼为给老板/组内同事看的版本。结构=数据范围+用户特点(新用户)→三条核心结论(论据直接附在每条结论下方,含问卷数据与客观行为数据)→未来行动(产品动作+验证动作)。内置点选批注层。'},
+  {v:2,date:'2026-09-01',desc:'按批注修改:①新增"问卷全貌"折叠块(9道题结构+8道客观题逐题结果+开放题概况)②结论2口语词统一成问卷简称(理解正确/响应速度)③高亮"教案写了不追问但代码没兜底"并补数字论证(498题写规则/0题配上限,闪耀时刻294/338已用)④结论3听不到比例改回好/中/差原始三档口径,去掉加工列⑤重写结论3因果逻辑:改成"用听不到比例是否随主观单调恶化来判断差评有无技术依据",并新增5维度交叉验证表。'}
 ];
 (function(){
   const last=VERSIONS[VERSIONS.length-1];
