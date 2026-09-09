@@ -51,6 +51,17 @@ main{padding:18px 32px 60px;}
 .annot-field label{font-size:12px;color:var(--muted);font-weight:600;}
 .annot-field select{font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;min-width:130px;}
 .annot-field select.done{border-color:var(--green);background:var(--green-bg);}
+.note-field{flex:1;min-width:200px;}
+.note-input{font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;resize:vertical;min-height:38px;width:100%;}
+.note-input.done{border-color:var(--green);background:var(--green-bg);}
+/* 多选筛选样式 */
+.filter-multi{position:relative;display:inline-block;}
+.filter-multi>button{font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;min-width:110px;text-align:left;}
+.filter-multi>button .cnt{color:var(--accent);font-weight:600;}
+.filter-multi .opts{display:none;position:absolute;top:100%;left:0;z-index:20;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.12);min-width:150px;margin-top:4px;padding:4px;}
+.filter-multi.open .opts{display:block;}
+.filter-multi .opts label{display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:13px;cursor:pointer;border-radius:6px;}
+.filter-multi .opts label:hover{background:#f1f5f9;}
 /* PLACEHOLDER_STYLE */
 </style>
 </head>
@@ -82,9 +93,14 @@ main{padding:18px 32px 60px;}
   </section>
 
   <section class="toolbar">
-    <label>嫌疑级别 <select id="f-level"><option value="">全部</option><option value="高">高</option><option value="中">中</option></select></label>
-    <label>标注状态 <select id="f-status"><option value="">全部</option><option value="done">已标</option><option value="undone">未标</option></select></label>
-    <label>有无噪声 <select id="f-noise"><option value="">全部</option><option value="是">是</option><option value="否">否</option><option value="存疑">存疑</option><option value="__none">未判定</option></select></label>
+    <div class="filter-multi" data-filter="level"><button type="button">嫌疑级别<span class="cnt"></span></button>
+      <div class="opts"><label><input type="checkbox" value="高">高</label><label><input type="checkbox" value="中">中</label></div></div>
+    <div class="filter-multi" data-filter="status"><button type="button">标注状态<span class="cnt"></span></button>
+      <div class="opts"><label><input type="checkbox" value="done">已标</label><label><input type="checkbox" value="undone">未标</label></div></div>
+    <div class="filter-multi" data-filter="noise"><button type="button">有无噪声<span class="cnt"></span></button>
+      <div class="opts"><label><input type="checkbox" value="是">是</label><label><input type="checkbox" value="否">否</label><label><input type="checkbox" value="存疑">存疑</label><label><input type="checkbox" value="__none">未判定</label></div></div>
+    <div class="filter-multi" data-filter="type"><button type="button">噪声类型<span class="cnt"></span></button>
+      <div class="opts"><label><input type="checkbox" value="A">A 他人现场</label><label><input type="checkbox" value="B">B 媒体人声</label><label><input type="checkbox" value="C">C 背景噪</label><label><input type="checkbox" value="D">D 本人无关话</label><label><input type="checkbox" value="E">E 重叠语音</label></div></div>
     <span class="spacer"></span>
     <button id="btn-export" class="primary">导出标注结果(JSON)</button>
     <button id="btn-export-csv">导出CSV</button>
@@ -159,38 +175,60 @@ function cardHTML(c,rank){
         ${sel(c.msg_id,'affect_text',[{v:'',t:'—'},{v:'是',t:'是'},{v:'否',t:'否'}],a.affect_text)}</div>
       <div class="annot-field"><label>是否影响AI回复</label>
         ${sel(c.msg_id,'affect_reply',[{v:'',t:'—'},{v:'是',t:'是'},{v:'否',t:'否'}],a.affect_reply)}</div>
+      <div class="annot-field note-field"><label>备注</label>
+        <textarea data-id="${c.msg_id}" data-field="note" class="note-input ${a.note?'done':''}" placeholder="写点内容...">${esc(a.note||'')}</textarea></div>
     </div>
   </div>`;
 }
 
 function render(){
-  const lv=document.getElementById('f-level').value;
-  const st=document.getElementById('f-status').value;
-  const nz=document.getElementById('f-noise').value;
+  const fsel=f=>[...document.querySelectorAll(`.filter-multi[data-filter="${f}"] input:checked`)].map(i=>i.value);
+  const lv=fsel('level'),st=fsel('status'),nz=fsel('noise'),tp=fsel('type');
   let list=CASES.slice();
-  if(lv)list=list.filter(c=>c.level===lv);
-  if(st){list=list.filter(c=>{const done=!!getAnn(c.msg_id).has_noise;return st==='done'?done:!done;});}
-  if(nz){list=list.filter(c=>{const v=getAnn(c.msg_id).has_noise;return nz==='__none'?!v:v===nz;});}
+  if(lv.length)list=list.filter(c=>lv.includes(c.level));
+  if(st.length)list=list.filter(c=>{const done=!!getAnn(c.msg_id).has_noise;return st.includes(done?'done':'undone');});
+  if(nz.length)list=list.filter(c=>{const v=getAnn(c.msg_id).has_noise;return nz.includes(v||'__none');});
+  if(tp.length)list=list.filter(c=>{const v=getAnn(c.msg_id).noise_type;return v&&tp.includes(v);});
   const box=document.getElementById('case-list');
   box.innerHTML=list.map((c,i)=>cardHTML(c,i+1)).join('')||'<p style="color:#888;padding:20px;">没有符合筛选的case</p>';
   renderStats();
+  updateFilterCounts();
 }
 
 document.addEventListener('change',e=>{
   const s=e.target.closest('select[data-id]');
   if(s){setAnn(s.dataset.id,s.dataset.field,s.value);s.classList.toggle('done',!!s.value);return;}
-  if(e.target.id==='f-level'||e.target.id==='f-status'||e.target.id==='f-noise')render();
+  if(e.target.closest('.filter-multi')){updateFilterCounts();render();}
 });
+// 备注框:输入即存(用input事件,失焦时高亮)
+document.addEventListener('input',e=>{
+  const t=e.target.closest('textarea.note-input');
+  if(t){setAnn(t.dataset.id,'note',t.value);t.classList.toggle('done',!!t.value.trim());}
+});
+// 多选下拉:点按钮开关,点外部关闭
+document.addEventListener('click',e=>{
+  const btn=e.target.closest('.filter-multi>button');
+  if(btn){const fm=btn.parentElement;const wasOpen=fm.classList.contains('open');
+    document.querySelectorAll('.filter-multi.open').forEach(x=>x.classList.remove('open'));
+    if(!wasOpen)fm.classList.add('open');e.stopPropagation();return;}
+  if(!e.target.closest('.filter-multi'))document.querySelectorAll('.filter-multi.open').forEach(x=>x.classList.remove('open'));
+});
+function updateFilterCounts(){
+  document.querySelectorAll('.filter-multi').forEach(fm=>{
+    const n=fm.querySelectorAll('input:checked').length;
+    fm.querySelector('.cnt').textContent=n?` (${n})`:'';
+  });
+}
 
 document.getElementById('btn-export').addEventListener('click',()=>{
   const out=CASES.map(c=>({...c,annotation:getAnn(c.msg_id)}));
   dl(JSON.stringify(out,null,2),'噪声标注结果.json','application/json');
 });
 document.getElementById('btn-export-csv').addEventListener('click',()=>{
-  const hd=['pool_idx','level','suspect_type','chatid','student_asr','audio_url','duration_s','有无噪声','噪声类型','影响文本','影响回复'];
+  const hd=['pool_idx','level','suspect_type','chatid','student_asr','audio_url','duration_s','有无噪声','噪声类型','影响文本','影响回复','备注'];
   const rows=[hd.join(',')];
   CASES.forEach(c=>{const a=getAnn(c.msg_id);
-    rows.push([c.pool_idx,c.level,c.suspect_type,c.chatid,'"'+(c.student_asr||'').replace(/"/g,'""')+'"',c.audio_url,c.duration_s,a.has_noise||'',a.noise_type||'',a.affect_text||'',a.affect_reply||''].join(','));});
+    rows.push([c.pool_idx,c.level,c.suspect_type,c.chatid,'"'+(c.student_asr||'').replace(/"/g,'""')+'"',c.audio_url,c.duration_s,a.has_noise||'',a.noise_type||'',a.affect_text||'',a.affect_reply||'','"'+(a.note||'').replace(/"/g,'""')+'"'].join(','));});
   dl('﻿'+rows.join('\n'),'噪声标注结果.csv','text/csv');
 });
 function dl(txt,name,mime){
