@@ -84,6 +84,7 @@ main{padding:18px 32px 60px;}
   <section class="toolbar">
     <label>嫌疑级别 <select id="f-level"><option value="">全部</option><option value="高">高</option><option value="中">中</option></select></label>
     <label>标注状态 <select id="f-status"><option value="">全部</option><option value="done">已标</option><option value="undone">未标</option></select></label>
+    <label>有无噪声 <select id="f-noise"><option value="">全部</option><option value="是">是</option><option value="否">否</option><option value="存疑">存疑</option><option value="__none">未判定</option></select></label>
     <span class="spacer"></span>
     <button id="btn-export" class="primary">导出标注结果(JSON)</button>
     <button id="btn-export-csv">导出CSV</button>
@@ -165,9 +166,11 @@ function cardHTML(c,rank){
 function render(){
   const lv=document.getElementById('f-level').value;
   const st=document.getElementById('f-status').value;
+  const nz=document.getElementById('f-noise').value;
   let list=CASES.slice();
   if(lv)list=list.filter(c=>c.level===lv);
   if(st){list=list.filter(c=>{const done=!!getAnn(c.msg_id).has_noise;return st==='done'?done:!done;});}
+  if(nz){list=list.filter(c=>{const v=getAnn(c.msg_id).has_noise;return nz==='__none'?!v:v===nz;});}
   const box=document.getElementById('case-list');
   box.innerHTML=list.map((c,i)=>cardHTML(c,i+1)).join('')||'<p style="color:#888;padding:20px;">没有符合筛选的case</p>';
   renderStats();
@@ -176,7 +179,7 @@ function render(){
 document.addEventListener('change',e=>{
   const s=e.target.closest('select[data-id]');
   if(s){setAnn(s.dataset.id,s.dataset.field,s.value);s.classList.toggle('done',!!s.value);return;}
-  if(e.target.id==='f-level'||e.target.id==='f-status')render();
+  if(e.target.id==='f-level'||e.target.id==='f-status'||e.target.id==='f-noise')render();
 });
 
 document.getElementById('btn-export').addEventListener('click',()=>{
