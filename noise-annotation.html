@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>语音噪声标注平台</title>
+<style>
+:root{--bg:#f5f7fb;--surface:#fff;--border:#dfe5ee;--text:#273142;--muted:#687386;--accent:#1f6feb;--red:#dc2626;--red-bg:#fef2f2;--orange:#f97316;--green:#138a44;--green-bg:#e8f8eb;--yellow-bg:#fff4c7;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.55;}
+.topbar{padding:22px 32px;background:#172033;color:#fff;}
+.topbar h1{margin:0 0 6px;font-size:22px;}
+.topbar p{margin:2px 0;color:#c6d1e3;font-size:13px;}
+main{padding:18px 32px 60px;}
+.summary,.toolbar,.case-card,.guide{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;padding:16px;}
+.metric{border:1px solid var(--border);border-radius:8px;padding:12px;background:#fbfcff;}
+.metric span{display:block;color:var(--muted);font-size:12px;}
+.metric strong{display:block;margin-top:4px;font-size:22px;line-height:1.2;}
+.metric em{display:block;margin-top:4px;color:#7a8494;font-size:11px;font-style:normal;}
+.guide{padding:14px 18px;font-size:13px;color:#475467;}
+.guide b{color:var(--text);}
+.guide .tag-legend{display:inline-block;margin:2px 8px 2px 0;padding:2px 8px;border-radius:6px;font-size:12px;}
+.toolbar{position:sticky;top:0;z-index:10;display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 16px;}
+.toolbar label{font-size:13px;color:#344054;}
+.toolbar select,.toolbar button{font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;}
+.toolbar button.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.toolbar .spacer{flex:1;}
+.case-card{padding:0;overflow:hidden;}
+.case-head{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #eef1f6;flex-wrap:wrap;}
+.case-rank{font-weight:700;color:var(--muted);}
+.badge{font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px;}
+.badge.hi{background:var(--red-bg);color:var(--red);}
+.badge.mid{background:var(--yellow-bg);color:#a16207;}
+.badge.type{background:#eef2ff;color:#4f46e5;}
+.case-meta{color:var(--muted);font-size:12px;}
+.case-body{padding:14px 16px;}
+.reason{background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px 12px;font-size:13px;color:#9a3412;margin-bottom:12px;}
+.reason b{color:#7c2d12;}
+.seg{margin-bottom:10px;}
+.seg .lbl{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:3px;}
+.seg .q-txt{background:#eef4ff;border-radius:8px;padding:8px 12px;font-size:14px;}
+.seg .asr-txt{background:#fff4c7;border-radius:8px;padding:8px 12px;font-size:15px;font-weight:600;color:#1f2937;}
+.seg .ai-txt{background:#e8f8eb;border-radius:8px;padding:8px 12px;font-size:14px;}
+.seg .und-txt{background:#f1f5f9;border-radius:8px;padding:6px 12px;font-size:13px;color:#475569;}
+.audio-row{display:flex;align-items:center;gap:12px;margin:10px 0;padding:10px 12px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;}
+.audio-row audio{height:36px;}
+.audio-row .dur{font-size:12px;color:var(--muted);}
+.annot-row{display:flex;flex-wrap:wrap;gap:16px;padding:12px 16px;background:#fbfcff;border-top:1px solid #eef1f6;}
+.annot-field{display:flex;flex-direction:column;gap:4px;}
+.annot-field label{font-size:12px;color:var(--muted);font-weight:600;}
+.annot-field select{font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;min-width:130px;}
+.annot-field select.done{border-color:var(--green);background:var(--green-bg);}
+/* PLACEHOLDER_STYLE */
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>语音噪声标注平台</h1>
+  <p>数据来源:AI大阅读课 · 近30天晚间随机池子前500条 · 语义初筛出的嫌疑case</p>
+  <p>用途:听音频判定是否有噪声、标类型,验证"文本初筛→真噪声"的命中率</p>
+</div>
+<main>
+  <section class="summary">
+    <div class="metrics">
+      <div class="metric"><span>嫌疑case总数</span><strong id="m-total">0</strong><em>从前500条挑出</em></div>
+      <div class="metric"><span>高嫌疑</span><strong id="m-hi">0</strong><em>几乎确定非答题内容混入</em></div>
+      <div class="metric"><span>已标注</span><strong id="m-done">0</strong><em>做出"有无噪声"判定</em></div>
+      <div class="metric"><span>确认有噪声</span><strong id="m-noise">0</strong><em>命中率=有噪声/已标注</em></div>
+      <div class="metric"><span>命中率</span><strong id="m-rate">—</strong><em>验证初筛准不准</em></div>
+    </div>
+  </section>
+
+  <section class="guide">
+    <b>标注说明:</b> 点开音频听学生真实录音,判断ASR文本里有没有混入<b>非学生本人/非答题</b>的声音。橙框是我初筛判它可疑的理由(仅供参考,以你听到的为准)。<br>
+    <b>噪声类型:</b>
+    <span class="tag-legend" style="background:#fee2e2;color:#dc2626;">A 他人现场说话</span>
+    <span class="tag-legend" style="background:#ffedd5;color:#c2410c;">B 媒体人声(电视等)</span>
+    <span class="tag-legend" style="background:#e0e7ff;color:#4338ca;">C 背景噪</span>
+    <span class="tag-legend" style="background:#fce7f3;color:#be185d;">D 学生本人无关话</span>
+    <span class="tag-legend" style="background:#f3e8ff;color:#7c3aed;">E 重叠语音</span>
+  </section>
+
+  <section class="toolbar">
+    <label>嫌疑级别 <select id="f-level"><option value="">全部</option><option value="高">高</option><option value="中">中</option></select></label>
+    <label>标注状态 <select id="f-status"><option value="">全部</option><option value="done">已标</option><option value="undone">未标</option></select></label>
+    <span class="spacer"></span>
+    <button id="btn-export" class="primary">导出标注结果(JSON)</button>
+    <button id="btn-export-csv">导出CSV</button>
+  </section>
+
+  <section id="case-list"></section>
+</main>
+<script>
+const CASES = [{"pool_idx": 64, "level": "高", "suspect_type": "A他人现场说话", "reason": "\"待会儿吃什么呢?我知道你想吃什么…你先把课上完再说\"——整段家长在旁说话被录入,后半才是答题", "msg_id": "852631500900937763", "userid": "251158478", "chatid": "852630914260385865", "textid": "7", "ai_question": "你说到了祥子一直靠正直要强过日子，却接连受挫。能不能从刚读的前两起两落里，找一件具体的事来说说呀？", "student_asr": "待会儿吃什么呢？我知道你想吃什么。我没说，别走，你在跟我说话，对呀。你想吃什么啊？我不知道。你先把你的课上完再说。他之前攒了三年的钱，好不容易换了一柄车，却被充军了。", "ai_understood": "", "ai_answer": "你点出了祥子攒三年钱买的新车，直接被大兵抢走这件实打实的遭难。他攥着血汗钱拼命攒出来的希望，说没就没，老实要强次次落空，自然就会冒出“当无赖也不错”的念头。", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/852630914260385865/1786620741786.aac", "duration_s": 43, "created_at": "2026-08-13 19:33:10"}, {"pool_idx": 82, "level": "高", "suspect_type": "A他人现场说话/对设备", "reason": "\"光线太暗了,调亮一点吧\"——完全非答题,像对旁人或设备说", "msg_id": "859539197407567882", "userid": "1131812173", "chatid": "859538992171946012", "textid": "5", "ai_question": "一下子要把决定和行动都想全确实不容易，我们先缩成一步——你先选钻进地下坑道还是躲进岩洞就好。", "student_asr": "光线太暗了，调亮一点吧。", "ai_understood": "", "ai_answer": "先把注意力拉回地下海的龙卷风场景里，我们先选钻进地下坑道，还是躲进岩洞？", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/859538992171946012/1788267688419.aac", "duration_s": 24, "created_at": "2026-09-01 21:01:54"}, {"pool_idx": 163, "level": "高", "suspect_type": "E重叠/多人", "reason": "整段是喂饭哄劝对话\"少舔一口\"\"你必须要吃\"\"臭啊你要吃吗\"——明显旁人对话,非学生答题", "msg_id": "856615499260289092", "userid": "267398884", "chatid": "856614879312842758", "textid": "3", "ai_question": "根据我们之前梳理的西游降妖策略，你认为真假猴王这一回，是靠什么方法策略解决的？为什么？", "student_asr": "我厉害，嗯，不允，不，不允许那个，不不够玩，那个，真的啊，在哪里？哎，那，那少舔一口这个吧。小心，难吃，小心，非常，非常小心，你小心舔一口，背一首歌啊，小心，嗯，为什么呀？好，我就不吃，你也要被我闭塞进去。你想啊，你必须要吃。臭了，臭啊，臭，你要吃吗？好好，我吃，我吃，我吃了，我吃了，我吃着，我还是给我塞呀，吃了，你才有可能吃，你吃，我吃，小心。看着什么啊？这个，嗯，我不吃了，不吃了，不吃。那我就每天补你一点，你不是能前面捏吗？不能小心，哼，小心，不能吃。这个不好吃，好吃，吃吃，我要敢吃啊。好瘦啊，你，你。", "ai_understood": "", "ai_answer": "咱们把话头拉回《西游记》的真假猴王这一段，两个悟空打到天上都没人辨得清，你最后记得是谁识破了假悟空的身份吗？", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/856614879312842758/1787570514637.aac", "duration_s": 120, "created_at": "2026-08-24 19:24:10"}, {"pool_idx": 228, "level": "高", "suspect_type": "A他人现场说话", "reason": "\"行,你洗完手…还有人想调班…我就待在四班\"——旁人说话/串场,与题无关", "msg_id": "857340242250870849", "userid": "432830342", "chatid": "857338380474708006", "textid": "14", "ai_question": "稻草人拼到了极限却什么都改变不了，那是一种深深的无能为力，而他肯这样拼，正因为那颗极度尽职、善良的心。我把替稻草人辩护的话整理好啦，你试着参考“表达时刻”读一读，为稻草人辩护。", "student_asr": "行，你洗完手。哎呀，还有人还想调班。我觉得，我就待在四班，挺好，四班的。", "ai_understood": "", "ai_answer": "是不是有点累了？今天先不勉强，我相信你心里也感受到了稻草人那颗尽职善良的心。", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/857338380474708006/1787743420816.aac", "duration_s": 21, "created_at": "2026-08-26 19:24:02"}, {"pool_idx": 236, "level": "高", "suspect_type": "A他人现场说话", "reason": "\"哎,阿姨好,哎,你们好\"——像旁人进来打招呼被录入", "msg_id": "857742040073658452", "userid": "148209426", "chatid": "857741977779699714", "textid": "3", "ai_question": "请你结合今天读到的两篇文章，说一说鲁迅提到了长妈妈的哪些事。", "student_asr": "哎，阿姨好，哎，你们好", "ai_understood": "", "ai_answer": "来，我们把注意力拉回刚才的书页上，你看看第27页长妈妈递出一包书的画面，能不能说说她做了什么呀。", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/857741977779699714/1787839230556.aac", "duration_s": 4, "created_at": "2026-08-27 22:00:38"}, {"pool_idx": 394, "level": "高", "suspect_type": "A他人现场说话", "reason": "\"现在给你做点饭吧\"——典型家长在旁说话被录入", "msg_id": "852981636151767052", "userid": "406750528", "chatid": "852981497286762505", "textid": "5", "ai_question": "你说到了想有人陪着玩，那你再想想，她这句话是说给谁听的呀？", "student_asr": "现在给你做点饭吧。", "ai_understood": "", "ai_answer": "咱们先回到刚才的场景里哦，站在门口的小女孩，对着忙工作的爸爸，心里真正想讲的是什么呀？", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/852981497286762505/1786704263125.aac", "duration_s": 3, "created_at": "2026-08-14 18:44:29"}, {"pool_idx": 396, "level": "高", "suspect_type": "A他人现场说话/换人", "reason": "\"我姐姐去上厕所了…这是我姐姐的平板…我才上一年级\"——换人了,非目标学生", "msg_id": "856638703437885516", "userid": "662542066", "chatid": "856638452278702100", "textid": "4", "ai_question": "没关系，哪怕没读过他的文章也没事。那你平时听别人提起鲁迅时，脑海里会浮现出一个怎样的形象呢？", "student_asr": "我我现在上的一年级啊，我这是我姐姐的平板。嗯，我姐姐去上厕所了，嗯，然后呢，我没有读过游戏呢，我才上一年级。", "ai_understood": "", "ai_answer": "原来是可爱的一年级小妹妹呀！谢谢你帮姐姐守着平板。那等姐姐上完厕所回来，你帮我把平板交还给她，让她来和我一起阅读，好吗？", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/856638452278702100/1787576163906.aac", "duration_s": 13, "created_at": "2026-08-24 20:56:22"}, {"pool_idx": 465, "level": "高", "suspect_type": "D本人无关话/情绪", "reason": "\"你气不气?你气不气?你气不气?\"——重复挑衅语,非答题内容", "msg_id": "857357234403811378", "userid": "551504247", "chatid": "857357120142839840", "textid": "3", "ai_question": "文学作品里的典型环境是打开优秀作品的重要密码，请你结合烈日、暴雨和祥子，分析它的作用。", "student_asr": "你气不气，你气不气？你气不气？你气不气？呃", "ai_understood": "", "ai_answer": "咱们不闹哈，咱回到这段故事里，你看故事里写整个老城像烧透了的砖窑，暴雨直砸祥子的头和背，这样的天气写出了祥子拉车环境什么样的特点？", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/857357120142839840/1787747481922.aac", "duration_s": 9, "created_at": "2026-08-26 20:31:33"}, {"pool_idx": 55, "level": "中", "suspect_type": "D本人无关话", "reason": "\"哎呀,吃完了\"——非答题的生活感叹", "msg_id": "854089419312074834", "userid": "555419397", "chatid": "854089275145240672", "textid": "5", "ai_question": "咱们换个小角度琢磨琢磨，他大可以把那一毛钱揣兜里走，可他没有——你觉得他最在乎的是什么？", "student_asr": "哎呀，吃完了", "ai_understood": "", "ai_answer": "咱们回过神来聊两句书里的祥子，他把毛票摔在太太脸上非要工钱走人，你觉得他最在乎的是什么？", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/854089275145240672/1786968380372.aac", "duration_s": 3, "created_at": "2026-08-17 20:06:25"}, {"pool_idx": 74, "level": "中", "suspect_type": "A他人现场说话", "reason": "\"好晚呀,哥哥\"——开头像对旁人说的话", "msg_id": "861006852987605060", "userid": "545381951", "chatid": "861006764764569650", "textid": "3", "ai_question": "最后他们打算如何解决这块巨石，这个想法又是谁提出来的？", "student_asr": "好晚呀，哥哥。好，有个想法是看自己。", "ai_understood": "", "ai_answer": "别着急，我们把范围缩小到第179页对话的最后两行，看看最后那句话是谁说的、又提了什么方案。", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/861006764764569650/1788617616394.aac", "duration_s": 10, "created_at": "2026-09-05 22:13:50"}, {"pool_idx": 92, "level": "中", "suspect_type": "D本人无关话", "reason": "\"我是来自八十年后的一个小学生\"——像在角色扮演/闲聊,偏题", "msg_id": "856998946625814561", "userid": "484085638", "chatid": "856998836118380644", "textid": "2", "ai_question": "你是谁？", "student_asr": "哦，我是来自，我是来自，就是我是来自你，呃，一百多，呃，就是我是来自，呃，我是来自八十多，八十，呃，八十年后的一个，呃，一个小学生。", "ai_understood": "", "ai_answer": "八十年后……小学生。我没听过这个地方，你……真的不是日本兵的人。", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/856998836118380644/1787662046858.aac", "duration_s": 20, "created_at": "2026-08-25 20:47:51"}, {"pool_idx": 145, "level": "中", "suspect_type": "设备/操作", "reason": "\"暂停了,怎么了?它这个暂停不了啊。那说吧\"——开头在摆弄设备/自言自语", "msg_id": "861358057190457367", "userid": "149647624", "chatid": "861357933030600783", "textid": "3", "ai_question": "作者运用\"三复情节\"来编排故事，到底有什么好处呢？说说你的想法！", "student_asr": "暂停了，怎么了？它这个暂停不了啊。那说吧，作者运用三副情节编排故事，有什么好处？嗯，让故事有了更多的挑战性，吸引读者继续往下读下去。", "ai_understood": "", "ai_answer": "没错，三次让情节读起来更有吸引力。三次借扇运用了不同的方法，这对塑造悟空的人物形象又有什么好处呢？", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/861357933030600783/1788701339621.aac", "duration_s": 17, "created_at": "2026-09-06 21:29:24"}, {"pool_idx": 306, "level": "中", "suspect_type": "A他人现场说话", "reason": "\"那我要上课吗?那你上好课,帮我做\"——像和旁人对话", "msg_id": "852609658609831967", "userid": "234304230", "chatid": "852608575460085828", "textid": "11", "ai_question": "你点出了急切的状态，那这份急切背后，藏着李民达他们没说出口的什么心意或者决心呢？", "student_asr": "那我要上课吗？那你上好课，帮我做。嗯，我不会那个呀。从这里，明达一定要做出杜少英的决心。", "ai_understood": "", "ai_answer": "你说得很对，这份急切背后正是李民达拼尽全力要救下战友的坚定决心，满是刻在骨子里的同志情谊。", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/852608575460085828/1786615568087.aac", "duration_s": 12, "created_at": "2026-08-13 18:06:23"}, {"pool_idx": 325, "level": "中", "suspect_type": "A他人现场说话", "reason": "\"你给我拿出两个来啊\"——像对旁人说的祈使句,跟题无关", "msg_id": "856969023424884756", "userid": "680118343", "chatid": "856968725428125793", "textid": "5", "ai_question": "哇，这句话说得好有分量，我都能感觉到你满满的感激呢。不过，终有一天这守护大家的火种也会传到你的手里，未来的你想去做什么，解决什么难题呢？", "student_asr": "你给我拿出两个来啊。", "ai_understood": "", "ai_answer": "没关系，我先给你举两个小例子参考呀：比如当医生帮生病的人恢复健康，或者种出更多粮食让大家都能吃饱，你有没有自己想做的呀？", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/856968725428125793/1787654924760.aac", "duration_s": 8, "created_at": "2026-08-25 18:48:56"}, {"pool_idx": 335, "level": "中", "suspect_type": "D本人无关话", "reason": "\"不知道能不能换一个班主任?\"——跳到与题无关的话题", "msg_id": "851554591253356587", "userid": "534342625", "chatid": "851554385426264161", "textid": "5", "ai_question": "你说得特别准，咱们试着用“把……比作……”的完整句式说说这个比喻，再想想他空有一身跑活路的力气，为啥没法挣脱这个处境呢？", "student_asr": "不知道能不能换一个班主任？", "ai_understood": "", "ai_answer": "咱们先把这段比喻的妙处说完，你看，把困在新房的祥子比作关在小木笼里的大兔子，他空有能飞跑的腿却跑不出去，比直接说难受无力更有画面感。再想想，外面是花轿锣鼓一路热闹的婚礼场面，屋里祥子像小木笼里的大兔子，里外一对比，你感受到了什么？", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/851554385426264161/1786364025502.aac", "duration_s": 5, "created_at": "2026-08-10 20:13:55"}, {"pool_idx": 360, "level": "中", "suspect_type": "D本人无关话", "reason": "\"我问个问题,洛基之前不是火神吗\"——学生反问,偏离作答但仍在聊内容", "msg_id": "858429008206016561", "userid": "130702480", "chatid": "858428847073497141", "textid": "5", "ai_question": "你可以先说说，大战结束后旧世界是毫发无损，还是被火焰和海水毁掉了呀？", "student_asr": "我问个问题，洛基之前不是火神吗？现在咋成邪神了？", "ai_understood": "", "ai_answer": "书中这里把洛基设定成对奥丁心怀嫉妒与仇恨、投向敌方阵营的邪神。我们回到大战结局来看，旧世界被火焰和海水吞没，诸神、巨人和怪兽几乎同归于尽，极少数幸存者逃到宇宙南端，看见了从海中现出的新大地，新世界会重新建立。", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/858428847073497141/1788003010955.aac", "duration_s": 8, "created_at": "2026-08-29 19:30:24"}, {"pool_idx": 441, "level": "中", "suspect_type": "A他人现场说话", "reason": "\"老公\"——单独一句,像旁人叫人被录入", "msg_id": "855573640878571570", "userid": "662395327", "chatid": "855573373483454515", "textid": "5", "ai_question": "欸嘿，我接收到一句奇奇怪怪的小暗号啦，咱们拉回故事里呀。你再瞧瞧老奶奶听完五次交换后的反应，她每次都在找什么呀？", "student_asr": "老公", "ai_understood": "", "ai_answer": "你是说她很爱自己的丈夫对不对？可就算是爱，把马换成烂苹果也很难开心呀，那她每次从这些交换里，都找到了什么好玩的好事呢？", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/855573373483454515/1787322241117.aac", "duration_s": 8, "created_at": "2026-08-21 22:24:11"}, {"pool_idx": 467, "level": "中", "suspect_type": "D本人无关话/情绪", "reason": "\"滚呐,你们这个到底什么时候结束啊\"——像抱怨/对旁人发泄,非答题", "msg_id": "858447123421712479", "userid": "649063597", "chatid": "858446999480176662", "textid": "3", "ai_question": "杜绍英被绑到树上这一段看得我直冒冷汗！被死死绑在树上，黑洞洞的枪口指着脑袋，杜绍英不但没求饶，还硬气地骂出了这句。读到这儿，你心里是啥感觉？你从杜绍英身上感受到了他什么品质？", "student_asr": "滚呐，你们这个到底什么时候结束啊？", "ai_understood": "", "ai_answer": "我能理解你现在有点不耐烦，咱们很快就聊完这一小段。杜绍英这句硬气的喊话，恰恰把他宁死不屈的劲儿直接砸到读者面前，看书时揪住这类关键句，就能一下子读懂人物的骨气。", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/858446999480176662/1788007335502.aac", "duration_s": 4, "created_at": "2026-08-29 20:42:23"}, {"pool_idx": 470, "level": "中", "suspect_type": "A他人现场说话", "reason": "\"你看,你骗人,妈就明摆着在那给你看\"——像和旁人(妈)争执被录入", "msg_id": "852996663667822691", "userid": "110137524", "chatid": "852996302483537975", "textid": "6", "ai_question": "妙啊！一人战十万，何等威风。你道如何？其实大圣心里也憋着股火呢，你觉得他非要闹这一场，图个啥？", "student_asr": "你看，你骗人，妈就明摆着在那给你看，你看，就往那", "ai_understood": "", "ai_answer": "哎，看官且慢，你这说的可不是咱《西游记》里的故事啦。咱们还是说回大圣，你觉得他大闹天宫是图个啥呢？", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/852996302483537975/1786707842348.aac", "duration_s": 5, "created_at": "2026-08-14 19:44:12"}, {"pool_idx": 477, "level": "中", "suspect_type": "其他", "reason": "\"再说一遍\"——像没听清让重说,或对旁人说", "msg_id": "852319987887665161", "userid": "709512159", "chatid": "852319692415754282", "textid": "7", "ai_question": "我帮你直接读一下落潮先生说的话——\"明天我要迟五十一分钟来上班\"。你再想想，星期四是几点上班呢？", "student_asr": "再说一遍", "ai_understood": "", "ai_answer": "好吧好吧，不难为你啦。落潮先生每天都比前一天晚上班51分钟，星期三他七点上班，星期四就是7点51分上班啦！", "audio_url": "https://tutor-student-speaking.fbcontent.cn/speech/ai-reading/852319692415754282/1786546510018.aac", "duration_s": 8, "created_at": "2026-08-12 22:55:20"}];
+</script>
+<script>
+const TYPE_OPTS=[
+ {v:'',t:'—'},{v:'A',t:'A 他人现场说话'},{v:'B',t:'B 媒体人声'},
+ {v:'C',t:'C 背景噪'},{v:'D',t:'D 本人无关话'},{v:'E',t:'E 重叠语音'}
+];
+const LS_KEY='noise_annot_v1';
+let store=JSON.parse(localStorage.getItem(LS_KEY)||'{}');
+
+function saveStore(){localStorage.setItem(LS_KEY,JSON.stringify(store));}
+function getAnn(id){return store[id]||{};}
+function setAnn(id,k,v){store[id]=store[id]||{};store[id][k]=v;saveStore();renderStats();}
+
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function renderStats(){
+  const total=CASES.length;
+  const hi=CASES.filter(c=>c.level==='高').length;
+  let done=0,noise=0;
+  CASES.forEach(c=>{const a=getAnn(c.msg_id);if(a.has_noise){done++;if(a.has_noise==='是')noise++;}});
+  document.getElementById('m-total').textContent=total;
+  document.getElementById('m-hi').textContent=hi;
+  document.getElementById('m-done').textContent=done;
+  document.getElementById('m-noise').textContent=noise;
+  document.getElementById('m-rate').textContent=done?((noise*100/done).toFixed(0)+'%'):'—';
+}
+
+function sel(id,field,opts,cur,cls){
+  let h=`<select data-id="${id}" data-field="${field}" class="${cur?'done':''} ${cls||''}">`;
+  opts.forEach(o=>{h+=`<option value="${o.v}" ${cur===o.v?'selected':''}>${o.t}</option>`;});
+  return h+'</select>';
+}
+
+function cardHTML(c,rank){
+  const a=getAnn(c.msg_id);
+  const lvlBadge=c.level==='高'?'<span class="badge hi">高嫌疑</span>':'<span class="badge mid">中嫌疑</span>';
+  const und=c.ai_understood&&c.ai_understood!=='@pipe_null@'?
+    `<div class="seg"><div class="lbl">AI理解的学生答案(board)</div><div class="und-txt">${esc(c.ai_understood)}</div></div>`:'';
+  return `<div class="case-card" data-id="${c.msg_id}" data-level="${c.level}" data-name="case#${rank}(池子#${c.pool_idx})">
+    <div class="case-head">
+      <span class="case-rank">#${rank}</span>
+      ${lvlBadge}
+      <span class="badge type">${esc(c.suspect_type)}</span>
+      <span class="case-meta">池子#${c.pool_idx} · chatid=${c.chatid} · ${c.duration_s}s · ${c.created_at}</span>
+    </div>
+    <div class="case-body">
+      <div class="reason"><b>初筛理由:</b> ${esc(c.reason)}</div>
+      <div class="seg"><div class="lbl">AI 问题</div><div class="q-txt">${esc(c.ai_question)}</div></div>
+      <div class="seg"><div class="lbl">学生 ASR 文本(重点看这里)</div><div class="asr-txt">${esc(c.student_asr)}</div></div>
+      <div class="audio-row">
+        <audio controls preload="none" src="${c.audio_url}"></audio>
+        <span class="dur">▶ 学生真实录音 · ${c.duration_s}秒</span>
+      </div>
+      ${und}
+      <div class="seg"><div class="lbl">AI 回答</div><div class="ai-txt">${esc(c.ai_answer)}</div></div>
+    </div>
+    <div class="annot-row">
+      <div class="annot-field"><label>有无噪声</label>
+        ${sel(c.msg_id,'has_noise',[{v:'',t:'—'},{v:'是',t:'是'},{v:'否',t:'否'},{v:'存疑',t:'存疑'}],a.has_noise)}</div>
+      <div class="annot-field"><label>噪声类型</label>
+        ${sel(c.msg_id,'noise_type',TYPE_OPTS,a.noise_type)}</div>
+      <div class="annot-field"><label>是否影响文本</label>
+        ${sel(c.msg_id,'affect_text',[{v:'',t:'—'},{v:'是',t:'是'},{v:'否',t:'否'}],a.affect_text)}</div>
+      <div class="annot-field"><label>是否影响AI回复</label>
+        ${sel(c.msg_id,'affect_reply',[{v:'',t:'—'},{v:'是',t:'是'},{v:'否',t:'否'}],a.affect_reply)}</div>
+    </div>
+  </div>`;
+}
+
+function render(){
+  const lv=document.getElementById('f-level').value;
+  const st=document.getElementById('f-status').value;
+  let list=CASES.slice();
+  if(lv)list=list.filter(c=>c.level===lv);
+  if(st){list=list.filter(c=>{const done=!!getAnn(c.msg_id).has_noise;return st==='done'?done:!done;});}
+  const box=document.getElementById('case-list');
+  box.innerHTML=list.map((c,i)=>cardHTML(c,i+1)).join('')||'<p style="color:#888;padding:20px;">没有符合筛选的case</p>';
+  renderStats();
+}
+
+document.addEventListener('change',e=>{
+  const s=e.target.closest('select[data-id]');
+  if(s){setAnn(s.dataset.id,s.dataset.field,s.value);s.classList.toggle('done',!!s.value);return;}
+  if(e.target.id==='f-level'||e.target.id==='f-status')render();
+});
+
+document.getElementById('btn-export').addEventListener('click',()=>{
+  const out=CASES.map(c=>({...c,annotation:getAnn(c.msg_id)}));
+  dl(JSON.stringify(out,null,2),'噪声标注结果.json','application/json');
+});
+document.getElementById('btn-export-csv').addEventListener('click',()=>{
+  const hd=['pool_idx','level','suspect_type','chatid','student_asr','audio_url','duration_s','有无噪声','噪声类型','影响文本','影响回复'];
+  const rows=[hd.join(',')];
+  CASES.forEach(c=>{const a=getAnn(c.msg_id);
+    rows.push([c.pool_idx,c.level,c.suspect_type,c.chatid,'"'+(c.student_asr||'').replace(/"/g,'""')+'"',c.audio_url,c.duration_s,a.has_noise||'',a.noise_type||'',a.affect_text||'',a.affect_reply||''].join(','));});
+  dl('﻿'+rows.join('\n'),'噪声标注结果.csv','text/csv');
+});
+function dl(txt,name,mime){
+  const b=new Blob([txt],{type:mime});const u=URL.createObjectURL(b);
+  const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);
+}
+
+render();
+</script>
+<style>
+#annToggle{position:fixed;right:18px;bottom:18px;z-index:9999;background:#7c3aed;color:#fff;border:none;border-radius:24px;padding:10px 16px;font-size:13px;cursor:pointer;box-shadow:0 4px 14px rgba(124,58,237,.4);}
+#annToggle.on{background:#dc2626;}
+body.ann-mode [data-name]{cursor:crosshair;}
+body.ann-mode [data-name]:hover{outline:2px dashed #7c3aed;outline-offset:2px;}
+.ann-mark{position:absolute;width:22px;height:22px;background:#dc2626;color:#fff;border-radius:50%;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:9998;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3);}
+#annEditor{position:fixed;z-index:10000;background:#fff;border:1px solid #cbd5e1;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.18);padding:10px;width:260px;display:none;}
+#annEditor textarea{width:100%;min-height:60px;border:1px solid #e2e8f0;border-radius:6px;padding:6px;font-size:13px;resize:vertical;font-family:inherit;}
+#annEditor .hint{font-size:11px;color:#94a3b8;margin-top:4px;}
+#annPanel{position:fixed;right:18px;bottom:64px;z-index:9998;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.12);width:260px;max-height:50vh;overflow:auto;display:none;}
+#annPanel h4{margin:0;padding:10px 12px;font-size:13px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;}
+#annPanel .item{padding:8px 12px;border-bottom:1px solid #f1f5f9;font-size:12px;cursor:pointer;display:flex;gap:6px;}
+#annPanel .item:hover{background:#faf5ff;}
+#annPanel .item .n{color:#dc2626;font-weight:700;}
+#annPanel .item .del{margin-left:auto;color:#94a3b8;cursor:pointer;}
+#annCopy{margin:8px 12px;padding:6px;width:calc(100% - 24px);background:#7c3aed;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;}
+#annToast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;z-index:10001;display:none;}
+</style>
+<button id="annToggle">✏️ 批注模式</button>
+<div id="annPanel"><h4>批注清单 <span id="annCnt">0</span></h4><div id="annItems"></div><button id="annCopy">导出给 Claude</button></div>
+<div id="annEditor"><textarea id="annText" placeholder="写下你的批注/修改意见..."></textarea><div class="hint">回车保存 · Shift+回车换行 · Esc 取消</div></div>
+<div id="annToast"></div>
+<script>
+(function(){
+ let annMode=false,anns=[],curTarget=null;
+ const tb=document.getElementById('annToggle'),ed=document.getElementById('annEditor'),ta=document.getElementById('annText'),panel=document.getElementById('annPanel');
+ tb.onclick=()=>{annMode=!annMode;tb.classList.toggle('on',annMode);tb.textContent=annMode?'✅ 退出批注':'✏️ 批注模式';document.body.classList.toggle('ann-mode',annMode);panel.style.display=annMode?'block':'none';};
+ document.addEventListener('click',e=>{
+   if(!annMode)return;
+   if(ed.contains(e.target)||panel.contains(e.target)||e.target===tb||e.target.closest('.ann-mark'))return;
+   const t=e.target.closest('[data-name]');if(!t)return;
+   e.preventDefault();curTarget=t;
+   const r=t.getBoundingClientRect();
+   ed.style.display='block';
+   ed.style.left=Math.max(10,Math.min(r.left,innerWidth-270))+'px';
+   ed.style.top=Math.max(10,Math.min(r.bottom+6,innerHeight-180))+'px';
+   ta.value='';setTimeout(()=>ta.focus(),0);
+ });
+ ta.addEventListener('keydown',e=>{
+   if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();saveAnn();}
+   else if(e.key==='Escape'){ed.style.display='none';}
+ });
+ function saveAnn(){if(!ta.value.trim()||!curTarget)return;anns.push({name:curTarget.getAttribute('data-name'),txt:ta.value.trim(),target:curTarget});ed.style.display='none';renderAll();}
+ function renderAll(){
+   document.querySelectorAll('.ann-mark').forEach(m=>m.remove());
+   const items=document.getElementById('annItems');items.innerHTML='';
+   anns.forEach((a,i)=>{
+     const r=a.target.getBoundingClientRect();
+     const m=document.createElement('div');m.className='ann-mark';m.textContent=i+1;
+     m.style.left=(scrollX+r.left-8)+'px';m.style.top=(scrollY+r.top-8)+'px';
+     m.onclick=()=>{a.target.scrollIntoView({block:'center',behavior:'smooth'});};
+     document.body.appendChild(m);
+     const it=document.createElement('div');it.className='item';
+     it.innerHTML=`<span class="n">${i+1}</span><span>${a.name}: ${a.txt}</span><span class="del">✕</span>`;
+     it.querySelector('.del').onclick=ev=>{ev.stopPropagation();anns.splice(i,1);renderAll();};
+     it.onclick=()=>a.target.scrollIntoView({block:'center',behavior:'smooth'});
+     items.appendChild(it);
+   });
+   document.getElementById('annCnt').textContent=anns.length;
+ }
+ window.addEventListener('scroll',()=>{if(anns.length)renderAll();},{passive:true});
+ window.addEventListener('resize',()=>{if(anns.length)renderAll();});
+ document.getElementById('annCopy').onclick=()=>{
+   if(!anns.length){toast('还没有批注');return;}
+   const txt=anns.map((a,i)=>`${i+1}. [${a.name}] ${a.txt}`).join('\n');
+   const done=()=>toast('✅ 已复制,回对话框粘贴');
+   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fb(txt,done));}
+   else fb(txt,done);
+ };
+ function fb(txt,cb){const t=document.createElement('textarea');t.value=txt;t.style.position='fixed';t.style.left='-9999px';document.body.appendChild(t);t.select();try{document.execCommand('copy');cb();}catch(e){toast('复制失败');}document.body.removeChild(t);}
+ function toast(m){const t=document.getElementById('annToast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2000);}
+})();
+</script>
+</body>
+</html>
