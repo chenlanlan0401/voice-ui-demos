@@ -102,6 +102,7 @@ function stats(){
   document.getElementById('m-noise').textContent=noise;
   document.getElementById('m-rate').textContent=done?((noise*100/done).toFixed(1)+'%'):'—';
   document.getElementById('m-affect').textContent=affect;
+  updateFilterCounts();
 }
 function sel(id,f,opts,cur){
   let h=`<select data-id="${id}" data-f="${f}" class="${cur?'done':''}">`;
@@ -139,6 +140,28 @@ function card(c,rank){
       <div class="annot-field"><label>备注</label><textarea data-id="${c.target_id}" data-f="note" class="note ${a.note?'done':''}" placeholder="其他情况写这里">${esc(a.note||'')}</textarea></div>
     </div>
   </div>`;
+}
+function updateFilterCounts(){
+  // 统计各维度各值的数量,写进option文字
+  const cnt=(fn)=>{const m={};CASES.forEach(c=>{const k=fn(c);if(k!=null){m[k]=(m[k]||0)+1;}});return m;};
+  const doneCnt=CASES.filter(c=>ann(c.target_id).has_noise).length;
+  const setOpts=(selId,baseMap,total)=>{
+    const sel=document.getElementById(selId);
+    [...sel.options].forEach(o=>{
+      const base=o.getAttribute('data-label')||o.textContent.replace(/\s*\(\d+\)$/,'');
+      if(!o.getAttribute('data-label'))o.setAttribute('data-label',base);
+      let n;
+      if(o.value==='')n=total;
+      else n=baseMap[o.value]||0;
+      o.textContent=base+'('+n+')';
+    });
+  };
+  setOpts('f-status',{undone:CASES.length-doneCnt,done:doneCnt},CASES.length);
+  setOpts('f-noise',cnt(c=>ann(c.target_id).has_noise||null),CASES.length);
+  setOpts('f-type',cnt(c=>ann(c.target_id).noise_type||null),CASES.length);
+  setOpts('f-affect',cnt(c=>ann(c.target_id).affect_reply||null),CASES.length);
+  setOpts('f-kind',cnt(c=>ann(c.target_id).reply_kind||null),CASES.length);
+  setOpts('f-pre',cnt(c=>c.prelabel),CASES.length);
 }
 function render(){
   const v=id=>document.getElementById(id).value;
