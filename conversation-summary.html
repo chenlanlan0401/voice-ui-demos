@@ -129,16 +129,23 @@ body.ann-mode section:hover{outline:2px dashed #7c3aed;outline-offset:2px;cursor
   </section>
 
   <section id="impact">
-    <h2>四、"影响"判定标准(因果分层)</h2>
-    <p>判定核心:<b>AI 最终拿到的输入,是否仍是"学生对本题的真实作答"</b>。</p>
+    <h2>四、"影响"判定标准(I0-I3,看AI有没有被骗)</h2>
+    <p>判定核心:<b>AI 有没有被噪声"骗到"</b>——看AI回复里有没有纠偏话术("拉回来""没听清""回到题目")。(用I前缀区别于项目分层L1/L2)</p>
     <table>
-      <tr><th>层级</th><th>状态</th><th>是否影响</th></tr>
-      <tr><td>L0</td><td>音频有噪声,但未进入 ASR 文本</td><td>不影响</td></tr>
-      <tr><td>L1</td><td>进了文本,但 AI 仍理解意图、回复正确</td><td>轻微/不影响</td></tr>
-      <tr><td>L2</td><td>噪声导致 AI 答非所问/没听清/跑偏</td><td>影响</td></tr>
-      <tr><td>L3</td><td>错误回复进一步致学生困惑、中断、学习受损</td><td>严重影响</td></tr>
+      <tr><th>层级</th><th>状态</th><th>AI被骗了吗</th><th>严重度</th></tr>
+      <tr><td>I0</td><td>噪声未进入ASR文本</td><td>—</td><td>不影响</td></tr>
+      <tr><td>I1</td><td>进了文本,但AI仍抓住学生真实意图正常回复</td><td>没被骗,自愈</td><td>不影响</td></tr>
+      <tr><td>I2</td><td>噪声改变了AI应对——细分三档↓</td><td>见下</td><td>见下</td></tr>
+      <tr><td>I3</td><td>错误回复致学生困惑、中断、学习受损</td><td>被骗且恶化</td><td>严重</td></tr>
     </table>
-    <div class="hl"><b>影响分界线:L2</b>。噪声真正改变了 AI 回复才计入"影响沟通";L0/L1 视为系统自愈。</div>
+    <h3>I2 三档(关键区分)</h3>
+    <table>
+      <tr><th>I2子类</th><th>表现</th><th>学生体感</th><th>严重度</th></tr>
+      <tr><td><b>I2-兜底</b></td><td>AI察觉噪声/学生没答好→拉回、提示</td><td>AI救了场</td><td>几乎不算伤害(甚至是好的)</td></tr>
+      <tr><td><b>I2-误伤</b></td><td>学生其实答对了,AI却因杂音判断"不对劲"→打断、要重说</td><td>冤枉、被打断</td><td>中</td></tr>
+      <tr><td><b>I2-被骗</b></td><td>AI没察觉,顺着噪声内容答→答非所问/错误</td><td>AI答错(未必知是噪声)</td><td>重(最隐蔽)</td></tr>
+    </table>
+    <div class="hl"><b>严重度:被骗 &gt; 误伤 &gt; 兜底</b>。真正要减少的是 I2-被骗 和 I2-误伤;<b>I2-兜底不计入损失</b>(AI做对了)。收益口径统计"被骗+误伤",而非全部I2。<br><b>必查坑</b>:AI说"拉回来"不一定是噪声触发,也可能是学生自己答错/跑题时的正常纠偏(内容问题,出边界)。标注须确认"拉回"是旁人声音触发还是学生自己错误触发——前者才算噪声影响。</div>
   </section>
 
   <section id="benefit">
