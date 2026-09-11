@@ -84,8 +84,16 @@ main{padding:16px 32px 60px;}
   </div>
   <!-- TAB2 噪声case -->
   <div id="tab-noise" class="hide">
+    <section class="summary"><div class="metrics">
+      <div class="metric"><span>噪声case总数</span><strong id="nz-total">0</strong><em>块A+块B</em></div>
+      <div class="metric"><span>块A(基线噪声)</span><strong id="nz-a">0</strong><em>基线标为有噪声</em></div>
+      <div class="metric"><span>块B(额外挖掘)</span><strong id="nz-b">0</strong><em>800条筛出44,待确认</em></div>
+      <div class="metric"><span>块B已确认有噪声</span><strong id="nz-bconf">0</strong><em>你听音频确认的</em></div>
+      <div class="metric"><span>只有别人声音/学生+别人</span><strong id="nz-type">0/0</strong><em>两类噪声分布</em></div>
+    </div></section>
     <section class="guide"><b>噪声case</b>:专门汇集噪声样本,用来看形态。分两块——<b>块A</b>=基线里你标为"有噪声"的(自动汇集,共享标注);<b>块B</b>=从额外800条随机样本里挖出的疑似噪声(需你听音频确认)。</section>
     <div class="blockhead">块A · 来自基线的噪声 <span class="sub">你在Tab①标为"有噪声"的会自动出现在这里</span></div>
+    <section class="toolbar" id="ba-toolbar"></section>
     <section id="ba-list"></section>
     <div class="blockhead">块B · 额外挖掘的噪声 <span class="sub">从基线外800条随机样本语义筛出的疑似噪声,共44条,待你听音频确认</span></div>
     <section class="toolbar" id="bb-toolbar"></section>
@@ -183,11 +191,23 @@ function renderBaseline(){
 function renderNoise(){
   // 块A:基线里标为有噪声的
   const blockA=BASELINE.filter(c=>ann(c.target_id).has_noise==='有');
-  document.getElementById('ba-list').innerHTML=blockA.length?blockA.map(c=>card(c,c.idx,{srcBadge:'来自基线#'+c.idx})).join(''):'<p style="padding:16px;color:#888">Tab①里还没标"有噪声"的case。你标了之后会自动出现在这里。</p>';
+  document.getElementById('ba-toolbar').innerHTML=toolbarHtml('ba',false);
+  const listA=filterList(blockA,'ba',false);
+  document.getElementById('ba-list').innerHTML=blockA.length?(listA.map(c=>card(c,c.idx,{srcBadge:'来自基线#'+c.idx})).join('')||'<p style="padding:16px;color:#888">无符合筛选</p>'):'<p style="padding:16px;color:#888">Tab①里还没标"有噪声"的case。你标了之后会自动出现在这里。</p>';
   // 块B:额外挖掘
   document.getElementById('bb-toolbar').innerHTML=toolbarHtml('bb',false);
-  const list=filterList(BLOCKB,'bb',false);
-  document.getElementById('bb-list').innerHTML=list.map((c,i)=>card(c,i+1,{srcBadge:'额外挖掘·池子#'+c.idx})).join('')||'<p style="padding:20px;color:#888">无</p>';
+  const listB=filterList(BLOCKB,'bb',false);
+  document.getElementById('bb-list').innerHTML=listB.map((c,i)=>card(c,i+1,{srcBadge:'额外挖掘·池子#'+c.idx})).join('')||'<p style="padding:20px;color:#888">无符合筛选</p>';
+  // Tab②统计
+  const bConf=BLOCKB.filter(c=>ann(c.target_id).has_noise==='有');
+  const allNoise=blockA.concat(bConf);
+  const t1=allNoise.filter(c=>ann(c.target_id).noise_type==='只有别人声音').length;
+  const t2=allNoise.filter(c=>ann(c.target_id).noise_type==='学生+别人声音').length;
+  document.getElementById('nz-total').textContent=blockA.length+BLOCKB.length;
+  document.getElementById('nz-a').textContent=blockA.length;
+  document.getElementById('nz-b').textContent=BLOCKB.length;
+  document.getElementById('nz-bconf').textContent=bConf.length;
+  document.getElementById('nz-type').textContent=t1+'/'+t2;
 }
 function updateCounts(prefix,list,withPre){
   const cnt=fn=>{const m={};list.forEach(c=>{const k=fn(c);if(k!=null)m[k]=(m[k]||0)+1;});return m;};
@@ -207,7 +227,7 @@ function updateCounts(prefix,list,withPre){
   setOpts(prefix+'-fa',cnt(c=>ann(c.target_id).affect_reply||null),list.length);
   if(withPre)setOpts(prefix+'-fp',cnt(c=>c.prelabel||null),list.length);
 }
-function refresh(){renderBaseline();renderNoise();updateCounts('bl',BASELINE,true);updateCounts('bb',BLOCKB,false);}
+function refresh(){renderBaseline();renderNoise();updateCounts('bl',BASELINE,true);updateCounts('bb',BLOCKB,false);const blockA=BASELINE.filter(c=>ann(c.target_id).has_noise==='有');updateCounts('ba',blockA,false);}
 
 // tab切换
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
