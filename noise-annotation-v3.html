@@ -30,6 +30,9 @@ main{padding:16px 32px 60px;}
 .toolbar button{font-size:13px;padding:6px 12px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;}
 .toolbar button.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
 .case-card{padding:0;overflow:hidden;}
+.case-card.is-labeled{background:#f2fbf4;border-color:#b6e2c4;}
+.case-card.is-labeled .case-head{background:#e8f8eb;}
+.case-card.is-labeled .annot-row{background:#eef9f1;}
 .case-head{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid #eef1f6;flex-wrap:wrap;}
 .case-rank{font-weight:700;color:var(--muted);}
 .badge{font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px;}
@@ -60,6 +63,12 @@ main{padding:16px 32px 60px;}
 .annot-field textarea{font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;min-width:180px;min-height:34px;font-family:inherit;resize:vertical;}
 .annot-field textarea.done{border-color:var(--green);background:var(--green-bg);}
 .hide{display:none;}
+.fold-btn{background:none;border:none;cursor:pointer;font-size:12px;color:var(--muted);padding:2px 6px;}
+.case-card.folded .case-foldable{display:none;}
+.case-card.folded .fold-btn{transform:rotate(-90deg);}
+.block-toggle{cursor:pointer;user-select:none;}
+.block-toggle .blk-arrow{display:inline-block;font-size:12px;color:var(--purple);transition:transform .15s;}
+.block-toggle.collapsed .blk-arrow{transform:rotate(-90deg);}
 </style>
 </head>
 <body>
@@ -96,12 +105,10 @@ main{padding:16px 32px 60px;}
       <div class="metric"><span>只有别人声音/学生+别人</span><strong id="nz-type">0/0</strong><em>两类噪声分布</em></div>
     </div></section>
     <section class="guide"><b>噪声case</b>:专门汇集噪声样本,用来看形态。分两块——<b>块A</b>=基线里你标为"有噪声"的(自动汇集,共享标注);<b>块B</b>=从额外800条随机样本里挖出的疑似噪声(需你听音频确认)。</section>
-    <div class="blockhead">块A · 来自基线的噪声 <span class="sub">你在Tab①标为"有噪声"的会自动出现在这里</span></div>
-    <section class="toolbar" id="ba-toolbar"></section>
-    <section id="ba-list"></section>
-    <div class="blockhead">块B · 额外挖掘的噪声 <span class="sub">从基线外800条随机样本语义筛出的疑似噪声,共44条,待你听音频确认</span></div>
-    <section class="toolbar" id="bb-toolbar"></section>
-    <section id="bb-list"></section>
+    <div class="blockhead block-toggle" data-block="ba"><span class="blk-arrow">▼</span> 块A · 来自基线的噪声 <span class="sub">你在Tab①标为"有噪声"的会自动出现在这里</span></div>
+    <div id="ba-wrap"><section class="toolbar" id="ba-toolbar"></section><section id="ba-list"></section></div>
+    <div class="blockhead block-toggle" data-block="bb"><span class="blk-arrow">▼</span> 块B · 额外挖掘的噪声 <span class="sub">从基线外800条随机样本语义筛出的疑似噪声,共44条,待你听音频确认</span></div>
+    <div id="bb-wrap"><section class="toolbar" id="bb-toolbar"></section><section id="bb-list"></section></div>
   </div>
 </main>
 <script>
@@ -131,16 +138,19 @@ function card(c,rank,opts){
   let badges='';
   if(opts.showPre){badges+=c.prelabel==='疑似有噪声'?'<span class="badge pre-y">预判:疑似有噪声</span>':'<span class="badge pre-n">预判:疑似无噪声</span>';}
   if(opts.srcBadge){badges+=`<span class="badge src">${opts.srcBadge}</span>`;}
+  const reason=(opts.showPre&&c.prelabel_reason)?`<div class="pre-reason"><b>预判理由:</b>${esc(c.prelabel_reason)}</div>`:'';
+  const reasonB=(c.reason)?`<div class="pre-reason"><b>挑出理由:</b>${esc(c.reason)}</div>`:'';
+  const labelTip=a.has_noise?`<span class="badge" style="background:${a.has_noise==='有'?'#fee2e2':'#e8f8eb'};color:${a.has_noise==='有'?'#dc2626':'#138a44'}">已标:${a.has_noise}</span>`:'';
+  const doneClass=a.has_noise?' is-labeled':'';
   const ms=(typeof MULTISPEAKER!=='undefined')?MULTISPEAKER[c.target_id]:null;
   if(ms&&ms.m){badges+=`<span class="badge multi" title="多说话人模型检测到 speaker≥2">🔴 多人声(${(ms.sp||[]).length}人)</span>`;}
   const msHtml=(ms&&ms.m)?`<div class="ms-box"><b>🔴 ASR多说话人识别</b>(说话人 ${(ms.sp||[]).join('/')} · &lt;1&gt;=参考说话人,其余为他人):<div class="ms-text">${esc(ms.t)}</div></div>`:'';
-  const reason=(opts.showPre&&c.prelabel_reason)?`<div class="pre-reason"><b>预判理由:</b>${esc(c.prelabel_reason)}</div>`:'';
-  const reasonB=(c.reason)?`<div class="pre-reason"><b>挑出理由:</b>${esc(c.reason)}</div>`:'';
-  return `<div class="case-card" data-id="${c.target_id}">
-    <div class="case-head"><span class="case-rank">#${rank}</span>${badges}
+  return `<div class="case-card${doneClass}" data-id="${c.target_id}">
+    <div class="case-head"><button class="fold-btn" data-fold="${c.target_id}">▼</button><span class="case-rank">#${rank}</span>${badges}${labelTip}
       <span class="case-meta">chatid=${c.chatid} · ${c.duration_s}s · ${c.created_at}</span>
       <button class="ctx-btn" data-cid="${c.target_id}">↩ 回看上文(${prev.length})</button>
     </div>
+    <div class="case-foldable" id="fold-${c.target_id}">
     <div class="ctx-panel" id="ctx-${c.target_id}"><div style="font-size:12px;color:#687386;font-weight:700;margin-bottom:6px;">本轮之前的对话(听学生音频比对说话人):</div>${ctxHtml}</div>
     <div class="case-body">${reason}${reasonB}${msHtml}
       <div class="seg"><div class="lbl">AI 问题</div><div class="q-txt">${esc(c.ai_question)}</div></div>
@@ -154,6 +164,7 @@ function card(c,rank,opts){
       <div class="annot-field"><label>是否影响AI回复</label>${sel(c.target_id,'affect_reply',['','影响','不影响'],a.affect_reply)}</div>
       <div class="annot-field"><label>AI回复是哪种</label>${sel(c.target_id,'reply_kind',['','兜底处理','回答错了','其他'],a.reply_kind)}</div>
       <div class="annot-field"><label>备注</label><textarea data-id="${c.target_id}" data-f="note" class="${a.note?'done':''}" placeholder="其他情况写这里">${esc(a.note||'')}</textarea></div>
+    </div>
     </div>
   </div>`;
 }
@@ -245,11 +256,10 @@ function updateCounts(prefix,list,withPre){
   setOpts(prefix+'-fm',cnt(c=>{const ms=(typeof MULTISPEAKER!=='undefined')?MULTISPEAKER[c.target_id]:null;return (ms&&ms.m)?'multi':'single';}),list.length);
   if(withPre)setOpts(prefix+'-fp',cnt(c=>c.prelabel||null),list.length);
 }
-// 筛选状态存在全局对象,避免 toolbar 重建时下拉值丢失(修复原有筛选点一次就跳回"全部")
+// 筛选状态存在全局对象,避免 toolbar 重建时下拉值丢失
 const FILTER={};
 function refresh(){
   renderBaseline();renderNoise();
-  // 重建后按 FILTER 恢复下拉的显示值
   Object.keys(FILTER).forEach(id=>{const e=document.getElementById(id);if(e)e.value=FILTER[id];});
   updateCounts('bl',BASELINE,true);updateCounts('bb',BLOCKB,false);const blockA=BASELINE.filter(c=>ann(c.target_id).has_noise==='有');updateCounts('ba',blockA,false);
 }
@@ -272,6 +282,10 @@ document.addEventListener('input',e=>{
   if(t){setA(t.dataset.id,t.dataset.f,t.value);}
 });
 document.addEventListener('click',e=>{
+  const fb=e.target.closest('.fold-btn');
+  if(fb){const card=fb.closest('.case-card');if(card)card.classList.toggle('folded');return;}
+  const blk=e.target.closest('.block-toggle');
+  if(blk){const w=document.getElementById(blk.dataset.block+'-wrap');if(w){const hide=w.style.display!=='none';w.style.display=hide?'none':'';blk.classList.toggle('collapsed',hide);}return;}
   const b=e.target.closest('.ctx-btn');
   if(b){const p=document.getElementById('ctx-'+b.dataset.cid);if(p)p.style.display=p.style.display==='block'?'none':'block';return;}
   const dj=e.target.closest('.dl-json'),dc=e.target.closest('.dl-csv');
