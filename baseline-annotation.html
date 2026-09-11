@@ -71,7 +71,12 @@ main{padding:16px 32px 60px;}
     <b>判不出说话人时:</b> 点开"回看上文",听前几轮学生的音频,比对是不是同一个人的声音。
   </section>
   <section class="toolbar">
-    <label>筛选 <select id="f-status"><option value="">全部</option><option value="undone">未标</option><option value="done">已标</option><option value="noise">有噪声</option><option value="prey">我预判有噪声</option></select></label>
+    <label>标注状态 <select id="f-status"><option value="">全部</option><option value="undone">未标</option><option value="done">已标</option></select></label>
+    <label>有无噪声 <select id="f-noise"><option value="">全部</option><option value="有">有</option><option value="无">无</option><option value="存疑">存疑</option></select></label>
+    <label>噪声类型 <select id="f-type"><option value="">全部</option><option value="只有别人声音">只有别人声音</option><option value="学生+别人声音">学生+别人声音</option></select></label>
+    <label>影响回复 <select id="f-affect"><option value="">全部</option><option value="影响">影响</option><option value="不影响">不影响</option></select></label>
+    <label>回复类型 <select id="f-kind"><option value="">全部</option><option value="兜底处理">兜底处理</option><option value="回答错了">回答错了</option><option value="其他">其他</option></select></label>
+    <label>我的预判 <select id="f-pre"><option value="">全部</option><option value="疑似有噪声">疑似有噪声</option><option value="疑似无噪声">疑似无噪声</option></select></label>
     <span class="spacer"></span>
     <button id="btn-json" class="primary">导出JSON</button>
     <button id="btn-csv">导出CSV</button>
@@ -136,19 +141,23 @@ function card(c,rank){
   </div>`;
 }
 function render(){
-  const f=document.getElementById('f-status').value;
+  const v=id=>document.getElementById(id).value;
+  const fs=v('f-status'),fn=v('f-noise'),ft=v('f-type'),fa=v('f-affect'),fk=v('f-kind'),fp=v('f-pre');
   let list=CASES.slice();
-  if(f==='undone')list=list.filter(c=>!ann(c.target_id).has_noise);
-  else if(f==='done')list=list.filter(c=>ann(c.target_id).has_noise);
-  else if(f==='noise')list=list.filter(c=>ann(c.target_id).has_noise==='有');
-  else if(f==='prey')list=list.filter(c=>c.prelabel==='疑似有噪声');
-  document.getElementById('case-list').innerHTML=list.map((c,i)=>card(c,c.idx)).join('')||'<p style="padding:20px;color:#888">无</p>';
+  if(fs==='undone')list=list.filter(c=>!ann(c.target_id).has_noise);
+  else if(fs==='done')list=list.filter(c=>ann(c.target_id).has_noise);
+  if(fn)list=list.filter(c=>ann(c.target_id).has_noise===fn);
+  if(ft)list=list.filter(c=>ann(c.target_id).noise_type===ft);
+  if(fa)list=list.filter(c=>ann(c.target_id).affect_reply===fa);
+  if(fk)list=list.filter(c=>ann(c.target_id).reply_kind===fk);
+  if(fp)list=list.filter(c=>c.prelabel===fp);
+  document.getElementById('case-list').innerHTML=list.map((c,i)=>card(c,c.idx)).join('')||'<p style="padding:20px;color:#888">无符合筛选的case</p>';
   stats();
 }
 document.addEventListener('change',e=>{
   const s=e.target.closest('select[data-id]');
   if(s){setA(s.dataset.id,s.dataset.f,s.value);s.classList.toggle('done',!!s.value);return;}
-  if(e.target.id==='f-status')render();
+  if(['f-status','f-noise','f-type','f-affect','f-kind','f-pre'].includes(e.target.id))render();
 });
 document.addEventListener('click',e=>{
   const b=e.target.closest('.ctx-btn');
