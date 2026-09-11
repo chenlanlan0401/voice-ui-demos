@@ -189,7 +189,25 @@ function renderNoise(){
   const list=filterList(BLOCKB,'bb',false);
   document.getElementById('bb-list').innerHTML=list.map((c,i)=>card(c,i+1,{srcBadge:'额外挖掘·池子#'+c.idx})).join('')||'<p style="padding:20px;color:#888">无</p>';
 }
-function refresh(){renderBaseline();renderNoise();}
+function updateCounts(prefix,list,withPre){
+  const cnt=fn=>{const m={};list.forEach(c=>{const k=fn(c);if(k!=null)m[k]=(m[k]||0)+1;});return m;};
+  const doneCnt=list.filter(c=>ann(c.target_id).has_noise).length;
+  const setOpts=(id,map,total)=>{
+    const s=document.getElementById(id);if(!s)return;
+    [...s.options].forEach(o=>{
+      let base=o.getAttribute('data-label');
+      if(base==null){base=o.textContent.replace(/\s*\(\d+\)$/,'');o.setAttribute('data-label',base);}
+      const n=o.value===''?total:(map[o.value]||0);
+      o.textContent=base+'('+n+')';
+    });
+  };
+  setOpts(prefix+'-fs',{undone:list.length-doneCnt,done:doneCnt},list.length);
+  setOpts(prefix+'-fn',cnt(c=>ann(c.target_id).has_noise||null),list.length);
+  setOpts(prefix+'-ft',cnt(c=>ann(c.target_id).noise_type||null),list.length);
+  setOpts(prefix+'-fa',cnt(c=>ann(c.target_id).affect_reply||null),list.length);
+  if(withPre)setOpts(prefix+'-fp',cnt(c=>c.prelabel||null),list.length);
+}
+function refresh(){renderBaseline();renderNoise();updateCounts('bl',BASELINE,true);updateCounts('bb',BLOCKB,false);}
 
 // tab切换
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
