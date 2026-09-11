@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>语音抗噪项目 · 对话全记录</title>
+<style>
+:root{--bg:#f5f7fb;--surface:#fff;--border:#e2e8f0;--text:#1f2937;--muted:#6b7280;--accent:#4f46e5;--accent2:#7c3aed;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;}
+.nav{position:sticky;top:0;z-index:10;background:#172033;padding:12px 20px;display:flex;flex-wrap:wrap;gap:6px;}
+.nav a{color:#c6d1e3;text-decoration:none;font-size:12px;padding:4px 9px;border-radius:6px;white-space:nowrap;}
+.nav a:hover{background:rgba(255,255,255,.12);color:#fff;}
+.wrap{max-width:860px;margin:0 auto;padding:24px 20px 80px;}
+h1{font-size:24px;margin:8px 0 4px;}
+.sub{color:var(--muted);font-size:13px;margin-bottom:24px;}
+section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:18px;scroll-margin-top:60px;}
+h2{font-size:18px;margin:0 0 12px;padding-left:10px;border-left:4px solid var(--accent2);}
+h3{font-size:15px;margin:16px 0 6px;color:#374151;}
+p,li{font-size:14px;}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0;}
+th,td{border:1px solid var(--border);padding:7px 9px;text-align:left;vertical-align:top;}
+th{background:#f8fafc;color:var(--muted);font-weight:600;}
+code{background:#eef2ff;color:#4338ca;padding:1px 5px;border-radius:4px;font-size:12px;}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin-right:4px;}
+.tag.done{background:#e8f8eb;color:#138a44;}
+.tag.todo{background:#fff4c7;color:#a16207;}
+.hl{background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;font-size:13px;color:#9a3412;margin:10px 0;}
+.hl b{color:#7c2d12;}
+.link-box{background:#eef2ff;border-radius:8px;padding:10px 14px;font-size:13px;margin:8px 0;}
+.link-box a{color:var(--accent);word-break:break-all;}
+ul{margin:6px 0;padding-left:22px;}
+.q{color:var(--muted);font-size:13px;font-style:italic;margin:4px 0;}
+#annToggle{position:fixed;right:18px;bottom:18px;z-index:9999;background:#7c3aed;color:#fff;border:none;border-radius:24px;padding:10px 16px;font-size:13px;cursor:pointer;box-shadow:0 4px 14px rgba(124,58,237,.4);}
+#annToggle.on{background:#dc2626;}
+body.ann-mode section:hover{outline:2px dashed #7c3aed;outline-offset:2px;cursor:crosshair;}
+.ann-mark{position:absolute;width:22px;height:22px;background:#dc2626;color:#fff;border-radius:50%;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:9998;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3);}
+#annEditor{position:fixed;z-index:10000;background:#fff;border:1px solid #cbd5e1;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.18);padding:10px;width:260px;display:none;}
+#annEditor textarea{width:100%;min-height:60px;border:1px solid #e2e8f0;border-radius:6px;padding:6px;font-size:13px;resize:vertical;font-family:inherit;}
+#annEditor .hint{font-size:11px;color:#94a3b8;margin-top:4px;}
+#annPanel{position:fixed;right:18px;bottom:64px;z-index:9998;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.12);width:260px;max-height:50vh;overflow:auto;display:none;}
+#annPanel h4{margin:0;padding:10px 12px;font-size:13px;border-bottom:1px solid #eee;}
+#annPanel .item{padding:8px 12px;border-bottom:1px solid #f1f5f9;font-size:12px;cursor:pointer;display:flex;gap:6px;}
+#annPanel .item:hover{background:#faf5ff;}
+#annPanel .item .n{color:#dc2626;font-weight:700;}
+#annPanel .item .del{margin-left:auto;color:#94a3b8;}
+#annCopy{margin:8px 12px;padding:6px;width:calc(100% - 24px);background:#7c3aed;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;}
+#annToast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;z-index:10001;display:none;}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="#bg">背景</a>
+  <a href="#def">噪声定义</a>
+  <a href="#scene">场景框架</a>
+  <a href="#impact">影响分层</a>
+  <a href="#benefit">收益口径</a>
+  <a href="#data">数据与取数</a>
+  <a href="#annot">标注平台</a>
+  <a href="#result">标注结果</a>
+  <a href="#next">下一步</a>
+  <a href="#files">产出文件</a>
+</nav>
+<div class="wrap">
+  <h1>语音交互抗噪项目 · 对话全记录</h1>
+  <div class="sub">AI大阅读课 · 从"抗噪差"用户反馈 → 问题定义 → 数据挖掘 → 标注验证 · 记录于 2026-09-10</div>
+  <section id="bg">
+    <h2>一、背景与问题</h2>
+    <p>学生对语音交互"抗噪差"反馈较多。当前交互:<b>自动开麦</b> → 学生说完手动/自动闭麦(<b>30秒无人声自动闭麦</b>)。学生答题时,若旁边有电视声或家人说话,会被 ASR 一并转成文本,导致 AI 回复出错。</p>
+    <p>项目关键前提(已确认):</p>
+    <ul>
+      <li>有区分不同声纹的能力,说话人相对固定,但<b>不要求学生注册声纹</b></li>
+      <li>ASR 为<b>自研</b></li>
+      <li>没有现成噪声样本,需从数据中现挖</li>
+    </ul>
+    <div class="hl">核心洞察:可用"<b>会话内隐式锚点</b>"代替声纹注册——AI 提问后自动开麦,第一个开口的几乎必是学生本人,这段天然是临时声纹锚点,后续片段与它比对即可区分本人/旁人。</div>
+  </section>
+
+  <section id="def">
+    <h2>二、噪声定义(已对齐)</h2>
+    <p><b>噪声</b>:一次学生答题的音频输入中,出现了"不应被系统当作该学生对当前题目作答"的声音。</p>
+    <ul>
+      <li>判据只认<b>声音来源身份</b>,不认内容是否跑题</li>
+      <li>学生本人说废话、口吃、跑题 <b>不算</b>噪声(属交互/内容问题)</li>
+    </ul>
+    <p>两种基本形态:</p>
+    <ul>
+      <li><b>多人声</b>:音频中 ≥2 个说话人</li>
+      <li><b>单一人声但非本学生</b>:仅一人说话,但不是当前答题学生(家长、旁人、换人使用)</li>
+    </ul>
+    <h3>项目范围与分层(L1先做,L2挂二期)</h3>
+    <table>
+      <tr><th>层</th><th>要回答</th><th>判据</th><th>手段</th><th>优先级</th></tr>
+      <tr><td><b>L1 核心层</b><br>抗噪本体</td><td>声音<b>是不是学生本人发的</b></td><td>声音来源身份</td><td>声纹/说话人分离(隐式锚点)</td><td>一期,ROI最高</td></tr>
+      <tr><td><b>L2 进阶层</b><br>作答真实性</td><td>作答<b>是不是学生独立完成的</b></td><td>答案真实归属</td><td>语义/行为分析+水平基线(声纹失效)</td><td>二期,难度高一档</td></tr>
+    </table>
+    <div class="hl"><b>为什么分层</b>:L1 噪声都伴随"出现别人的声音",声纹能兜底、规模大、见效快;L2"学生复述家长答案"全程是学生声纹、声纹失效,且当前"音频+文本"可能连标注都标不了(家长上一轮教/只给看答案),需二期单独设计数据方案。</div>
+  </section>
+
+  <section id="scene">
+    <h2>三、场景刻画框架(现象层 × 意图层)</h2>
+    <p>单靠声学现象无法决定如何处理,需两层共同刻画。</p>
+    <h3>层一:现象层(声学形态 — 决定能否技术分离)</h3>
+    <table>
+      <tr><th>编号</th><th>现象</th><th>说明</th></tr>
+      <tr><td>P1</td><td>学生不说话,他人说话</td><td>学生未作答,只有旁人声音</td></tr>
+      <tr><td>P2</td><td>学生+他人,交替</td><td>先后说,不重叠</td></tr>
+      <tr><td>P3</td><td>学生+他人,重叠</td><td>同时说,分离难度最高</td></tr>
+    </table>
+    <h3>层二:意图层(逐路打标 — 决定影响大小与策略)</h3>
+    <p>对音频里<b>每一路声音</b>分别打两个标签:①说话人(学生本人/他人)②与当前题目相关性(相关/无关)。两两组合成四格:</p>
+    <table>
+      <tr><th></th><th>相关</th><th>无关</th></tr>
+      <tr><th>学生本人</th><td>① 正常答题(基准,非噪声)</td><td>② 学生说无关话 → <b>不算噪声,属内容问题,出边界</b></td></tr>
+      <tr><th>他人</th><td>③ 旁人帮答/代答 → <b>噪声,要管</b></td><td>④ 旁人环境话 → <b>噪声,要管</b></td></tr>
+    </table>
+    <div class="hl"><b>关键边界</b>:噪声的前提是"出现了学生之外的声音"。①②全程只有学生一路声音→<b>不是噪声</b>(②虽干扰对话但属内容问题,不在本项目);③④出现他人声音→<b>才是噪声</b>。对他人那路再判相关(③,要识别引导)/无关(④,直接滤)。</div>
+    <p class="q">→ 复杂场景 = 各路声音落格的组合 × 现象层(交替/重叠)。标注时逐路打"谁说的×相不相关",复杂场景自然被拆解。</p>
+    <h3>场景矩阵(均属"出现他人声音"= 噪声范围)</h3>
+    <table>
+      <tr><th>场景</th><th>他人那路</th><th>学生发声</th><th>例子</th><th>影响?</th><th>理想处理</th></tr>
+      <tr><td>S1 环境旁白</td><td>④无关</td><td>有</td><td>学生答,家长喊吃饭</td><td>看ASR是否被污染</td><td>滤旁人,留学生</td></tr>
+      <tr><td>S2 环境顶替</td><td>④无关</td><td>无</td><td>学生没开口,全程旁人</td><td>影响</td><td>滤除+提示作答</td></tr>
+      <tr><td>S3 家长提示</td><td>③相关</td><td>有</td><td>学生答,家长补提示</td><td>影响(误判水平)</td><td>识别非学生声</td></tr>
+      <tr><td>S4 家长代答</td><td>③相关</td><td>无</td><td>家长直接替答</td><td>影响(严重误判)</td><td>识别代答+引导本人</td></tr>
+      <tr><td>S5 换人使用</td><td>非目标学生</td><td>—</td><td>兄弟姐妹替用</td><td>影响</td><td>识别换人+引导</td></tr>
+    </table>
+    <div class="hl"><b>重点</b>:S3/S4 家长辅助/代答已确认<b>纳入要解决的范围</b>,但处理目标不同于环境噪声——不是简单滤掉,而是识别"这不是学生说的"并引导,需单独设计产品策略。</div>
+  </section>
+
+  <section id="impact">
+    <h2>四、"影响"判定标准(因果分层)</h2>
+    <p>判定核心:<b>AI 最终拿到的输入,是否仍是"学生对本题的真实作答"</b>。</p>
+    <table>
+      <tr><th>层级</th><th>状态</th><th>是否影响</th></tr>
+      <tr><td>L0</td><td>音频有噪声,但未进入 ASR 文本</td><td>不影响</td></tr>
+      <tr><td>L1</td><td>进了文本,但 AI 仍理解意图、回复正确</td><td>轻微/不影响</td></tr>
+      <tr><td>L2</td><td>噪声导致 AI 答非所问/没听清/跑偏</td><td>影响</td></tr>
+      <tr><td>L3</td><td>错误回复进一步致学生困惑、中断、学习受损</td><td>严重影响</td></tr>
+    </table>
+    <div class="hl"><b>影响分界线:L2</b>。噪声真正改变了 AI 回复才计入"影响沟通";L0/L1 视为系统自愈。</div>
+  </section>
+
+  <section id="benefit">
+    <h2>五、收益口径</h2>
+    <p style="font-size:15px;"><b>问题收益 = 噪声对话占比(规模) × L2+影响占比(危害程度)</b></p>
+    <ul>
+      <li><b>规模</b>:需通过<b>随机全标样本</b>估算无偏占比。已挖的嫌疑case<b>不能</b>用于算占比(会高估)</li>
+      <li><b>危害程度</b>:噪声case中 L2/L3 所占比例</li>
+      <li>两者相乘 = 可挽回的"坏对话"数量 = 立项收益天花板</li>
+    </ul>
+    <h3>两类样本用途区分(重要)</h3>
+    <table>
+      <tr><th>样本类型</th><th>怎么来</th><th>用途</th></tr>
+      <tr><td>嫌疑case</td><td>语义初筛挑出</td><td>验证筛得准不准、攒方案样本</td></tr>
+      <tr><td>随机全标样本</td><td>随机抽N条全部听标</td><td>算真实占比、算L0-L3分布=算收益</td></tr>
+    </table>
+  </section>
+
+  <section id="data">
+    <h2>六、数据与取数</h2>
+    <ul>
+      <li>数据源表:<code>dw_ods.ori_tutor_ai_reading_sharding_user_chat_history_sharding_da</code>(catalog=hive_f04)</li>
+      <li>关键字段:<code>chathistorytype</code>(1=AI/2=用户)、<code>message</code>(文本)、<code>audiourl</code>(学生录音,可下载)、<code>duration</code>(时长)、<code>chatid/textid</code>(串对话)、<code>createdtime</code></li>
+      <li>取数口径:近30天 · 晚间18-22点 · 学生语音 · 有音频 · 时长≥3秒 · 三段齐全(用"上一条必是AI问题"卡掉无上下文行)</li>
+      <li>已取:<b>随机5000条</b>(含完整"AI问题→学生语音→AI回答"三段+音频URL)</li>
+      <li>执行身份:察察服务端配置的 <b>lujiang</b>(非本人LDAP)</li>
+    </ul>
+    <div class="hl">量级参考:近30天晚间、有音频、≥3秒的学生语音约<b>90万条</b>/覆盖数万用户,池子充足。</div>
+  </section>
+
+  <section id="annot">
+    <h2>七、标注平台</h2>
+    <p>仿参考文件做的卡片流标注平台:三段内容 + <b>内联音频播放</b> + 噪声标注下拉(有无噪声/类型/影响文本/影响回复)+ 备注框 + 多选筛选 + 统计命中率 + 导出JSON/CSV + 批注层。标注存浏览器本地。</p>
+    <div class="link-box">线上标注平台:<br><a href="https://chenlanlan0401.github.io/voice-ui-demos/noise-annotation.html">chenlanlan0401.github.io/voice-ui-demos/noise-annotation.html</a></div>
+    <p>已挖嫌疑case:池子<b>前1500条</b>语义初筛出 <b>77条</b>(高29/中48)。</p>
+    <div class="hl"><b>关键结论</b>:关键词规则<b>不可用</b>——课文含大量亲属称谓(妈妈/爸爸/哥哥)、生活场景,规则误报会淹没真信号。噪声识别必须靠<b>语义/声纹</b>判断。</div>
+  </section>
+
+  <section id="result">
+    <h2>八、首批标注结果(20条,旧判据)</h2>
+    <table>
+      <tr><th>指标</th><th>结果</th></tr>
+      <tr><td>总命中率(是/总)</td><td>8/20 = 40%(含存疑50%)</td></tr>
+      <tr><td>高嫌疑命中</td><td>5/8 = 62%</td></tr>
+      <tr><td>中嫌疑命中</td><td>3/12 = 25%</td></tr>
+    </table>
+    <p class="q">→ 高嫌疑尚可(62%),中嫌疑基本是噪音(25%);"文本有点怪"远不够,需靠语义/声纹。</p>
+    <div class="hl">这批标注促成了<b>噪声定义的收敛</b>:用户明确"学生自己说废话不算噪声,只有非本人声音才算",判据从"内容跑题"转向"声音来源身份"。第二批57条即按新判据挑出。</div>
+  </section>
+
+  <section id="next">
+    <h2>九、下一步(待办)</h2>
+    <p><span class="tag todo">待办</span> 标完77条嫌疑case,算新判据下的命中率</p>
+    <p><span class="tag todo">待办</span> 做<b>随机全标样本(200-300条)</b>——算无偏占比和L0-L3分布=算收益</p>
+    <p><span class="tag todo">待办</span> 标注平台补"现象层P1-P3 + 意图层A/B/C"标签,出场景分布</p>
+    <p><span class="tag todo">待办</span> S3/S4家长辅助/代答的产品策略单独设计</p>
+    <p><span class="tag todo">待办</span> 找语音团队确认声纹能力边界(见能力验证清单)</p>
+    <p><span class="tag done">可选</span> 继续扫池子1500-3000挖更多嫌疑case</p>
+  </section>
+
+  <section id="files">
+    <h2>十、产出文件清单</h2>
+    <table>
+      <tr><th>文件</th><th>内容</th></tr>
+      <tr><td>PRD-问题定义</td><td>噪声定义+场景框架+影响分层+收益口径(本页即其可视化)</td></tr>
+      <tr><td>能力验证清单</td><td>给语音团队的A-E五组能力问题</td></tr>
+      <tr><td>第一步挖数据方案</td><td>挖噪声case整体方案</td></tr>
+      <tr><td>LLM文本初筛prompt</td><td>批量初筛指令</td></tr>
+      <tr><td>标注记录表.csv</td><td>标注模板</td></tr>
+      <tr><td>池子5000.csv</td><td>5000条原始数据(文本+音频URL+三段)</td></tr>
+      <tr><td>标注平台.html</td><td>77条嫌疑case标注平台(线上)</td></tr>
+    </table>
+    <p class="q">说明:文件存于本会话工作区,内容与本页一致。本页是全对话的可视化总览,支持顶部导航跳转。</p>
+  </section>
+</div>
+<button id="annToggle">✏️ 批注模式</button>
+<div id="annPanel"><h4>批注清单 <span id="annCnt">0</span></h4><div id="annItems"></div><button id="annCopy">导出给 Claude</button></div>
+<div id="annEditor"><textarea id="annText" placeholder="写下批注/修改意见..."></textarea><div class="hint">回车保存 · Shift+回车换行 · Esc 取消</div></div>
+<div id="annToast"></div>
+<script>
+(function(){
+ let annMode=false,anns=[],curTarget=null;
+ const tb=document.getElementById('annToggle'),ed=document.getElementById('annEditor'),ta=document.getElementById('annText'),panel=document.getElementById('annPanel');
+ tb.onclick=()=>{annMode=!annMode;tb.classList.toggle('on',annMode);tb.textContent=annMode?'✅ 退出批注':'✏️ 批注模式';document.body.classList.toggle('ann-mode',annMode);panel.style.display=annMode?'block':'none';};
+ document.addEventListener('click',e=>{
+   if(!annMode)return;
+   if(ed.contains(e.target)||panel.contains(e.target)||e.target===tb||e.target.closest('.ann-mark')||e.target.closest('.nav'))return;
+   const t=e.target.closest('section');if(!t)return;
+   e.preventDefault();curTarget=t;
+   const r=t.getBoundingClientRect();
+   ed.style.display='block';
+   ed.style.left=Math.max(10,Math.min(r.left,innerWidth-270))+'px';
+   ed.style.top=Math.max(10,Math.min(r.top+30,innerHeight-180))+'px';
+   ta.value='';setTimeout(()=>ta.focus(),0);
+ });
+ ta.addEventListener('keydown',e=>{
+   if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();saveAnn();}
+   else if(e.key==='Escape'){ed.style.display='none';}
+ });
+ function saveAnn(){if(!ta.value.trim()||!curTarget)return;const name=(curTarget.querySelector('h2')||{}).textContent||'区块';anns.push({name:name,txt:ta.value.trim(),target:curTarget});ed.style.display='none';renderAll();}
+ function renderAll(){
+   document.querySelectorAll('.ann-mark').forEach(m=>m.remove());
+   const items=document.getElementById('annItems');items.innerHTML='';
+   anns.forEach((a,i)=>{
+     const r=a.target.getBoundingClientRect();
+     const m=document.createElement('div');m.className='ann-mark';m.textContent=i+1;
+     m.style.left=(scrollX+r.left-8)+'px';m.style.top=(scrollY+r.top-8)+'px';
+     m.onclick=()=>a.target.scrollIntoView({block:'center',behavior:'smooth'});
+     document.body.appendChild(m);
+     const it=document.createElement('div');it.className='item';
+     it.innerHTML=`<span class="n">${i+1}</span><span>${a.name}: ${a.txt}</span><span class="del">✕</span>`;
+     it.querySelector('.del').onclick=ev=>{ev.stopPropagation();anns.splice(i,1);renderAll();};
+     it.onclick=()=>a.target.scrollIntoView({block:'center',behavior:'smooth'});
+     items.appendChild(it);
+   });
+   document.getElementById('annCnt').textContent=anns.length;
+ }
+ window.addEventListener('scroll',()=>{if(anns.length)renderAll();},{passive:true});
+ window.addEventListener('resize',()=>{if(anns.length)renderAll();});
+ document.getElementById('annCopy').onclick=()=>{
+   if(!anns.length){toast('还没有批注');return;}
+   const txt=anns.map((a,i)=>`${i+1}. [${a.name}] ${a.txt}`).join('\n');
+   const done=()=>toast('✅ 已复制,回对话框粘贴');
+   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fb(txt,done));}else fb(txt,done);
+ };
+ function fb(txt,cb){const t=document.createElement('textarea');t.value=txt;t.style.position='fixed';t.style.left='-9999px';document.body.appendChild(t);t.select();try{document.execCommand('copy');cb();}catch(e){toast('复制失败');}document.body.removeChild(t);}
+ function toast(m){const t=document.getElementById('annToast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2000);}
+})();
+</script>
+</body>
+</html>

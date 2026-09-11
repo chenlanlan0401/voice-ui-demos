@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PRD · 语音抗噪(评审版)</title>
+<style>
+:root{--bg:#f5f7fb;--surface:#fff;--border:#e2e8f0;--text:#1f2937;--muted:#6b7280;--accent:#4f46e5;--accent2:#7c3aed;--red:#dc2626;--amber:#d97706;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;}
+.nav{position:sticky;top:0;z-index:10;background:#172033;padding:12px 20px;display:flex;flex-wrap:wrap;gap:6px;}
+.nav a{color:#c6d1e3;text-decoration:none;font-size:12px;padding:4px 9px;border-radius:6px;white-space:nowrap;}
+.nav a:hover{background:rgba(255,255,255,.12);color:#fff;}
+.wrap{max-width:880px;margin:0 auto;padding:24px 20px 80px;}
+h1{font-size:23px;margin:8px 0 4px;}
+.sub{color:var(--muted);font-size:13px;margin-bottom:20px;}
+.meta{background:#eef2ff;border-radius:8px;padding:10px 14px;font-size:12px;color:#4338ca;margin-bottom:20px;}
+section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:16px;scroll-margin-top:60px;}
+h2{font-size:18px;margin:0 0 12px;padding-left:10px;border-left:4px solid var(--accent2);}
+h3{font-size:15px;margin:16px 0 6px;color:#374151;}
+h4{font-size:13px;margin:12px 0 4px;color:var(--muted);}
+p,li{font-size:14px;}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0;}
+th,td{border:1px solid var(--border);padding:7px 9px;text-align:left;vertical-align:top;}
+th{background:#f8fafc;color:var(--muted);font-weight:600;}
+code{background:#eef2ff;color:#4338ca;padding:1px 5px;border-radius:4px;font-size:12px;}
+.gap{background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:2px 7px;font-size:12px;color:var(--amber);font-weight:600;}
+.hl{background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;font-size:13px;color:#9a3412;margin:10px 0;}
+.hl b{color:#7c2d12;}
+ul{margin:6px 0;padding-left:22px;}
+.q{color:var(--muted);font-size:13px;}
+.done{color:#138a44;font-weight:600;}
+#annToggle{position:fixed;right:18px;bottom:18px;z-index:9999;background:#7c3aed;color:#fff;border:none;border-radius:24px;padding:10px 16px;font-size:13px;cursor:pointer;box-shadow:0 4px 14px rgba(124,58,237,.4);}
+#annToggle.on{background:#dc2626;}
+body.ann-mode section:hover{outline:2px dashed #7c3aed;outline-offset:2px;cursor:crosshair;}
+.ann-mark{position:absolute;width:22px;height:22px;background:#dc2626;color:#fff;border-radius:50%;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:9998;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3);}
+#annEditor{position:fixed;z-index:10000;background:#fff;border:1px solid #cbd5e1;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.18);padding:10px;width:260px;display:none;}
+#annEditor textarea{width:100%;min-height:60px;border:1px solid #e2e8f0;border-radius:6px;padding:6px;font-size:13px;resize:vertical;font-family:inherit;}
+#annEditor .hint{font-size:11px;color:#94a3b8;margin-top:4px;}
+#annPanel{position:fixed;right:18px;bottom:64px;z-index:9998;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.12);width:260px;max-height:50vh;overflow:auto;display:none;}
+#annPanel h4{margin:0;padding:10px 12px;font-size:13px;border-bottom:1px solid #eee;}
+#annPanel .item{padding:8px 12px;border-bottom:1px solid #f1f5f9;font-size:12px;cursor:pointer;display:flex;gap:6px;}
+#annPanel .item:hover{background:#faf5ff;}
+#annPanel .item .n{color:#dc2626;font-weight:700;}
+#annPanel .item .del{margin-left:auto;color:#94a3b8;}
+#annCopy{margin:8px 12px;padding:6px;width:calc(100% - 24px);background:#7c3aed;color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;}
+#annToast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 16px;border-radius:8px;font-size:13px;z-index:10001;display:none;}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="#zs">综述</a>
+  <a href="#bg1">背景·问题</a>
+  <a href="#bg2">背景·量级</a>
+  <a href="#bg3">背景·原因</a>
+  <a href="#bg4">背景·解法</a>
+  <a href="#goal">需求目标</a>
+  <a href="#design">需求设计</a>
+  <a href="#ai">AI专项</a>
+  <a href="#gap">缺口清单</a>
+</nav>
+<div class="wrap">
+  <h1>PRD:AI大阅读课语音交互抗噪(一期)</h1>
+  <div class="sub">按评审会三层逻辑链(背景→目标→设计)撰写 · 记录于 2026-09-11</div>
+  <div class="meta">需求类型:AI/模型 + 流程/履约 · 命中特殊场景:AI/模型<br>状态:<b>需求背景已立住</b>;需求目标待补(收益量级需随机全标样本)、需求设计待补(方案到功能级)</div>
+  <section id="zs">
+    <h2>综述 · 名词表</h2>
+    <table>
+      <tr><th>名词</th><th>定义</th></tr>
+      <tr><td>噪声</td><td>一次学生答题音频中,出现学生本人以外的声音(多人声,或单一人声但非本学生)。只认声音来源身份,不认内容跑题。</td></tr>
+      <tr><td>会话内隐式锚点</td><td>AI提问后自动开麦,第一个开口者几乎必是学生本人,该段作为临时声纹参考,后续片段与它比对区分本人/旁人。不需学生注册。</td></tr>
+      <tr><td>L1 核心层</td><td>一期范围:识别"声音是不是学生本人发的",靠声纹/说话人分离。</td></tr>
+      <tr><td>L2 进阶层</td><td>二期范围:识别"作答是不是学生独立完成的"(如学生复述家长答案),声纹失效。</td></tr>
+      <tr><td>影响分层 L0-L3</td><td>噪声破坏程度:L0未进文本/L1进文本未害回复/L2改变了AI回复/L3破坏学习。</td></tr>
+    </table>
+  </section>
+
+  <section id="bg1">
+    <h2>一、需求背景 · Step1 用户的问题和机会 <span class="done">✅</span></h2>
+    <p><b>用户</b>:使用 AI 大阅读课语音答题的小学生(L2-L6),在家庭环境中通过"自动开麦"作答。</p>
+    <p><b>问题(一句话)</b>:学生在家答题时,若旁边有家人说话或电视声,这些非学生声音被 ASR 一并转成文本,污染真实作答,导致 AI 回复出错(答非所问、误判学生水平)。</p>
+    <p><b>发现方式</b>:学生"抗噪差"反馈较多 + 已从线上真实数据挖出 case 佐证(如混入"你先把课上完再说""我姐姐去上厕所了这是我姐姐的平板")。</p>
+    <p><b>机会点</b>:当前自动开麦+30s无人声闭麦,长窗口+开放家庭环境是噪声混入的结构性原因。已确认具备"区分声纹"能力、说话人相对固定,可用会话内隐式锚点在不要求注册的前提下区分本人/旁人。</p>
+  </section>
+
+  <section id="bg2">
+    <h2>一、需求背景 · Step2 影响量级 <span class="gap">待补充</span></h2>
+    <div class="hl"><b>一期核心缺口</b>:当前无法给出无偏的噪声占比。已挖77条嫌疑case是"语义初筛挑出的",非随机抽样,用它算占比会严重高估。</div>
+    <p>已有量级线索(非结论):</p>
+    <ul>
+      <li>数据规模:近30天晚间、有音频、≥3秒的学生语音约 <b>90万条</b>,覆盖数万用户</li>
+      <li>首批20条嫌疑标注(旧判据):高嫌疑命中62%、中嫌疑25%、总命中40% —— 此为<b>筛选准确率,非发生率</b></li>
+    </ul>
+    <p><b>补法</b>:随机全标样本(200-300条,从5000池随机抽逐条听标)→ ①噪声真实占比 ②L0-L3影响分布。这是目标能否量化的前提。</p>
+  </section>
+
+  <section id="bg3">
+    <h2>一、需求背景 · Step3 原因分析 <span class="done">✅</span></h2>
+    <ul>
+      <li>学生<b>知道</b>要答题(排除"不知道")、也<b>愿意</b>答(排除"不愿意")</li>
+      <li>根因是<b>系统层面</b>:①自动开麦+30s长窗口收入环境音;②ASR无差别转写不区分来源;③链路无说话人判断,分不清谁在说</li>
+      <li>原因类型:<b>不能做</b>(系统无区分声音来源的能力)→ 解法方向是"能力建设:给系统增加说话人区分"</li>
+    </ul>
+  </section>
+
+  <section id="bg4">
+    <h2>一、需求背景 · Step4 解法判断 <span class="done">✅</span></h2>
+    <table>
+      <tr><th>路径</th><th>说明</th><th>成本</th><th>见效</th><th>结论</th></tr>
+      <tr><td>①收声侧改造</td><td>改交互/缩窗口减少噪声捕获</td><td>中</td><td>快</td><td>缩窗口可辅助,改交互增摩擦,不作主线</td></tr>
+      <tr><td>②声纹过滤(主线)</td><td>隐式锚点区分,只留学生本人进ASR</td><td>中</td><td>中</td><td><b>选为主线</b>:保住自动开麦体验,已具备声纹能力</td></tr>
+      <tr><td>③语义过滤</td><td>靠文本语义判跑题</td><td>中</td><td>中</td><td>补充,解决声纹盲区,非主线</td></tr>
+    </table>
+    <p><b>节奏(分两层)</b>:L1核心层(一期,声纹主线,ROI最高)→ L2进阶层(二期,识别学生复述家长答案,声纹失效,不阻塞一期)。</p>
+    <p><b>策略</b>:主线具体阈值(声纹相似度门限、片段粒度、缩窗口秒数)<span class="gap">待补充</span>,依赖语音团队能力边界确认。</p>
+  </section>
+
+  <section id="goal">
+    <h2>二、需求目标 <span class="gap">部分待补</span></h2>
+    <p><b>本阶段定位</b>:L1核心层,一期。<b>核心目标</b>(指回第一层):降低"因噪声污染导致AI回复出错(L2/L3)"的对话比例。</p>
+    <h3>Step1 指标框架(当前值/目标值待基线)</h3>
+    <table>
+      <tr><th>指标</th><th>类型</th><th>当前值</th><th>目标值</th><th>依据</th></tr>
+      <tr><td>噪声致回复出错率(L2+)</td><td>结果</td><td class="gap">待补</td><td class="gap">待补</td><td>需随机全标样本测基线</td></tr>
+      <tr><td>学生本人语音正确保留率</td><td>过程</td><td>—</td><td class="gap">待补</td><td>过滤后真实作答不被误杀</td></tr>
+      <tr><td>噪声片段拦截率</td><td>过程</td><td>—</td><td class="gap">待补</td><td>他人声音被正确滤除比例</td></tr>
+    </table>
+    <h3>Step2 约束指标</h3>
+    <table>
+      <tr><th>类型</th><th>指标</th><th>说明</th></tr>
+      <tr><td>约束</td><td><b>学生真实作答误杀率</b></td><td>最关键——不能把学生本人的话当噪声滤掉。误杀比漏掉更伤。约束值待定,建议从严。</td></tr>
+      <tr><td>约束</td><td>端到端延迟</td><td>声纹过滤加在ASR前的额外延迟不能破坏流畅性。阈值待与语音团队确认。</td></tr>
+      <tr><td>观察</td><td>答题完成率/重说率</td><td>观察是否因误杀导致反复重说。</td></tr>
+    </table>
+    <h3>Step3 上线后动作 <span class="gap">待补</span></h3>
+    <p class="q">框架:A)出错率降+误杀达标→扩覆盖;B)出错率降但误杀超线→调声纹阈值(提高保留倾向);C)出错率无变化→回能力验证。</p>
+  </section>
+
+  <section id="design">
+    <h2>三、需求设计 <span class="gap">主体待补</span></h2>
+    <h3>Step1 流程变化(流程图待补)</h3>
+    <p><b>变化点</b>:在"自动开麦收音 → ASR转写"之间插入<b>说话人区分/声纹过滤</b>层,只把匹配学生锚点的语音送进ASR。</p>
+    <p><b>before</b>:开麦→收全部声音→ASR无差别转写→送AI→回复<br>
+    <b>after</b>:开麦→采首响作学生锚点→逐片段声纹比对→仅本人片段送ASR(旁人丢弃/标记)→送AI→回复;识别换人/代答则触发引导话术</p>
+    <h4>功能拆解表(待细化)</h4>
+    <table>
+      <tr><th>功能</th><th>类型</th><th>说明</th></tr>
+      <tr><td>会话内锚点采集</td><td>新增</td><td>开麦后采集首个学生响应作临时声纹参考</td></tr>
+      <tr><td>片段级声纹比对过滤</td><td>新增</td><td>判定本人/非本人,非本人不进ASR</td></tr>
+      <tr><td>换人/代答识别引导</td><td>新增</td><td>识别到非目标学生时,AI引导交还/请本人作答</td></tr>
+      <tr><td>闭麦窗口调整</td><td>修改</td><td>评估30s窗口是否缩短(辅助手段)</td></tr>
+    </table>
+    <h3>Step2 产品详细设计 <span class="gap">待补</span></h3>
+    <p class="q">各功能点"为什么→界面→操作→规则"待设计。关键待定:①换人/代答的AI引导话术与交互 ②声纹误杀的兜底(学生被误判为旁人如何重新识别,不能静默丢弃)③缩窗口vs让30s窗口"认人"的取舍。</p>
+    <h3>Step3 技术详细设计 <span class="gap">待补</span></h3>
+    <p class="q">依赖语音团队:声纹是否支持流式/片段级embedding、无注册相对区分、额外延迟、重叠语音与低SNR准确率。</p>
+  </section>
+
+  <section id="ai">
+    <h2>四、特殊场景专项:AI/模型</h2>
+    <table>
+      <tr><th>检查项</th><th>说明</th></tr>
+      <tr><td>外部成熟能力调研</td><td>ASR自研;声纹能力已确认存在,边界(流式/片段/无注册)<span class="gap">待语音团队确认</span></td></tr>
+      <tr><td>准确率/覆盖/使用量</td><td><span class="gap">待补</span>——尤其重叠语音(P3)、低SNR场景的退化程度</td></tr>
+      <tr><td>数据来源/评估/合规</td><td>源:AI大阅读课对话表(含学生音频)。评估:随机全标+标注平台。合规:<span class="gap">涉未成年人语音,待确认</span></td></tr>
+      <tr><td>模型选型依据</td><td><span class="gap">待补</span>——声纹技术选型待对齐</td></tr>
+    </table>
+    <div class="hl"><b>盲区提示</b>:声纹主线解决不了 ①纯背景噪(无第二说话人)②学生复述家长答案(L2,声纹失效)③重叠语音(P3,分离最难)。需二期或补充手段。</div>
+  </section>
+
+  <section id="gap">
+    <h2>五、信息缺口与假设(待确认)</h2>
+    <table>
+      <tr><th>#</th><th>缺口</th><th>影响层</th><th>补法</th></tr>
+      <tr><td>1</td><td>噪声真实占比+L0-L3分布</td><td>需求目标(收益)</td><td>随机全标样本200-300条</td></tr>
+      <tr><td>2</td><td>声纹能力边界</td><td>设计+技术</td><td>能力验证清单交语音团队</td></tr>
+      <tr><td>3</td><td>各指标当前值/目标值/约束值</td><td>需求目标</td><td>缺口1、2出结果后测算</td></tr>
+      <tr><td>4</td><td>功能级产品设计</td><td>需求设计</td><td>缺口2确认后设计</td></tr>
+      <tr><td>5</td><td>未成年人语音数据合规</td><td>特殊场景</td><td>法务/合规确认</td></tr>
+    </table>
+    <h3>显式假设(未验证,不作既定事实)</h3>
+    <ul>
+      <li>假设噪声主要来源是"家人现场说话",故声纹主线有效 → 需缺口1的类型分布验证</li>
+      <li>假设"会话内隐式锚点"可靠(首响必是学生)→ 需小样本验证首响命中率</li>
+    </ul>
+  </section>
+</div>
+<button id="annToggle">✏️ 批注模式</button>
+<div id="annPanel"><h4>批注清单 <span id="annCnt">0</span></h4><div id="annItems"></div><button id="annCopy">导出给 Claude</button></div>
+<div id="annEditor"><textarea id="annText" placeholder="写下批注/修改意见..."></textarea><div class="hint">回车保存 · Shift+回车换行 · Esc 取消</div></div>
+<div id="annToast"></div>
+<script>
+(function(){
+ let annMode=false,anns=[],curTarget=null;
+ const tb=document.getElementById('annToggle'),ed=document.getElementById('annEditor'),ta=document.getElementById('annText'),panel=document.getElementById('annPanel');
+ tb.onclick=()=>{annMode=!annMode;tb.classList.toggle('on',annMode);tb.textContent=annMode?'✅ 退出批注':'✏️ 批注模式';document.body.classList.toggle('ann-mode',annMode);panel.style.display=annMode?'block':'none';};
+ document.addEventListener('click',e=>{
+   if(!annMode)return;
+   if(ed.contains(e.target)||panel.contains(e.target)||e.target===tb||e.target.closest('.ann-mark')||e.target.closest('.nav'))return;
+   const t=e.target.closest('section');if(!t)return;
+   e.preventDefault();curTarget=t;
+   const r=t.getBoundingClientRect();
+   ed.style.display='block';
+   ed.style.left=Math.max(10,Math.min(r.left,innerWidth-270))+'px';
+   ed.style.top=Math.max(10,Math.min(r.top+30,innerHeight-180))+'px';
+   ta.value='';setTimeout(()=>ta.focus(),0);
+ });
+ ta.addEventListener('keydown',e=>{
+   if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();saveAnn();}
+   else if(e.key==='Escape'){ed.style.display='none';}
+ });
+ function saveAnn(){if(!ta.value.trim()||!curTarget)return;const name=(curTarget.querySelector('h2')||{}).textContent||'区块';anns.push({name:name,txt:ta.value.trim(),target:curTarget});ed.style.display='none';renderAll();}
+ function renderAll(){
+   document.querySelectorAll('.ann-mark').forEach(m=>m.remove());
+   const items=document.getElementById('annItems');items.innerHTML='';
+   anns.forEach((a,i)=>{
+     const r=a.target.getBoundingClientRect();
+     const m=document.createElement('div');m.className='ann-mark';m.textContent=i+1;
+     m.style.left=(scrollX+r.left-8)+'px';m.style.top=(scrollY+r.top-8)+'px';
+     m.onclick=()=>a.target.scrollIntoView({block:'center',behavior:'smooth'});
+     document.body.appendChild(m);
+     const it=document.createElement('div');it.className='item';
+     it.innerHTML=`<span class="n">${i+1}</span><span>${a.name}: ${a.txt}</span><span class="del">✕</span>`;
+     it.querySelector('.del').onclick=ev=>{ev.stopPropagation();anns.splice(i,1);renderAll();};
+     it.onclick=()=>a.target.scrollIntoView({block:'center',behavior:'smooth'});
+     items.appendChild(it);
+   });
+   document.getElementById('annCnt').textContent=anns.length;
+ }
+ window.addEventListener('scroll',()=>{if(anns.length)renderAll();},{passive:true});
+ window.addEventListener('resize',()=>{if(anns.length)renderAll();});
+ document.getElementById('annCopy').onclick=()=>{
+   if(!anns.length){toast('还没有批注');return;}
+   const txt=anns.map((a,i)=>`${i+1}. [${a.name}] ${a.txt}`).join('\n');
+   const done=()=>toast('✅ 已复制,回对话框粘贴');
+   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fb(txt,done));}else fb(txt,done);
+ };
+ function fb(txt,cb){const t=document.createElement('textarea');t.value=txt;t.style.position='fixed';t.style.left='-9999px';document.body.appendChild(t);t.select();try{document.execCommand('copy');cb();}catch(e){toast('复制失败');}document.body.removeChild(t);}
+ function toast(m){const t=document.getElementById('annToast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',2000);}
+})();
+</script>
+</body>
+</html>
