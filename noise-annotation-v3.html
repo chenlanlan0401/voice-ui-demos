@@ -125,7 +125,7 @@ let store=JSON.parse(localStorage.getItem(LS)||'{}');
 try{Object.keys(PRESET).forEach(k=>{if(!store[k]||!store[k].has_noise){store[k]=PRESET[k];}});save();}catch(e){}
 function save(){localStorage.setItem(LS,JSON.stringify(store));}
 function ann(id){return store[id]||{};}
-function setA(id,k,v){store[id]=store[id]||{};store[id][k]=v;save();refresh();}
+function setA(id,k,v,skipRefresh){store[id]=store[id]||{};store[id][k]=v;save();if(!skipRefresh)refresh();}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function sel(id,f,opts,cur){let h=`<select data-id="${id}" data-f="${f}" class="${cur?'done':''}">`;opts.forEach(o=>h+=`<option value="${o}" ${cur===o?'selected':''}>${o||'—'}</option>`);return h+'</select>';}
 
@@ -279,7 +279,7 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('input',e=>{
   const t=e.target.closest('textarea[data-id]');
-  if(t){setA(t.dataset.id,t.dataset.f,t.value);}
+  if(t){setA(t.dataset.id,t.dataset.f,t.value,true);}
 });
 document.addEventListener('click',e=>{
   const fb=e.target.closest('.fold-btn');
