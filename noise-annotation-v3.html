@@ -230,10 +230,10 @@ function renderBaseline(){
   let msCnt=0;BASELINE.forEach(c=>{const ms=(typeof MULTISPEAKER!=='undefined')?MULTISPEAKER[c.target_id]:null;if(ms&&ms.m)msCnt++;});
   const me=document.getElementById('bl-multi');if(me)me.textContent=msCnt;
 }
-function renderSummary(){
+function renderSummary(blockA){
   const el=document.getElementById('nz-summary');if(!el)return;
-  // 统计范围:基线200 + 块B44 的全部人工标注
-  const all=BASELINE.concat(BLOCKB);
+  // 统计范围:仅本 Tab 汇集的噪声case = 块A(基线标"有噪声") + 块B(额外挖掘44条)
+  const all=blockA.concat(BLOCKB);
   const labeled=all.filter(c=>ann(c.target_id).has_noise);
   const yes=labeled.filter(c=>ann(c.target_id).has_noise==='有');
   const no=labeled.filter(c=>ann(c.target_id).has_noise==='无');
@@ -253,8 +253,8 @@ function renderSummary(){
     }).join(''):'<div class="sp-row"><span class="k" style="color:#999">暂无数据</span></div>';
     return `<div class="sp-card"><h4>${title}</h4>${rows}</div>`;
   };
-  el.innerHTML=`<h3>📊 人工标注总结</h3>
-    <p class="sp-note">统计范围:基线200条 + 块B44条,共 ${all.length} 条候选;下列分布基于你已标注的 <b>${labeled.length}</b> 条。</p>
+  el.innerHTML=`<h3>📊 人工标注总结(仅本Tab噪声case)</h3>
+    <p class="sp-note">统计范围:块A ${blockA.length}条(基线标"有噪声") + 块B ${BLOCKB.length}条(额外挖掘),共 ${all.length} 条;下列分布基于已标注的 <b>${labeled.length}</b> 条。</p>
     <div class="sp-grid">
       <div class="sp-card"><h4>标注进度 & 结论</h4>
         <div class="sp-big">已标注 <b>${labeled.length}</b>/${all.length} 条</div>
@@ -272,9 +272,9 @@ function renderSummary(){
     </div>`;
 }
 function renderNoise(){
-  renderSummary();
   // 块A:基线里标为有噪声的
   const blockA=BASELINE.filter(c=>ann(c.target_id).has_noise==='有');
+  renderSummary(blockA);
   document.getElementById('ba-toolbar').innerHTML=toolbarHtml('ba',false);
   const listA=filterList(blockA,'ba',false);
   document.getElementById('ba-list').innerHTML=blockA.length?(listA.map(c=>card(c,c.idx,{srcBadge:'来自基线#'+c.idx})).join('')||'<p style="padding:16px;color:#888">无符合筛选</p>'):'<p style="padding:16px;color:#888">Tab①里还没标"有噪声"的case。你标了之后会自动出现在这里。</p>';
