@@ -55,6 +55,15 @@ main{padding:16px 32px 60px;}
 .sp-row .v{flex:0 0 66px;text-align:right;color:var(--text);font-variant-numeric:tabular-nums;}
 .sp-big{font-size:13px;color:#475467;}
 .sp-big b{font-size:20px;color:var(--text);margin:0 3px;}
+.cm-wide{grid-column:1/-1;}
+.cm-table{border-collapse:collapse;width:100%;font-size:12px;margin:4px 0 10px;}
+.cm-table th,.cm-table td{border:1px solid var(--border);padding:6px 8px;text-align:center;}
+.cm-table th{background:#f4f6fa;color:#475467;font-weight:600;}
+.cm-table td b{font-size:16px;}
+.cm-tp{background:#e8f8eb;}.cm-tn{background:#eef4ff;}.cm-fp{background:#fef2f2;}.cm-fn{background:#fff7ed;}
+.cm-metrics{display:flex;flex-wrap:wrap;gap:18px;margin-top:6px;}
+.cm-metric{font-size:12px;color:#475467;}
+.cm-metric b{display:block;font-size:20px;color:var(--text);}
 .case-meta{color:var(--muted);font-size:12px;}
 .ctx-btn{margin-left:auto;font-size:12px;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;}
 .ctx-panel{display:none;padding:10px 16px;background:#f4f6fa;border-bottom:1px solid #eef1f6;}
@@ -253,6 +262,35 @@ function renderSummary(blockA){
     }).join(''):'<div class="sp-row"><span class="k" style="color:#999">暂无数据</span></div>';
     return `<div class="sp-card"><h4>${title}</h4>${rows}</div>`;
   };
+  // ===== ASR多人声 vs 人工标注 混淆矩阵 =====
+  // ground truth:人工标 has_noise "有"=真的有别人声,"无"=没有;"存疑"不计入
+  const evalSet=labeled.filter(c=>ann(c.target_id).has_noise==='有'||ann(c.target_id).has_noise==='无');
+  let TP=0,FP=0,FN=0,TN=0;
+  evalSet.forEach(c=>{
+    const human=ann(c.target_id).has_noise==='有';   // 人工:有别人声
+    const asr=isMS(c.target_id);                       // ASR:判多人声
+    if(human&&asr)TP++;else if(!human&&asr)FP++;else if(human&&!asr)FN++;else TN++;
+  });
+  const N=evalSet.length;
+  const acc=N?Math.round((TP+TN)*100/N):0;
+  const prec=(TP+FP)?Math.round(TP*100/(TP+FP)):null;   // ASR判多人声里真有别人声的比例
+  const rec=(TP+FN)?Math.round(TP*100/(TP+FN)):null;    // 真有别人声里被ASR抓到的比例
+  const f1=(prec!=null&&rec!=null&&(prec+rec))?Math.round(2*prec*rec/(prec+rec)):null;
+  const pv=x=>x==null?'—':x+'%';
+  const cmCard=`<div class="sp-card cm-wide"><h4>🎯 ASR多人声 vs 人工标注(识别准确性)</h4>
+    <p class="sp-note" style="margin:0 0 8px">口径:人工标"有噪声"视为真有别人说话,"无"视为无;"存疑"不计入。有效对比样本 <b>${N}</b> 条。</p>
+    <table class="cm-table"><tbody>
+      <tr><th rowspan="2" colspan="2" style="background:#eef1f6"></th><th colspan="2">人工标注(真值)</th></tr>
+      <tr><th>有别人声</th><th>无别人声</th></tr>
+      <tr><th rowspan="2">ASR<br>判定</th><th>多人声</th><td class="cm-tp"><b>${TP}</b><br><span style="color:#138a44">正确命中</span></td><td class="cm-fp"><b>${FP}</b><br><span style="color:#dc2626">误报</span></td></tr>
+      <tr><th>单人声</th><td class="cm-fn"><b>${FN}</b><br><span style="color:#b45309">漏报</span></td><td class="cm-tn"><b>${TN}</b><br><span style="color:#4338ca">正确排除</span></td></tr>
+    </tbody></table>
+    <div class="cm-metrics">
+      <div class="cm-metric">准确率 Accuracy<b>${pv(acc)}</b><span style="color:#888">${TP+TN}/${N} 判对</span></div>
+      <div class="cm-metric">精确率 Precision<b>${pv(prec)}</b><span style="color:#888">ASR报多人声里${TP}/${TP+FP}真有别人</span></div>
+      <div class="cm-metric">召回率 Recall<b>${pv(rec)}</b><span style="color:#888">真有别人里ASR抓到${TP}/${TP+FN}</span></div>
+      <div class="cm-metric">F1<b>${pv(f1)}</b></div>
+    </div></div>`;
   el.innerHTML=`<h3>📊 人工标注总结(仅本Tab噪声case)</h3>
     <p class="sp-note">统计范围:块A ${blockA.length}条(基线标"有噪声") + 块B ${BLOCKB.length}条(额外挖掘),共 ${all.length} 条;下列分布基于已标注的 <b>${labeled.length}</b> 条。</p>
     <div class="sp-grid">
@@ -264,11 +302,7 @@ function renderSummary(blockA){
       ${bars('噪声类型分布(有噪声内)',tType,yes.length,'#7c3aed')}
       ${bars('是否影响AI回复(有噪声内)',tAffect,yes.length,'#dc2626')}
       ${bars('AI回复类型(有噪声内)',tReply,yes.length,'#1f6feb')}
-      <div class="sp-card"><h4>人工"有噪声" vs ASR多人声</h4>
-        <div class="sp-big">有噪声共 <b>${yes.length}</b> 条</div>
-        <div class="sp-big" style="margin-top:8px">其中被ASR判为多人声 <b style="color:#b91c1c">${msInYes}</b> 条 <span style="color:#888">(${yes.length?Math.round(msInYes*100/yes.length):0}%)</span></div>
-        <div class="sp-big" style="margin-top:8px;color:#888">仅人工标噪声、ASR未判多人声 ${yes.length-msInYes} 条(可能是媒体人声/单人杂音)</div>
-      </div>
+      ${cmCard}
     </div>`;
 }
 function renderNoise(){
