@@ -42,6 +42,19 @@ main{padding:16px 32px 60px;}
 .badge.multi{background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5;}
 .ms-box{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px;font-size:12px;color:#7f1d1d;margin-bottom:10px;}
 .ms-text{margin-top:5px;font-size:13px;color:#450a0a;line-height:1.7;word-break:break-all;}
+.sumpanel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:14px;}
+.sumpanel h3{margin:0 0 4px;font-size:15px;}
+.sumpanel .sp-note{color:var(--muted);font-size:12px;margin:0 0 14px;}
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;}
+.sp-card{border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:#fbfcff;}
+.sp-card h4{margin:0 0 10px;font-size:13px;color:var(--text);}
+.sp-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;font-size:13px;}
+.sp-row .k{flex:0 0 128px;color:#475467;}
+.sp-row .bar{flex:1;height:14px;background:#eef1f6;border-radius:7px;overflow:hidden;}
+.sp-row .bar>span{display:block;height:100%;border-radius:7px;}
+.sp-row .v{flex:0 0 66px;text-align:right;color:var(--text);font-variant-numeric:tabular-nums;}
+.sp-big{font-size:13px;color:#475467;}
+.sp-big b{font-size:20px;color:var(--text);margin:0 3px;}
 .case-meta{color:var(--muted);font-size:12px;}
 .ctx-btn{margin-left:auto;font-size:12px;padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;}
 .ctx-panel{display:none;padding:10px 16px;background:#f4f6fa;border-bottom:1px solid #eef1f6;}
@@ -105,6 +118,7 @@ main{padding:16px 32px 60px;}
       <div class="metric"><span>只有别人声音/学生+别人</span><strong id="nz-type">0/0</strong><em>两类噪声分布</em></div>
     </div></section>
     <section class="guide"><b>噪声case</b>:专门汇集噪声样本,用来看形态。分两块——<b>块A</b>=基线里你标为"有噪声"的(自动汇集,共享标注);<b>块B</b>=从额外800条随机样本里挖出的疑似噪声(需你听音频确认)。</section>
+    <section class="sumpanel" id="nz-summary"></section>
     <div class="blockhead block-toggle" data-block="ba"><span class="blk-arrow">▼</span> 块A · 来自基线的噪声 <span class="sub">你在Tab①标为"有噪声"的会自动出现在这里</span></div>
     <div id="ba-wrap"><section class="toolbar" id="ba-toolbar"></section><section id="ba-list"></section></div>
     <div class="blockhead block-toggle" data-block="bb"><span class="blk-arrow">▼</span> 块B · 额外挖掘的噪声 <span class="sub">从基线外800条随机样本语义筛出的疑似噪声,共44条,待你听音频确认</span></div>
@@ -216,7 +230,49 @@ function renderBaseline(){
   let msCnt=0;BASELINE.forEach(c=>{const ms=(typeof MULTISPEAKER!=='undefined')?MULTISPEAKER[c.target_id]:null;if(ms&&ms.m)msCnt++;});
   const me=document.getElementById('bl-multi');if(me)me.textContent=msCnt;
 }
+function renderSummary(){
+  const el=document.getElementById('nz-summary');if(!el)return;
+  // 统计范围:基线200 + 块B44 的全部人工标注
+  const all=BASELINE.concat(BLOCKB);
+  const labeled=all.filter(c=>ann(c.target_id).has_noise);
+  const yes=labeled.filter(c=>ann(c.target_id).has_noise==='有');
+  const no=labeled.filter(c=>ann(c.target_id).has_noise==='无');
+  const doubt=labeled.filter(c=>ann(c.target_id).has_noise==='存疑');
+  const isMS=id=>{const m=(typeof MULTISPEAKER!=='undefined')?MULTISPEAKER[id]:null;return !!(m&&m.m);};
+  const cnt=(arr,fn)=>{const m={};arr.forEach(c=>{const k=fn(c);if(k)m[k]=(m[k]||0)+1;});return m;};
+  const tType=cnt(yes,c=>ann(c.target_id).noise_type);
+  const tAffect=cnt(yes,c=>ann(c.target_id).affect_reply);
+  const tReply=cnt(yes,c=>ann(c.target_id).reply_kind);
+  const msInYes=yes.filter(c=>isMS(c.target_id)).length;
+  // 柱状分布组件
+  const bars=(title,map,total,color)=>{
+    const keys=Object.keys(map);
+    const rows=keys.length?keys.map(k=>{
+      const n=map[k],pct=total?Math.round(n*100/total):0;
+      return `<div class="sp-row"><span class="k">${esc(k)}</span><span class="bar"><span style="width:${pct}%;background:${color}"></span></span><span class="v">${n} · ${pct}%</span></div>`;
+    }).join(''):'<div class="sp-row"><span class="k" style="color:#999">暂无数据</span></div>';
+    return `<div class="sp-card"><h4>${title}</h4>${rows}</div>`;
+  };
+  el.innerHTML=`<h3>📊 人工标注总结</h3>
+    <p class="sp-note">统计范围:基线200条 + 块B44条,共 ${all.length} 条候选;下列分布基于你已标注的 <b>${labeled.length}</b> 条。</p>
+    <div class="sp-grid">
+      <div class="sp-card"><h4>标注进度 & 结论</h4>
+        <div class="sp-big">已标注 <b>${labeled.length}</b>/${all.length} 条</div>
+        <div class="sp-big" style="margin-top:8px">有噪声 <b style="color:#dc2626">${yes.length}</b> · 无噪声 <b style="color:#138a44">${no.length}</b> · 存疑 <b style="color:#b45309">${doubt.length}</b></div>
+        <div class="sp-big" style="margin-top:8px">有噪声占已标 <b>${labeled.length?Math.round(yes.length*100/labeled.length):0}%</b></div>
+      </div>
+      ${bars('噪声类型分布(有噪声内)',tType,yes.length,'#7c3aed')}
+      ${bars('是否影响AI回复(有噪声内)',tAffect,yes.length,'#dc2626')}
+      ${bars('AI回复类型(有噪声内)',tReply,yes.length,'#1f6feb')}
+      <div class="sp-card"><h4>人工"有噪声" vs ASR多人声</h4>
+        <div class="sp-big">有噪声共 <b>${yes.length}</b> 条</div>
+        <div class="sp-big" style="margin-top:8px">其中被ASR判为多人声 <b style="color:#b91c1c">${msInYes}</b> 条 <span style="color:#888">(${yes.length?Math.round(msInYes*100/yes.length):0}%)</span></div>
+        <div class="sp-big" style="margin-top:8px;color:#888">仅人工标噪声、ASR未判多人声 ${yes.length-msInYes} 条(可能是媒体人声/单人杂音)</div>
+      </div>
+    </div>`;
+}
 function renderNoise(){
+  renderSummary();
   // 块A:基线里标为有噪声的
   const blockA=BASELINE.filter(c=>ann(c.target_id).has_noise==='有');
   document.getElementById('ba-toolbar').innerHTML=toolbarHtml('ba',false);
