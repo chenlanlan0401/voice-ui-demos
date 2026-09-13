@@ -305,7 +305,7 @@ function renderSummary(blockA){
   const yesStuOther=yes.filter(c=>ann(c.target_id).noise_type==='学生+别人声音');
   const yesOnlyOther=yes.filter(c=>ann(c.target_id).noise_type==='只有别人声音');
   const yesNoType=yes.filter(c=>!ann(c.target_id).noise_type);
-  const s1Card=`<div class="sp-card cm-wide"><h4>① 人工标"有噪声"→ ASR判成了什么</h4>
+  const s1Card=`<div class="sp-card cm-wide"><h4>人工标"有噪声"→ ASR判成了什么</h4>
     <p class="sp-note" style="margin:0 0 8px">人工标有噪声共 ${yes.length} 条,按噪声类型细分,看各类里ASR的判定分布。</p>
     <table class="cm-table"><tbody>
       <tr><th style="background:#eef1f6">人工噪声类型 \\ ASR判定</th><th>ASR多人声</th><th>ASR单人声</th></tr>
