@@ -328,26 +328,34 @@ function renderSummary(blockA){
       <div class="sp-card" style="background:#fff"><h4>🔴 多人声(学生+别人声音) <span style="color:#888;font-weight:400">(已标影响 ${msGroup.tot} 条)</span></h4>${msGroup.tot?affRows(msGroup):'<div class="sp-row"><span class="k" style="color:#999">暂无已标影响的样本</span></div>'}</div>
       <div class="sp-card" style="background:#fff"><h4>单人声(只有别人声音) <span style="color:#888;font-weight:400">(已标影响 ${sgGroup.tot} 条)</span></h4>${sgGroup.tot?affRows(sgGroup):'<div class="sp-row"><span class="k" style="color:#999">暂无已标影响的样本</span></div>'}</div>
     </div></div>`;
-  // ===== 场景1:人工标"有噪声"内,按噪声类型细分,看ASR判成什么 =====
-  const asrLabel=id=>isMS(id)?'ASR多人声':'ASR单人声';
-  const s1Row=(title,arr)=>{
-    const t=arr.length,mn=arr.filter(c=>isMS(c.target_id)).length,sn=t-mn;
-    const mp=t?Math.round(mn*100/t):0,sp=t?Math.round(sn*100/t):0;
-    return `<tr><th style="text-align:left">${title}<br><span style="color:#888;font-weight:400">共${t}条</span></th>
-      <td class="cm-tp"><b>${mn}</b><br><span style="color:#888">${mp}%</span></td>
-      <td class="cm-tn"><b>${sn}</b><br><span style="color:#888">${sp}%</span></td></tr>`;
-  };
-  const yesStuOther=yes.filter(c=>ann(c.target_id).noise_type==='学生+别人声音');
-  const yesOnlyOther=yes.filter(c=>ann(c.target_id).noise_type==='只有别人声音');
-  const yesNoType=yes.filter(c=>!ann(c.target_id).noise_type);
-  const s1Card=`<div class="sp-card cm-wide"><h4>人工标"有噪声"→ ASR判成了什么</h4>
-    <p class="sp-note" style="margin:0 0 8px">人工标有噪声共 ${yes.length} 条,按噪声类型细分,看各类里ASR的判定分布。</p>
+  // ===== ASR多人声 vs 人工标注 混淆矩阵(范围=本Tab块A+块B)=====
+  const s1eval=labeled.filter(c=>ann(c.target_id).has_noise==='有'||ann(c.target_id).has_noise==='无');
+  let TP=0,FP=0,FN=0,TN=0;
+  s1eval.forEach(c=>{
+    const human=ann(c.target_id).has_noise==='有';
+    const asr=isMS(c.target_id);
+    if(human&&asr)TP++;else if(!human&&asr)FP++;else if(human&&!asr)FN++;else TN++;
+  });
+  const s1N=s1eval.length;
+  const s1acc=s1N?Math.round((TP+TN)*100/s1N):0;
+  const s1prec=(TP+FP)?Math.round(TP*100/(TP+FP)):null;
+  const s1rec=(TP+FN)?Math.round(TP*100/(TP+FN)):null;
+  const s1f1=(s1prec!=null&&s1rec!=null&&(s1prec+s1rec))?Math.round(2*s1prec*s1rec/(s1prec+s1rec)):null;
+  const s1pv=x=>x==null?'—':x+'%';
+  const s1Card=`<div class="sp-card cm-wide"><h4>🎯 ASR多人声 vs 人工标注(识别准确性)</h4>
+    <p class="sp-note" style="margin:0 0 8px">范围:本Tab块A+块B;口径:人工标"有噪声"视为真有别人说话,"无"视为无,"存疑"/未标不计入。有效对比样本 <b>${s1N}</b> 条。</p>
     <table class="cm-table"><tbody>
-      <tr><th style="background:#eef1f6">人工噪声类型 \\ ASR判定</th><th>ASR多人声</th><th>ASR单人声</th></tr>
-      ${s1Row('学生+别人声音',yesStuOther)}
-      ${s1Row('只有别人声音',yesOnlyOther)}
-      ${yesNoType.length?s1Row('有噪声但未标类型',yesNoType):''}
-    </tbody></table></div>`;
+      <tr><th rowspan="2" colspan="2" style="background:#eef1f6"></th><th colspan="2">人工标注(真值)</th></tr>
+      <tr><th>有别人声</th><th>无别人声</th></tr>
+      <tr><th rowspan="2">ASR<br>判定</th><th>多人声</th><td class="cm-tp"><b>${TP}</b><br><span style="color:#138a44">正确命中</span></td><td class="cm-fp"><b>${FP}</b><br><span style="color:#dc2626">误报</span></td></tr>
+      <tr><th>单人声</th><td class="cm-fn"><b>${FN}</b><br><span style="color:#b45309">漏报</span></td><td class="cm-tn"><b>${TN}</b><br><span style="color:#4338ca">正确排除</span></td></tr>
+    </tbody></table>
+    <div class="cm-metrics">
+      <div class="cm-metric">准确率 Accuracy<b>${s1pv(s1acc)}</b><span style="color:#888">${TP+TN}/${s1N} 判对</span></div>
+      <div class="cm-metric">精确率 Precision<b>${s1pv(s1prec)}</b><span style="color:#888">ASR报多人声里${TP}/${TP+FP}真有别人</span></div>
+      <div class="cm-metric">召回率 Recall<b>${s1pv(s1rec)}</b><span style="color:#888">真有别人里ASR抓到${TP}/${TP+FN}</span></div>
+      <div class="cm-metric">F1<b>${s1pv(s1f1)}</b></div>
+    </div></div>`;
   el.innerHTML=`<h3>📊 人工标注总结(仅本Tab噪声case)</h3>
     <p class="sp-note">统计范围:块A ${blockA.length}条(基线标"有噪声") + 块B ${BLOCKB.length}条(额外挖掘),共 ${all.length} 条;下列分布基于已标注的 <b>${labeled.length}</b> 条。</p>
     <div class="sp-grid">
