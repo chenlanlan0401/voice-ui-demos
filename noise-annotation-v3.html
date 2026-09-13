@@ -198,6 +198,7 @@ function toolbarHtml(prefix,withPre){
     <label>有无噪声 <select id="${prefix}-fn"><option value="">全部</option><option value="有">有</option><option value="无">无</option><option value="存疑">存疑</option></select></label>
     <label>噪声类型 <select id="${prefix}-ft"><option value="">全部</option><option value="只有别人声音">只有别人声音</option><option value="学生+别人声音">学生+别人声音</option></select></label>
     <label>影响回复 <select id="${prefix}-fa"><option value="">全部</option><option value="影响">影响</option><option value="不影响">不影响</option></select></label>
+    <label>AI回复类型 <select id="${prefix}-fr"><option value="">全部</option><option value="兜底处理">兜底处理</option><option value="回答错了">回答错了</option><option value="其他">其他</option></select></label>
     <label>多人声(ASR) <select id="${prefix}-fm"><option value="">全部</option><option value="multi">🔴 有多人声</option><option value="single">单人声</option></select></label>
     ${withPre?`<label>我的预判 <select id="${prefix}-fp"><option value="">全部</option><option value="疑似有噪声">疑似有噪声</option><option value="疑似无噪声">疑似无噪声</option></select></label>`:''}
     <span class="spacer"></span>
@@ -207,7 +208,7 @@ function toolbarHtml(prefix,withPre){
 function filterList(list,prefix,withPre){
   const val=id=>{const e=document.getElementById(id);return e?e.value:'';};
   const gv=k=>{const id=prefix+'-'+k;return (typeof FILTER!=='undefined'&&FILTER[id]!=null)?FILTER[id]:val(id);};
-  const fs=gv('fs'),fn=gv('fn'),ft=gv('ft'),fa=gv('fa'),fm=gv('fm'),fp=withPre?gv('fp'):'';
+  const fs=gv('fs'),fn=gv('fn'),ft=gv('ft'),fa=gv('fa'),fr=gv('fr'),fm=gv('fm'),fp=withPre?gv('fp'):'';
   return list.filter(c=>{
     const a=ann(c.target_id);
     const ms=(typeof MULTISPEAKER!=='undefined')?MULTISPEAKER[c.target_id]:null;
@@ -217,6 +218,7 @@ function filterList(list,prefix,withPre){
     if(fn&&a.has_noise!==fn)return false;
     if(ft&&a.noise_type!==ft)return false;
     if(fa&&a.affect_reply!==fa)return false;
+    if(fr&&a.reply_kind!==fr)return false;
     if(fm==='multi'&&!isMulti)return false;
     if(fm==='single'&&isMulti)return false;
     if(fp&&c.prelabel!==fp)return false;
@@ -373,6 +375,7 @@ function updateCounts(prefix,list,withPre){
   setOpts(prefix+'-fn',cnt(c=>ann(c.target_id).has_noise||null),list.length);
   setOpts(prefix+'-ft',cnt(c=>ann(c.target_id).noise_type||null),list.length);
   setOpts(prefix+'-fa',cnt(c=>ann(c.target_id).affect_reply||null),list.length);
+  setOpts(prefix+'-fr',cnt(c=>ann(c.target_id).reply_kind||null),list.length);
   setOpts(prefix+'-fm',cnt(c=>{const ms=(typeof MULTISPEAKER!=='undefined')?MULTISPEAKER[c.target_id]:null;return (ms&&ms.m)?'multi':'single';}),list.length);
   if(withPre)setOpts(prefix+'-fp',cnt(c=>c.prelabel||null),list.length);
 }
@@ -395,7 +398,7 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
 document.addEventListener('change',e=>{
   const s=e.target.closest('select[data-id]');
   if(s){setA(s.dataset.id,s.dataset.f,s.value);return;}
-  if(e.target.matches('select[id$="-fs"],select[id$="-fn"],select[id$="-ft"],select[id$="-fa"],select[id$="-fm"],select[id$="-fp"]')){FILTER[e.target.id]=e.target.value;refresh();}
+  if(e.target.matches('select[id$="-fs"],select[id$="-fn"],select[id$="-ft"],select[id$="-fa"],select[id$="-fr"],select[id$="-fm"],select[id$="-fp"]')){FILTER[e.target.id]=e.target.value;refresh();}
 });
 document.addEventListener('input',e=>{
   const t=e.target.closest('textarea[data-id]');
