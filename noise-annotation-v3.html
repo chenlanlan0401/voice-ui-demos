@@ -307,18 +307,18 @@ function renderSummary(blockA){
     const tot=Object.values(m).reduce((a,b)=>a+b,0);
     return {m,tot};
   };
-  // 按【人工标注】分组:标"有噪声"=有别人声(多人声),标"无噪声"=单人声;存疑不计入
-  const msGroup=affGroup(labeled.filter(c=>ann(c.target_id).has_noise==='有'));
-  const sgGroup=affGroup(labeled.filter(c=>ann(c.target_id).has_noise==='无'));
+  // 按【人工标注的噪声类型】分组:多人声=学生+别人声音,单人声=只有别人声音;"无噪声(纯学生)"不进此表
+  const msGroup=affGroup(labeled.filter(c=>ann(c.target_id).noise_type==='学生+别人声音'));
+  const sgGroup=affGroup(labeled.filter(c=>ann(c.target_id).noise_type==='只有别人声音'));
   const affRows=g=>AFF_KEYS.map(k=>{
     const n=g.m[k]||0,pct=g.tot?Math.round(n*100/g.tot):0;
     return `<div class="sp-row"><span class="k">${k}</span><span class="bar"><span style="width:${pct}%;background:${AFF_COLORS[k]}"></span></span><span class="v">${n} · ${pct}%</span></div>`;
   }).join('');
   const affCard=`<div class="sp-card cm-wide"><h4>🗣️ 多人声/单人声 对AI回答的影响占比</h4>
-    <p class="sp-note" style="margin:0 0 10px">按<b>人工标注</b>分组(标"有噪声"=有别人说话,"无"=单人声,"存疑"不计入);仅统计已标"是否影响AI回复"的样本;占比为组内百分比。</p>
+    <p class="sp-note" style="margin:0 0 10px">按<b>人工标注的噪声类型</b>分组:多人声=「学生+别人声音」,单人声=「只有别人声音」("无噪声/纯学生"不计入);仅统计已标"是否影响AI回复"的样本,占比为组内百分比。</p>
     <div class="sp-grid" style="gap:16px">
-      <div class="sp-card" style="background:#fff"><h4>🔴 有别人声(人工标有噪声) <span style="color:#888;font-weight:400">(已标影响 ${msGroup.tot} 条)</span></h4>${msGroup.tot?affRows(msGroup):'<div class="sp-row"><span class="k" style="color:#999">暂无已标影响的样本</span></div>'}</div>
-      <div class="sp-card" style="background:#fff"><h4>单人声(人工标无噪声) <span style="color:#888;font-weight:400">(已标影响 ${sgGroup.tot} 条)</span></h4>${sgGroup.tot?affRows(sgGroup):'<div class="sp-row"><span class="k" style="color:#999">暂无已标影响的样本</span></div>'}</div>
+      <div class="sp-card" style="background:#fff"><h4>🔴 多人声(学生+别人声音) <span style="color:#888;font-weight:400">(已标影响 ${msGroup.tot} 条)</span></h4>${msGroup.tot?affRows(msGroup):'<div class="sp-row"><span class="k" style="color:#999">暂无已标影响的样本</span></div>'}</div>
+      <div class="sp-card" style="background:#fff"><h4>单人声(只有别人声音) <span style="color:#888;font-weight:400">(已标影响 ${sgGroup.tot} 条)</span></h4>${sgGroup.tot?affRows(sgGroup):'<div class="sp-row"><span class="k" style="color:#999">暂无已标影响的样本</span></div>'}</div>
     </div></div>`;
   el.innerHTML=`<h3>📊 人工标注总结(仅本Tab噪声case)</h3>
     <p class="sp-note">统计范围:块A ${blockA.length}条(基线标"有噪声") + 块B ${BLOCKB.length}条(额外挖掘),共 ${all.length} 条;下列分布基于已标注的 <b>${labeled.length}</b> 条。</p>
