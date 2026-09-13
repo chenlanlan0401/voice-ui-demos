@@ -114,6 +114,7 @@ main{padding:16px 32px 60px;}
       <div class="metric"><span>🔴 多人声(ASR)</span><strong id="bl-multi" style="color:#b91c1c">0</strong><em>多说话人模型检测</em></div>
     </div></section>
     <section class="guide"><b>基线</b>:随机抽样,用来算<b>无偏噪声占比</b>。噪声天生稀疏,大多是干净的很正常。橙标是我的文本预判(仅参考)。</section>
+    <section class="sumpanel" id="bl-summary"></section>
     <section class="toolbar" id="bl-toolbar"></section>
     <section id="bl-list"></section>
   </div>
@@ -240,6 +241,40 @@ function renderBaseline(){
   document.getElementById('bl-affect').textContent=affect;
   let msCnt=0;BASELINE.forEach(c=>{const ms=(typeof MULTISPEAKER!=='undefined')?MULTISPEAKER[c.target_id]:null;if(ms&&ms.m)msCnt++;});
   const me=document.getElementById('bl-multi');if(me)me.textContent=msCnt;
+  renderBaselineCM();
+}
+// 基线 Tab 的 ASR多人声 vs 人工标注 混淆矩阵(范围=基线全部200条)
+function renderBaselineCM(){
+  const el=document.getElementById('bl-summary');if(!el)return;
+  const isMS=id=>{const m=(typeof MULTISPEAKER!=='undefined')?MULTISPEAKER[id]:null;return !!(m&&m.m);};
+  // 口径:人工标 has_noise "有"=真有别人声,"无"=无;"存疑"/未标 不计入
+  const evalSet=BASELINE.filter(c=>ann(c.target_id).has_noise==='有'||ann(c.target_id).has_noise==='无');
+  let TP=0,FP=0,FN=0,TN=0;
+  evalSet.forEach(c=>{
+    const human=ann(c.target_id).has_noise==='有';
+    const asr=isMS(c.target_id);
+    if(human&&asr)TP++;else if(!human&&asr)FP++;else if(human&&!asr)FN++;else TN++;
+  });
+  const N=evalSet.length;
+  const acc=N?Math.round((TP+TN)*100/N):0;
+  const prec=(TP+FP)?Math.round(TP*100/(TP+FP)):null;
+  const rec=(TP+FN)?Math.round(TP*100/(TP+FN)):null;
+  const f1=(prec!=null&&rec!=null&&(prec+rec))?Math.round(2*prec*rec/(prec+rec)):null;
+  const pv=x=>x==null?'—':x+'%';
+  el.innerHTML=`<h3>🎯 ASR多人声 vs 人工标注(识别准确性)</h3>
+    <p class="sp-note" style="margin:0 0 8px">范围:基线200条;口径:人工标"有噪声"视为真有别人说话,"无"视为无,"存疑"/未标不计入。有效对比样本 <b>${N}</b> 条。</p>
+    <table class="cm-table"><tbody>
+      <tr><th rowspan="2" colspan="2" style="background:#eef1f6"></th><th colspan="2">人工标注(真值)</th></tr>
+      <tr><th>有别人声</th><th>无别人声</th></tr>
+      <tr><th rowspan="2">ASR<br>判定</th><th>多人声</th><td class="cm-tp"><b>${TP}</b><br><span style="color:#138a44">正确命中</span></td><td class="cm-fp"><b>${FP}</b><br><span style="color:#dc2626">误报</span></td></tr>
+      <tr><th>单人声</th><td class="cm-fn"><b>${FN}</b><br><span style="color:#b45309">漏报</span></td><td class="cm-tn"><b>${TN}</b><br><span style="color:#4338ca">正确排除</span></td></tr>
+    </tbody></table>
+    <div class="cm-metrics">
+      <div class="cm-metric">准确率 Accuracy<b>${pv(acc)}</b><span style="color:#888">${TP+TN}/${N} 判对</span></div>
+      <div class="cm-metric">精确率 Precision<b>${pv(prec)}</b><span style="color:#888">ASR报多人声里${TP}/${TP+FP}真有别人</span></div>
+      <div class="cm-metric">召回率 Recall<b>${pv(rec)}</b><span style="color:#888">真有别人里ASR抓到${TP}/${TP+FN}</span></div>
+      <div class="cm-metric">F1<b>${pv(f1)}</b></div>
+    </div>`;
 }
 function renderSummary(blockA){
   const el=document.getElementById('nz-summary');if(!el)return;
