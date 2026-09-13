@@ -291,6 +291,34 @@ function renderSummary(blockA){
       <div class="cm-metric">召回率 Recall<b>${pv(rec)}</b><span style="color:#888">真有别人里ASR抓到${TP}/${TP+FN}</span></div>
       <div class="cm-metric">F1<b>${pv(f1)}</b></div>
     </div></div>`;
+  // ===== 按 ASR多人声/单人声 分组,统计对AI回答的影响四类占比 =====
+  // 影响四类:不影响 / 有影响-兜底处理 / 有影响-回答错了 / 有影响-其他
+  const affClass=c=>{
+    const a=ann(c.target_id);
+    if(!a.affect_reply)return null;                 // 未标影响,不计入
+    if(a.affect_reply==='不影响')return '不影响';
+    const kind=a.reply_kind||'其他';
+    return '有影响-'+(kind==='兜底处理'?'兜底处理':kind==='回答错了'?'回答错了':'其他');
+  };
+  const AFF_KEYS=['不影响','有影响-兜底处理','有影响-回答错了','有影响-其他'];
+  const AFF_COLORS={'不影响':'#138a44','有影响-兜底处理':'#1f6feb','有影响-回答错了':'#dc2626','有影响-其他':'#b45309'};
+  const affGroup=(arr)=>{
+    const m={};arr.forEach(c=>{const k=affClass(c);if(k)m[k]=(m[k]||0)+1;});
+    const tot=Object.values(m).reduce((a,b)=>a+b,0);
+    return {m,tot};
+  };
+  const msGroup=affGroup(labeled.filter(c=>isMS(c.target_id)));
+  const sgGroup=affGroup(labeled.filter(c=>!isMS(c.target_id)));
+  const affRows=g=>AFF_KEYS.map(k=>{
+    const n=g.m[k]||0,pct=g.tot?Math.round(n*100/g.tot):0;
+    return `<div class="sp-row"><span class="k">${k}</span><span class="bar"><span style="width:${pct}%;background:${AFF_COLORS[k]}"></span></span><span class="v">${n} · ${pct}%</span></div>`;
+  }).join('');
+  const affCard=`<div class="sp-card cm-wide"><h4>🗣️ 多人声/单人声 对AI回答的影响占比</h4>
+    <p class="sp-note" style="margin:0 0 10px">按ASR判定分组,仅统计已标"是否影响AI回复"的样本;占比为组内百分比。</p>
+    <div class="sp-grid" style="gap:16px">
+      <div class="sp-card" style="background:#fff"><h4>🔴 ASR多人声 <span style="color:#888;font-weight:400">(已标影响 ${msGroup.tot} 条)</span></h4>${msGroup.tot?affRows(msGroup):'<div class="sp-row"><span class="k" style="color:#999">暂无已标影响的样本</span></div>'}</div>
+      <div class="sp-card" style="background:#fff"><h4>单人声 <span style="color:#888;font-weight:400">(已标影响 ${sgGroup.tot} 条)</span></h4>${sgGroup.tot?affRows(sgGroup):'<div class="sp-row"><span class="k" style="color:#999">暂无已标影响的样本</span></div>'}</div>
+    </div></div>`;
   el.innerHTML=`<h3>📊 人工标注总结(仅本Tab噪声case)</h3>
     <p class="sp-note">统计范围:块A ${blockA.length}条(基线标"有噪声") + 块B ${BLOCKB.length}条(额外挖掘),共 ${all.length} 条;下列分布基于已标注的 <b>${labeled.length}</b> 条。</p>
     <div class="sp-grid">
@@ -303,6 +331,7 @@ function renderSummary(blockA){
       ${bars('是否影响AI回复(有噪声内)',tAffect,yes.length,'#dc2626')}
       ${bars('AI回复类型(有噪声内)',tReply,yes.length,'#1f6feb')}
       ${cmCard}
+      ${affCard}
     </div>`;
 }
 function renderNoise(){
