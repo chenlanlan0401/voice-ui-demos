@@ -313,25 +313,6 @@ function renderSummary(blockA){
       ${s1Row('只有别人声音',yesOnlyOther)}
       ${yesNoType.length?s1Row('有噪声但未标类型',yesNoType):''}
     </tbody></table></div>`;
-  // ===== 场景2:ASR判"多人声"内,人工标注是什么分布 =====
-  const asrMulti=all.filter(c=>isMS(c.target_id));
-  const humanCat=c=>{const a=ann(c.target_id);
-    if(!a.has_noise)return '未标注';
-    if(a.has_noise==='无')return '人工:无噪声(纯学生)';
-    if(a.has_noise==='存疑')return '人工:存疑';
-    return '人工:'+(a.noise_type||'有噪声(未标类型)');
-  };
-  const s2map=cnt(asrMulti,humanCat);
-  const S2_ORDER=['人工:学生+别人声音','人工:只有别人声音','人工:有噪声(未标类型)','人工:无噪声(纯学生)','人工:存疑','未标注'];
-  const s2keys=S2_ORDER.filter(k=>s2map[k]).concat(Object.keys(s2map).filter(k=>!S2_ORDER.includes(k)));
-  const S2_COLOR=k=>k.includes('学生+别人')?'#7c3aed':k.includes('只有别人')?'#a855f7':k.includes('无噪声')?'#dc2626':k.includes('存疑')?'#b45309':k==='未标注'?'#94a3b8':'#6366f1';
-  const s2rows=s2keys.length?s2keys.map(k=>{
-    const n=s2map[k],pct=asrMulti.length?Math.round(n*100/asrMulti.length):0;
-    return `<div class="sp-row"><span class="k" style="flex:0 0 168px">${esc(k)}</span><span class="bar"><span style="width:${pct}%;background:${S2_COLOR(k)}"></span></span><span class="v">${n} · ${pct}%</span></div>`;
-  }).join(''):'<div class="sp-row"><span class="k" style="color:#999">暂无ASR多人声样本</span></div>';
-  const s2Card=`<div class="sp-card cm-wide"><h4>② ASR判"多人声"→ 人工标注是什么</h4>
-    <p class="sp-note" style="margin:0 0 10px">本Tab里ASR判为多人声共 <b>${asrMulti.length}</b> 条,看它们的人工标注分布(占比为ASR多人声内百分比)。</p>
-    ${s2rows}</div>`;
   el.innerHTML=`<h3>📊 人工标注总结(仅本Tab噪声case)</h3>
     <p class="sp-note">统计范围:块A ${blockA.length}条(基线标"有噪声") + 块B ${BLOCKB.length}条(额外挖掘),共 ${all.length} 条;下列分布基于已标注的 <b>${labeled.length}</b> 条。</p>
     <div class="sp-grid">
@@ -344,7 +325,6 @@ function renderSummary(blockA){
       ${bars('是否影响AI回复(有噪声内)',tAffect,yes.length,'#dc2626')}
       ${bars('AI回复类型(有噪声内)',tReply,yes.length,'#1f6feb')}
       ${s1Card}
-      ${s2Card}
       ${affCard}
     </div>`;
 }
