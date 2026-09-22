@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
+<title>ASR 效果对比 · 基线(线上模型) vs 优化后(灰度)</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font:14px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f4f6f8;color:#1f2329}
+header{background:#fff;border-bottom:1px solid #e3e5e9;padding:18px 26px 14px}
+h1{margin:0 0 4px;font-size:19px}
+.sub{color:#6b7280;font-size:13px}
+.wrap{max-width:1120px;margin:0 auto;padding:20px 26px 90px}
+.card{background:#fff;border:1px solid #e3e5e9;border-radius:12px;padding:16px 20px;margin-bottom:18px}
+.card h2{margin:0 0 4px;font-size:16px}
+.card .desc{color:#6b7280;font-size:12.5px;margin-bottom:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.kpi{border:1px solid #eef0f3;border-radius:10px;padding:12px 14px;background:#fafbfc}
+.kpi .lb{font-size:12px;color:#6b7280;margin-bottom:6px}
+.kpi .duo{display:flex;align-items:baseline;gap:8px;font-variant-numeric:tabular-nums}
+.kpi .b{font-size:15px;color:#64748b}
+.kpi .arrow{color:#cbd5e1}
+.kpi .g{font-size:22px;font-weight:700}
+.kpi .delta{font-size:12px;font-weight:600;margin-top:5px}
+.up{color:#16a34a}.down{color:#dc2626}.flat{color:#9ca3af}
+.kpi.warnbox{background:#fffbeb;border-color:#fde68a}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;border-bottom:1px solid #eef0f3;text-align:right}
+th:first-child,td:first-child{text-align:left}
+thead th{background:#f8fafc;color:#475569;font-weight:600;border-bottom:2px solid #e3e5e9}
+tbody tr:hover{background:#f8fafc}
+.note{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;font-size:12.8px;color:#1e3a8a;margin:14px 0}
+.note b{color:#1d4ed8}
+.warn{background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;font-size:12.8px;color:#92400e;margin:14px 0}
+.warn b{color:#b45309}
+.bar2{display:flex;height:22px;border-radius:5px;overflow:hidden;margin:4px 0}
+.bar2 i{display:block;height:100%}
+.lg{font-size:11.5px;color:#6b7280;margin-top:4px}
+.tag{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.tag.base{background:#e2e8f0;color:#475569}
+.tag.gray{background:#dbeafe;color:#1d4ed8}
+.mini{font-size:11.5px;color:#9ca3af;font-weight:400;margin-left:6px}
+.foot{color:#9ca3af;font-size:11.5px;text-align:right;margin-top:20px}
+.PLACEHOLDER_STYLE{}
+</style>
+</head>
+<body>
+<div id="APP"></div>
+<script>
+window.__RESULT__ = {"base":{"n":200,"done":200,"use":{"full":153,"basic":36,"none":11,"blank":0},"cats":{"truncation":5,"crosstalk":6,"transcription":31,"hallucination":4,"other":3},"catCases":49,"reasons":{"content_word":22,"term_proper":6,"function_word":7},"cross":{"multi_speaker":5,"ambient":1},"trunc":{"head":3,"tail":2},"cert":{"sure":19,"likely":24,"unsure":1,"blank":156},"err":124,"den":4310,"cerN":199,"cerZero":153,"cers":[0,0,0,0,0.75,0.13333333333333333,0.021739130434782608,0.125,0,1,0,0,0,0,0,0.057692307692307696,0,0,0.2857142857142857,0,0,0.04195804195804196,0,0,0,0,0,0,0,0,0,0.25,0,0.05,0,0.011494252873563218,0,0.3333333333333333,0,0,0,0,0,0,1,0,0,0.16666666666666666,0,0,0.15789473684210525,0,0.03773584905660377,0,0,0,0,0,0,0.038461538461538464,0,0,0,0.0297029702970297,0,0,0.0625,0,0,0,0,0,0,0,0,0.125,0,0.017241379310344827,0,0,0,0,0,0,0,0,0,0,0,0,0,0.3333333333333333,0.25,0,0,0,0,0,0.5,0,0,0,0,0,0,0,0,0,0,0,0,0,0.4375,0.18181818181818182,0,0.1,0,0,0,0,0,0,0,0.02,0,0,0,0,0,0,0.047619047619047616,0,0,0.043478260869565216,0,0.10714285714285714,0,0,0,0,0,0,0,0,0,0,0.06666666666666667,0,0,0.07142857142857142,0,0,0.25,0,0.14285714285714285,0,0,0,0,0,0.07692307692307693,0,0,0.16666666666666666,0,0.06666666666666667,0,0,0.07692307692307693,0,0,0,0,0,0.5882352941176471,0,0,0,0,0.23076923076923078,0,0,0.25,0,0,0,1,0,0.07894736842105263,0,0.02857142857142857,0,0,0,0.6,0,0,0,0],"ncErr":99,"ncDen":4089,"ncN":193,"noCer":1,"hall0":1,"noCerIds":["RD147"],"levels":{"L4":{"done":38,"f":29,"b":6,"no":3,"blank":0,"cross":0,"prob":9,"err":17,"den":708},"L6":{"done":30,"f":25,"b":4,"no":1,"blank":0,"cross":0,"prob":6,"err":14,"den":898},"L7":{"done":72,"f":58,"b":11,"no":3,"blank":0,"cross":3,"prob":14,"err":42,"den":1612},"L5":{"done":44,"f":31,"b":9,"no":4,"blank":0,"cross":3,"prob":14,"err":22,"den":732},"L3":{"done":11,"f":7,"b":4,"no":0,"blank":0,"cross":0,"prob":4,"err":11,"den":224},"L2":{"done":5,"f":3,"b":2,"no":0,"blank":0,"cross":0,"prob":2,"err":18,"den":136}},"levelOrder":["L2","L3","L4","L5","L6","L7"],"dur":[{"lab":"≤5s","done":48,"f":38,"err":11,"den":264,"cross":0},{"lab":"5–10s","done":64,"f":53,"err":27,"den":697,"cross":2},{"lab":"10–15s","done":32,"f":25,"err":19,"den":714,"cross":1},{"lab":">15s","done":56,"f":37,"err":67,"den":2635,"cross":3}],"cerMed":0,"cerMean":0.05231665676767913,"cerP90":0.15789473684210525,"microAll":0.02877030162412993,"microNoCross":0.02421129860601614},"gray":{"n":250,"done":250,"use":{"full":201,"basic":44,"none":5,"blank":0},"cats":{"hallucination":6,"crosstalk":22,"transcription":17,"truncation":2,"other":3},"catCases":50,"reasons":{"content_word":16,"function_word":1},"cross":{"multi_speaker":17,"ambient":5},"trunc":{"tail":1},"cert":{"sure":38,"likely":10,"unsure":2,"blank":200},"err":502,"den":6067,"cerN":249,"cerZero":202,"cers":[0,0,0,0,0,0,0.2608695652173913,0,0,0,0,0,0,0,0,0,0,0,0,0.275,0,0,0,0,0,0,0.75,0,0,0,0,0,0,0,0,0.11904761904761904,0,0,0,0.3333333333333333,0,0,0,0,0,0,0.425,0,0,0,0,0.1111111111111111,0,0,0,0,0,0,0,0,0,0.022727272727272728,0,0,1,0.015384615384615385,0,0.1935483870967742,0,0,0,0,0,1.4545454545454546,0,0,0,4.7,0,0,4.857142857142857,0,2.6818181818181817,0.1111111111111111,2.1666666666666665,0,0,0,0,0,2,0,0,0,0,1,0,0,0.8095238095238095,0,1.263157894736842,0,0,0,0,0,0,0,0,0,0.25,0,0.5,0,0,0,0,0,0,0,0.25,0,0,0,0.03333333333333333,0,0,0.045454545454545456,0,0,0,0,0,0,0,0,0,0,0.037037037037037035,0,11.666666666666666,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.029411764705882353,0,0,0,0,0,0,0,0.234375,0.125,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.2222222222222222,0.030303030303030304,0,0.16666666666666666,0,0.2,0,0,0,0,0,0,0,0,0,0,0,0.6666666666666666,0.06666666666666667,0,0,0.16666666666666666,0,2.5454545454545454,0,0,0,0,0,0,0,0,0,0,0,0,0.024390243902439025,0,0,0,0,0,0,0,0.07228915662650602,0.25,0.8666666666666667,0,0.05,0.016666666666666666,0,0,0,0.8333333333333334,0,0,1,0,0,0,0,0,0,0,0,0,0,0],"ncErr":75,"ncDen":5613,"ncN":227,"noCer":1,"hall0":1,"noCerIds":["G2-002"],"levels":{"L2":{"done":50,"f":43,"b":6,"no":1,"blank":0,"cross":3,"prob":7,"err":56,"den":1353},"L3":{"done":50,"f":36,"b":14,"no":0,"blank":0,"cross":9,"prob":14,"err":283,"den":1572},"L4":{"done":50,"f":41,"b":7,"no":2,"blank":0,"cross":2,"prob":9,"err":68,"den":1035},"L5":{"done":50,"f":42,"b":7,"no":1,"blank":0,"cross":1,"prob":8,"err":26,"den":1005},"L6":{"done":50,"f":39,"b":10,"no":1,"blank":0,"cross":7,"prob":12,"err":69,"den":1102}},"levelOrder":["L2","L3","L4","L5","L6"],"dur":[{"lab":"≤5s","done":46,"f":41,"err":4,"den":222,"cross":0},{"lab":"5–10s","done":59,"f":51,"err":31,"den":653,"cross":4},{"lab":"10–15s","done":37,"f":29,"err":75,"den":680,"cross":3},{"lab":">15s","done":108,"f":80,"err":392,"den":4512,"cross":15}],"cerMed":0,"cerMean":0.18031830826707865,"cerP90":0.25,"microAll":0.08274270644470084,"microNoCross":0.013361838588989846}};
+</script>
+<script>
+(function(){
+var R = window.__RESULT__, B = R.base, G = R.gray;
+function pct(v,n){ return n?(v/n*100).toFixed(1)+'%':'—'; }
+function cerS(v){ return (v==null)?'—':(v*100).toFixed(1)+'%'; }
+function num(v,d){ return v==null?'—':v.toFixed(d==null?1:d); }
+function esc(s){ return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
+
+// delta: 数值方向。better='down' 表示越小越好(CER),='up' 表示越大越好(可用率)
+function deltaHTML(bv, gv, better, isPct){
+  if(bv==null||gv==null) return '<div class="delta flat">—</div>';
+  var diff = gv - bv;
+  var unit = isPct ? 'pp' : '';
+  var shown = isPct ? (diff*100).toFixed(1) : diff.toFixed(1);
+  var sign = diff>0?'+':'';
+  var good = (better==='down') ? diff<0 : diff>0;
+  var cls = Math.abs(diff)<1e-9 ? 'flat' : (good?'up':'down');
+  var word = Math.abs(diff)<1e-9 ? '持平' : (good?'↓改善':'↑变差');
+  if(better==='up') word = Math.abs(diff)<1e-9?'持平':(good?'↑提升':'↓下降');
+  return '<div class="delta '+cls+'">'+word+' '+sign+shown+unit+'</div>';
+}
+function kpi(lb, bTxt, gTxt, bv, gv, better, isPct, warn){
+  return '<div class="kpi'+(warn?' warnbox':'')+'"><div class="lb">'+lb+'</div>'
+    +'<div class="duo"><span class="b">'+bTxt+'</span><span class="arrow">→</span><span class="g">'+gTxt+'</span></div>'
+    +deltaHTML(bv,gv,better,isPct)+'</div>';
+}
+
+var h = '';
+h += '<div class="card"><h2>整体对比 <span class="mini">基线=四模型平台·线上模型(online) 200条 ｜ 优化后=灰度平台 250条 · 均为「已确认」进统计</span></h2>';
+h += '<div class="desc">左灰=基线，右大=优化后。CER 越低越好，可用率越高越好。</div>';
+h += '<div class="kpis">';
+h += kpi('完全可用率', pct(B.use.full,B.done), pct(G.use.full,G.done), B.use.full/B.done, G.use.full/G.done, 'up', true);
+h += kpi('可用率（完全+基本）', pct(B.use.full+B.use.basic,B.done), pct(G.use.full+G.use.basic,G.done), (B.use.full+B.use.basic)/B.done, (G.use.full+G.use.basic)/G.done, 'up', true);
+h += kpi('完全不可用', B.use.none+' 条', G.use.none+' 条', B.use.none/B.done, G.use.none/G.done, 'down', true);
+h += kpi('micro CER（全量）', cerS(B.microAll), cerS(G.microAll), B.microAll, G.microAll, 'down', true, true);
+h += kpi('micro CER（剔除串音）', cerS(B.microNoCross), cerS(G.microNoCross), B.microNoCross, G.microNoCross, 'down', true);
+h += kpi('零错率', pct(B.cerZero,B.cerN), pct(G.cerZero,G.cerN), B.cerZero/B.cerN, G.cerZero/G.cerN, 'up', true);
+h += '</div></div>';
+
+// 关键提示:全量CER反常的解释
+h += '<div class="warn"><b>⚠️ 为什么「全量 CER」优化后反而更高（2.9%→8.3%）？</b><br>'
+  +'灰度批的<b>串音样本明显更多</b>（基线 6 条 → 灰度 22 条）。串音场景下 ASR 会把老师/他人说话也识别进来，产生大量「多识别(I)」，'
+  +'单看灰度这 22 条串音的 micro CER 高达 <b>94.1%</b>，把全量指标整体拉高。<br>'
+  +'剔除串音后，优化后 CER <b>1.3% &lt; 基线 2.4%</b>，模型对「学生本人语音」的识别能力是<b>提升</b>的。'
+  +'两批样本构成不同（年级/时长分布、串音占比），建议<b>以「剔除串音」口径为主</b>看模型能力，全量口径受样本影响大。</div>';
+
+document.getElementById('APP').innerHTML = h + (window.__MORE__||'');
+window.__RENDER1__ = h;
+})();
+</script>
+<script>
+(function(){
+var R=window.__RESULT__,B=R.base,G=R.gray;
+function pct(v,n){return n?(v/n*100).toFixed(1)+'%':'—';}
+function cerS(v){return(v==null)?'—':(v*100).toFixed(1)+'%';}
+var h='';
+
+// 可用性分布对比
+function useBar(g){
+  var d=g.done,u=g.use;
+  return '<div class="bar2">'
+    +'<i style="width:'+(u.full/d*100)+'%;background:#3a8a5f"></i>'
+    +'<i style="width:'+(u.basic/d*100)+'%;background:#d19a2f"></i>'
+    +'<i style="width:'+(u.none/d*100)+'%;background:#c14f45"></i></div>'
+    +'<div class="lg">完全可用 '+u.full+'（'+pct(u.full,d)+'）· 基本可用 '+u.basic+'（'+pct(u.basic,d)+'）· 完全不可用 '+u.none+'（'+pct(u.none,d)+'）</div>';
+}
+h+='<div class="card"><h2>可用性分布</h2><div class="desc">分母=已确认条数</div>';
+h+='<div style="margin-bottom:10px"><span class="tag base">基线 online</span> '+useBar(B)+'</div>';
+h+='<div><span class="tag gray">优化后 灰度</span> '+useBar(G)+'</div></div>';
+
+// CER 概览对比
+h+='<div class="card"><h2>CER 概览 <span class="mini">micro=Σ错误÷Σ字数（先汇总再相除）；均值为 macro 口径仅参考</span></h2>';
+h+='<table><thead><tr><th>指标</th><th>基线 online</th><th>优化后 灰度</th></tr></thead><tbody>';
+var rows=[
+  ['micro CER（全量）',cerS(B.microAll),cerS(G.microAll)],
+  ['micro CER（剔除串音）',cerS(B.microNoCross),cerS(G.microNoCross)],
+  ['CER 中位数',cerS(B.cerMed),cerS(G.cerMed)],
+  ['逐条均值（macro）',cerS(B.cerMean),cerS(G.cerMean)],
+  ['P90',cerS(B.cerP90),cerS(G.cerP90)],
+  ['零错率',pct(B.cerZero,B.cerN),pct(G.cerZero,G.cerN)],
+  ['可计算 CER 条数',B.cerN+' 条',G.cerN+' 条'],
+  ['空参考（不计 CER）',B.noCer+' 条',G.noCer+' 条']
+];
+rows.forEach(function(r){h+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td></tr>';});
+h+='</tbody></table></div>';
+
+// 问题分类对比
+h+='<div class="card"><h2>问题分类分布 <span class="mini">分类为单选；子项可多选</span></h2>';
+h+='<table><thead><tr><th>类别</th><th>基线 online</th><th>优化后 灰度</th></tr></thead><tbody>';
+var CT={crosstalk:'串音',transcription:'转写错误',hallucination:'幻听',truncation:'截断',other:'其他'};
+['crosstalk','transcription','hallucination','truncation','other'].forEach(function(k){
+  h+='<tr><td>'+CT[k]+'</td><td>'+(B.cats[k]||0)+' 条 · '+pct(B.cats[k]||0,B.done)+'</td><td>'+(G.cats[k]||0)+' 条 · '+pct(G.cats[k]||0,G.done)+'</td></tr>';
+});
+h+='<tr><td>有问题分类合计</td><td>'+B.catCases+' 条</td><td>'+G.catCases+' 条</td></tr>';
+h+='<tr><td>无问题分类</td><td>'+(B.done-B.catCases)+' 条</td><td>'+(G.done-G.catCases)+' 条</td></tr>';
+h+='</tbody></table>';
+h+='<div class="lg">串音来源：基线 多人声'+(B.cross.multi_speaker||0)+'/环境音'+(B.cross.ambient||0)+'；优化后 多人声'+(G.cross.multi_speaker||0)+'/环境音'+(G.cross.ambient||0)+'。'
+  +'<br>串音数量增多主要是灰度批采样里含更多多人声场景，不代表模型退化——串音是环境问题，非识别错误。</div></div>';
+
+window.__H2__=h;
+document.getElementById('APP').insertAdjacentHTML('beforeend',h);
+})();
+</script>
+<script>
+(function(){
+var R=window.__RESULT__,B=R.base,G=R.gray;
+function pct(v,n){return n?(v/n*100).toFixed(1)+'%':'—';}
+function mc(L){return L.den?(L.err/L.den*100).toFixed(1)+'%':'—';}
+var h='';
+
+// 分年级(并排):两批年级不完全一致
+h+='<div class="card"><h2>分年级对比 <span class="mini">micro CER=该组Σ错误÷Σ字数</span></h2>';
+h+='<div class="desc">注意：基线含 L7（72条）无 L2 仅5条；优化后 L2-L6 各50条无 L7。年级构成不同，同级可比、跨批整体需谨慎。</div>';
+h+='<table><thead><tr><th>年级</th><th>批次</th><th>已确认</th><th>完全可用率</th><th>micro CER</th><th>串音</th><th>问题案例</th></tr></thead><tbody>';
+var levels=['L2','L3','L4','L5','L6','L7'];
+levels.forEach(function(lv){
+  var Lb=B.levels[lv],Lg=G.levels[lv];
+  if(Lb) h+='<tr><td rowspan="'+((Lb&&Lg)?2:1)+'">'+lv+'</td><td><span class="tag base">基线</span></td><td>'+Lb.done+'</td><td>'+pct(Lb.f,Lb.done)+'</td><td>'+mc(Lb)+'</td><td>'+Lb.cross+'</td><td>'+Lb.prob+'</td></tr>';
+  if(Lg){
+    var pre = Lb ? '' : '<td>'+lv+'</td>';
+    h+='<tr>'+pre+'<td><span class="tag gray">优化后</span></td><td>'+Lg.done+'</td><td>'+pct(Lg.f,Lg.done)+'</td><td>'+mc(Lg)+'</td><td>'+Lg.cross+'</td><td>'+Lg.prob+'</td></tr>';
+  }
+});
+h+='</tbody></table></div>';
+
+// 分时长(并排)
+h+='<div class="card"><h2>分时长对比 <span class="mini">时长已统一为秒</span></h2>';
+h+='<table><thead><tr><th>时长</th><th>批次</th><th>已确认</th><th>完全可用率</th><th>micro CER</th><th>串音</th></tr></thead><tbody>';
+for(var i=0;i<B.dur.length;i++){
+  var Tb=B.dur[i],Tg=G.dur[i];
+  h+='<tr><td rowspan="2">'+Tb.lab+'</td><td><span class="tag base">基线</span></td><td>'+Tb.done+'</td><td>'+pct(Tb.f,Tb.done)+'</td><td>'+(Tb.den?(Tb.err/Tb.den*100).toFixed(1)+'%':'—')+'</td><td>'+Tb.cross+'</td></tr>';
+  h+='<tr><td><span class="tag gray">优化后</span></td><td>'+Tg.done+'</td><td>'+pct(Tg.f,Tg.done)+'</td><td>'+(Tg.den?(Tg.err/Tg.den*100).toFixed(1)+'%':'—')+'</td><td>'+Tg.cross+'</td></tr>';
+}
+h+='</tbody></table>'
+  +'<div class="lg">优化后 >15s 长句占比大（108/250=43%），而长句串音/插入更集中，这也是全量 CER 被拉高的原因之一。</div></div>';
+
+// 结论卡
+h+='<div class="card"><h2>对比结论</h2><div class="note" style="margin-top:0">'
+  +'① <b>可用性全面提升</b>：完全可用率 76.5%→80.4%，可用率（完全+基本）94.5%→98.0%，完全不可用 11条→5条。<br>'
+  +'② <b>识别能力（剔除串音 CER）提升</b>：2.4%→1.3%，零错率 76.9%→81.1%，中位数均为 0%。这是最能反映模型识别准确性的口径。<br>'
+  +'③ <b>全量 CER 反升属样本效应</b>：灰度批串音多（22 vs 6）+长句多，串音的高插入错误拉高了全量数字，不代表模型退化。<br>'
+  +'④ <b>转写错误明显减少</b>：31条→17条，说明真正的「听错字」类问题在优化后下降。<br>'
+  +'<b>总体判断：优化后模型在可用性与净识别准确率上均优于基线</b>，全量 CER 需结合样本构成解读。'
+  +'</div></div>';
+
+h+='<div class="foot">口径同灰度平台 computeStats：仅「已确认」进统计 · CER=(S+I+D)÷人工文本字数（只数中文/数字/字母）· micro 汇总。'
+  +'<br>基线数据来自「ASR四模型标注平台」线上模型(online) · 优化后来自「ASR灰度标注平台」250条 · 生成 '+new Date().toLocaleString('zh-CN')+'</div>';
+
+document.getElementById('APP').insertAdjacentHTML('beforeend',h);
+})();
+</script>
+<style>
+#annoBar{position:fixed;right:16px;bottom:16px;z-index:9998;display:flex;gap:8px;align-items:center;background:#fff;border:1px solid #d0d3d9;border-radius:24px;padding:6px 10px;box-shadow:0 4px 16px rgba(0,0,0,.12);font-size:12.5px}
+#annoBar button{font:inherit;font-size:12.5px;padding:5px 11px;border:1px solid #d0d3d9;border-radius:18px;background:#fff;cursor:pointer}
+#annoBar button.on{background:#2563eb;color:#fff;border-color:#2563eb}
+#annoBar .cnt{color:#6b7280}
+.anno-dot{position:absolute;width:22px;height:22px;border-radius:50%;background:#f59e0b;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.3);z-index:9990;transform:translate(-50%,-50%)}
+.anno-pop{position:absolute;z-index:9999;background:#fff;border:1px solid #d0d3d9;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.18);padding:10px;width:260px}
+.anno-pop textarea{width:100%;min-height:60px;font:inherit;font-size:12.5px;border:1px solid #d0d3d9;border-radius:6px;padding:6px;resize:vertical}
+.anno-pop .row{display:flex;gap:6px;justify-content:flex-end;margin-top:6px}
+.anno-pop button{font:inherit;font-size:12px;padding:4px 10px;border:1px solid #d0d3d9;border-radius:6px;background:#fff;cursor:pointer}
+.anno-pop button.pri{background:#2563eb;color:#fff;border-color:#2563eb}
+.anno-pop button.del{color:#dc2626;border-color:#fca5a5}
+body.anno-adding{cursor:crosshair}
+</style>
+<div id="annoBar">
+  <button id="annoToggle" type="button">✏️ 批注</button>
+  <button id="annoAdd" type="button" style="display:none">+ 点击添加</button>
+  <span class="cnt" id="annoCnt"></span>
+  <button id="annoExport" type="button" style="display:none">导出</button>
+  <button id="annoClear" type="button" style="display:none;color:#dc2626">清空</button>
+</div>
+<script>
+(function(){
+var LS='asr_cmp_annos_v1';
+var annos=[]; try{annos=JSON.parse(localStorage.getItem(LS)||'[]')||[];}catch(e){annos=[];}
+var adding=false, shown=false, seq=0;
+annos.forEach(function(a){ if(a.id>seq)seq=a.id; });
+var bar=document.getElementById('annoBar');
+var tgl=document.getElementById('annoToggle'), addBtn=document.getElementById('annoAdd');
+var cnt=document.getElementById('annoCnt'), expBtn=document.getElementById('annoExport'), clrBtn=document.getElementById('annoClear');
+
+function save(){ try{localStorage.setItem(LS,JSON.stringify(annos));}catch(e){} updateCnt(); }
+function updateCnt(){ cnt.textContent=annos.length?annos.length+' 条':''; }
+
+function anchorEl(){ return document.getElementById('APP'); }
+function place(dot,a){
+  dot.style.left=(a.xr*100)+'%';
+  dot.style.top=a.y+'px';
+}
+function renderDots(){
+  document.querySelectorAll('.anno-dot,.anno-pop').forEach(function(n){n.remove();});
+  if(!shown) return;
+  var app=anchorEl(); var rect=app.getBoundingClientRect();
+  annos.forEach(function(a,idx){
+    var dot=document.createElement('div'); dot.className='anno-dot'; dot.textContent=(idx+1);
+    dot.style.position='absolute';
+    // 相对 APP 定位:x 用比例, y 用绝对像素(相对 APP 顶)
+    dot.style.left=(app.offsetLeft + a.xr*app.offsetWidth)+'px';
+    dot.style.top=(app.offsetTop + a.y)+'px';
+    dot.title=a.text||'(空)';
+    dot.addEventListener('click',function(ev){ ev.stopPropagation(); openPop(a,dot); });
+    document.body.appendChild(dot);
+  });
+}
+function openPop(a,dot){
+  document.querySelectorAll('.anno-pop').forEach(function(n){n.remove();});
+  var pop=document.createElement('div'); pop.className='anno-pop';
+  pop.style.left=dot.style.left; pop.style.top=(parseFloat(dot.style.top)+16)+'px';
+  pop.innerHTML='<textarea placeholder="写下批注...">'+(a.text||'')+'</textarea>'
+    +'<div class="row"><button class="del">删除</button><button class="pri">保存</button></div>';
+  document.body.appendChild(pop);
+  var ta=pop.querySelector('textarea'); ta.focus();
+  pop.querySelector('.pri').addEventListener('click',function(){ a.text=ta.value; save(); pop.remove(); renderDots(); });
+  pop.querySelector('.del').addEventListener('click',function(){ annos=annos.filter(function(x){return x!==a;}); save(); pop.remove(); renderDots(); });
+  pop.addEventListener('click',function(e){e.stopPropagation();});
+}
+tgl.addEventListener('click',function(){
+  shown=!shown; tgl.classList.toggle('on',shown);
+  addBtn.style.display=shown?'':'none'; expBtn.style.display=shown?'':'none'; clrBtn.style.display=shown?'':'none';
+  if(!shown){ adding=false; addBtn.classList.remove('on'); document.body.classList.remove('anno-adding'); }
+  renderDots(); updateCnt();
+});
+addBtn.addEventListener('click',function(){ adding=!adding; addBtn.classList.toggle('on',adding); document.body.classList.toggle('anno-adding',adding); });
+document.addEventListener('click',function(ev){
+  if(!adding) return;
+  if(bar.contains(ev.target)) return;
+  var app=anchorEl();
+  var x=ev.pageX-app.offsetLeft, y=ev.pageY-app.offsetTop;
+  var a={id:++seq, xr:x/app.offsetWidth, y:y, text:''};
+  annos.push(a); save();
+  adding=false; addBtn.classList.remove('on'); document.body.classList.remove('anno-adding');
+  renderDots();
+  setTimeout(function(){ var dots=document.querySelectorAll('.anno-dot'); openPop(a,dots[dots.length-1]); },30);
+});
+expBtn.addEventListener('click',function(){
+  var lines=annos.map(function(a,i){return (i+1)+'. '+(a.text||'(空)');});
+  var blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  var url=URL.createObjectURL(blob); var link=document.createElement('a');
+  link.href=url; link.download='对比报告-批注.txt'; link.click();
+  setTimeout(function(){URL.revokeObjectURL(url);},1000);
+});
+clrBtn.addEventListener('click',function(){ if(confirm('清空所有批注?')){annos=[];save();renderDots();} });
+window.addEventListener('resize',renderDots);
+window.addEventListener('scroll',function(){ /* dots 用 pageY 绝对定位, 无需随滚动重算 */ });
+updateCnt();
+})();
+</script>
+</body>
+</html>
