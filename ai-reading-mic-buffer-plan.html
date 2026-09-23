@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI大阅读开麦体验 · 缓冲方案(第一版)</title>
+<style>
+:root{
+  --bg:#f5f7fb; --card:#fff; --ink:#1f2733; --sub:#5b6676; --line:#e6ebf2;
+  --brand:#5b6ef5; --brand-soft:#eef1fe; --warm:#f5a623; --warm-soft:#fff6e6;
+  --good:#2fb37a; --good-soft:#e6f7f0; --bad:#e5573f; --bad-soft:#fdecea;
+  --shadow:0 2px 12px rgba(31,39,51,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  line-height:1.7;font-size:15px;padding-bottom:80px}
+.wrap{max-width:900px;margin:0 auto;padding:32px 24px}
+h1{font-size:26px;margin:0 0 4px}
+.lead{color:var(--sub);font-size:14px;margin:0 0 24px}
+h2{font-size:19px;margin:36px 0 14px;padding-left:11px;border-left:4px solid var(--brand)}
+h3{font-size:15px;margin:18px 0 8px;color:var(--ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:20px 22px;box-shadow:var(--shadow);margin:14px 0}
+p{margin:8px 0}
+strong{color:var(--ink)}
+.tag{display:inline-block;font-size:12px;padding:2px 9px;border-radius:20px;font-weight:600}
+.tag.brand{background:var(--brand-soft);color:var(--brand)}
+.tag.warm{background:var(--warm-soft);color:#b9770f}
+.tag.good{background:var(--good-soft);color:var(--good)}
+.tag.bad{background:var(--bad-soft);color:var(--bad)}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line)}
+th{background:#fafbfd;color:var(--sub);font-weight:600;font-size:13px}
+tr:last-child td{border-bottom:none}
+td.num{font-variant-numeric:tabular-nums;color:var(--sub)}
+.hl{background:var(--brand-soft)}
+ul,ol{margin:8px 0;padding-left:22px}
+li{margin:5px 0}
+.callout{border-radius:12px;padding:14px 16px;margin:14px 0;font-size:14px}
+.callout.warn{background:var(--warm-soft);border:1px solid #f5d99a}
+.callout.key{background:var(--brand-soft);border:1px solid #c7cffb}
+.callout.bad{background:var(--bad-soft);border:1px solid #f3b6ab}
+.callout b{display:block;margin-bottom:3px}
+.mut{color:var(--sub);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap" id="doc">
+<h1 data-name="标题">AI大阅读开麦体验 · 缓冲方案(第一版)</h1>
+<p class="lead" data-name="副标题">让"该等的题"多给几秒思考,又不让任何学生觉得"这题怎么不一样了"。基于15节课118小问数据。</p>
+
+<div class="callout key" data-name="一句话结论">
+<b>一句话</b>
+UI 一套不变,所有题问完照旧立刻亮竖条。只把 25 道"该等"的题的竖条<strong>先做成柔和"待命"态、检测到真开口才切"激活"态</strong>。收音全程开、开口即转录,一致性靠全课同一套动画守住。第一版先上受影响最大的前 10 道。
+</div>
+
+<h2 data-name="第一节标题">一、我们到底在解决什么</h2>
+<div class="card" data-name="问题定位卡">
+<p>AI 问完题,竖条立刻波动(呼吸灯 + 语音竖条),对 82 道<span class="tag good">立即题</span>没问题——学生本来就想好了。但对 25 道<span class="tag warm">该等题</span>,题还没在脑子里过完一遍,"该你说了"的信号已经打过来了。</p>
+<p><strong>被催的根子不是系统在催</strong>(竖条之后系统什么都不做,只是等)<strong>,而是竖条那个"波动=轮到你了"的强信号,来得比慢答学生的思考快。</strong>压力是纯心理的聚光灯感,不是任何催促动作。</p>
+<div class="callout warn" data-name="不返工提示">
+<b>好消息:不用改题库</b>
+数据验证过没有"给时间也没用、得改题"的题(C类=0)。慢只有两种成因:真在组织长答(该等)/ 答案本就短(不用等)。所以产品动作只有一个——给该等的题软化聚光灯 + 多给几秒。
+</div>
+</div>
+
+<h2 data-name="第二节标题">二、为什么不能"分模式 / 分环节"</h2>
+<div class="card" data-name="一致性论证卡">
+<p>这 25 道题散落在整节课里,不固定在某个环节。直觉会想"给它们做个思考模式",但只要学生<strong>能感知到两种模式在切换</strong>,一致性就破了——"它这题怎么不波动了?卡了吗?"</p>
+<p>所以解法反过来:<strong>让该等题和立即题在学生眼里长得一模一样</strong>,只在学生察觉不到的地方调节奏。三条底线锁死一致性:</p>
+<ul>
+<li><strong>时机不动</strong>:所有题问完都立刻亮竖条,没有"半天不亮"的卡顿疑虑。</li>
+<li><strong>动画一套</strong>:柔和态→激活态是同一根竖条的两种情绪,不是两个控件、两种模式。</li>
+<li><strong>收音全程开、开口即转录</strong>:任何题任何时刻一张嘴就收录,绝不慢待答得快的孩子。</li>
+</ul>
+</div>
+
+<h2 data-name="第三节标题">三、两段式竖条(核心交互)</h2>
+<div class="card" data-name="流程图卡">
+<h3>立即题(82道)· 现状不变</h3>
+<pre data-name="立即题流程" style="background:#fafbfd;border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.9;overflow:auto;margin:8px 0">AI问完题
+   │
+   ▼  立刻亮竖条 · <span style="color:var(--brand)">柔和待命态</span>
+   │      "我在听你,不着急"
+   ▼  学生马上开口 → 切 <span style="color:var(--bad)">激活录音态</span> → 转录
+        (柔和态一闪而过,和现在几乎无差别)</pre>
+
+<h3 style="margin-top:20px">该等题(25道)· 柔和态多停留几秒</h3>
+<pre data-name="该等题流程" style="background:var(--brand-soft);border:1px solid #c7cffb;border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.9;overflow:auto;margin:8px 0">AI问完题
+   │
+   ▼  立刻亮竖条 · <span style="color:var(--brand)">柔和待命态</span>  ← 时机和立即题<b>完全一样</b>
+   │      多停留 N 秒(按年级),给组织长答的时间
+   │      · 收音后台一直开着
+   │      · 一旦检测到真开口 → 立即切激活态、立即转录(不等满 N 秒)
+   ▼  <span style="color:var(--bad)">激活录音态</span> → 转录</pre>
+<p class="mut">学生视角:所有题问完都亮竖条、都能随时开口。区别只有"柔和态停留多久",而这是无感的。压力来自动效强度,就从动效强度上卸,不从时机上卸。</p>
+</div>
+
+<div class="card" data-name="视觉差卡">
+<h3>柔和态 vs 激活态长什么样</h3>
+<p>关键分寸:两态的差<strong>要够学生分辨(否则等于没做),又不能大到像两个控件(否则变两种模式、破一致性)</strong>。方向是"同一根竖条的两种情绪":</p>
+<table data-name="两态对比表">
+<tr><th>维度</th><th style="color:var(--brand)">柔和待命态</th><th style="color:var(--bad)">激活录音态</th></tr>
+<tr><td>竖条幅度</td><td>低、缓、匀速呼吸</td><td>随真实音量跳动</td></tr>
+<tr><td>颜色</td><td>低饱和(柔和蓝/灰蓝)</td><td>品牌主色/暖色,更实</td></tr>
+<tr><td>潜台词</td><td>"我在听,慢慢想"</td><td>"正在录你说的"</td></tr>
+</table>
+<p class="mut">这块建议给设计单独出动效稿,文字说不清手感——需要在真机上看"柔和态是不是显得系统正常在等、而不是卡了"。</p>
+</div>
+
+<h2 data-name="第四节标题">四、等多久 · 按年级配(标准档)</h2>
+<div class="card" data-name="时长表卡">
+<p>柔和态最多停留时长按年级配。数据来源:该等题慢答者的开口时间分布(报告第五节)。同一学生一节课就一个年级,课内档位恒定,不会来回变。</p>
+<table data-name="年级时长表">
+<tr><th>年级</th><th>标准档(覆盖约3/4慢答者)</th><th>宽松档(覆盖约9成)</th></tr>
+<tr><td>L2 / L3 / L4</td><td class="num">7–8 秒</td><td class="num">12 秒</td></tr>
+<tr><td>L5</td><td class="num">8 秒</td><td class="num">14 秒</td></tr>
+<tr class="hl"><td><strong>L6</strong></td><td class="num"><strong>10 秒</strong></td><td class="num"><strong>18 秒</strong></td></tr>
+</table>
+<div class="callout key" data-name="第一版档位建议">
+<b>第一版建议:先上标准档</b>
+规则最简单、立刻覆盖全部 25 题。宽松档、"按题型×年级"、"按题实测"都留到 A/B 之后再精细化——前者会引入冷启动多给问题,后者要等数据。
+</div>
+</div>
+
+<h2 data-name="第五节标题">五、先做哪些题 · 前10道(覆盖76%受影响人次)</h2>
+<div class="card" data-name="前10题卡">
+<p>该等的 25 道题按<strong>影响面</strong>(作答人数 × 慢答占比 = 实际让多少人被催过)排队,别一起上。<strong>只做前 10 道就覆盖 76% 的受影响人次</strong>(二八分布),第一批就盯这 10 道。</p>
+<table data-name="前10题清单">
+<tr><th>排名</th><th>年级</th><th>题号</th><th>题型</th><th>受影响人数</th></tr>
+<tr class="hl"><td class="num">1</td><td>L5</td><td>110840-1</td><td>信息推断题</td><td class="num">1093</td></tr>
+<tr><td class="num">2</td><td>L6</td><td>1672503-1</td><td>人物形象题</td><td class="num">847</td></tr>
+<tr><td class="num">3</td><td>L3</td><td>1284421-1</td><td>信息提取题</td><td class="num">823</td></tr>
+<tr><td class="num">4</td><td>L6</td><td>1672502-1</td><td>内容辨析题</td><td class="num">757</td></tr>
+<tr><td class="num">5</td><td>L6</td><td>1672504-1</td><td>信息提取题</td><td class="num">722</td></tr>
+<tr><td class="num">6</td><td>L3</td><td>1284420-1</td><td>信息推断题</td><td class="num">481</td></tr>
+<tr><td class="num">7</td><td>L4</td><td>334695-1</td><td>概括梳理题</td><td class="num">384</td></tr>
+<tr><td class="num">8</td><td>L4</td><td>334698-1</td><td>开放表达题</td><td class="num">259</td></tr>
+<tr><td class="num">9</td><td>L6</td><td>474358-1</td><td>人物心理题</td><td class="num">209</td></tr>
+<tr><td class="num">10</td><td>L3</td><td>893326-1</td><td>信息提取题</td><td class="num">180</td></tr>
+</table>
+<p class="mut">这 25 道题是离线预先打好标签的(报告第四节),上课时只按题号查 flag,运行时零计算。</p>
+</div>
+
+<div class="callout bad" data-name="人物形象题坑">
+<b>⚠️ 别被"慢答多"误导:人物形象题</b>
+第 2 名是人物形象题,但这类题慢的人往往在说正确短答(如"贪吃""挑拨离间"),是<strong>答案本就短</strong>、不是在组织长答。上线时要按逐题分类的实际 flag 走,别只看题型就无脑加缓冲。
+</div>
+
+<h2 data-name="第六节标题">六、怎么证明"被催感"下降(A/B 口径)</h2>
+<div class="card" data-name="AB卡">
+<p>前 10 道做 A/B,对照组现状、实验组两段式竖条 + 缓冲。衡量指标建议:</p>
+<table data-name="AB指标表">
+<tr><th>指标</th><th>怎么看</th></tr>
+<tr><td>慢答者首开口时间</td><td>该等题里,愣≥5秒学生的开口时点分布是否更集中、被"逼"提前开口的减少</td></tr>
+<tr><td>重说 / 打断率</td><td>因没想好就开口、说一半重来的比例是否下降</td></tr>
+<tr><td>空答 / 放弃率</td><td>被催到干脆不答的比例是否下降</td></tr>
+<tr><td>答得快的人未被拖慢</td><td>立即题、以及该等题里的快答者,首开口时间<strong>不能变慢</strong>——这是不能踩的红线</td></tr>
+</table>
+<p class="mut">最后一条是护栏:如果缓冲反而拖慢了答得快的孩子,说明"开口即转录"没做到位,方案要回炉。</p>
+</div>
+
+<h2 data-name="第七节标题">七、两个必须钉死的技术前提</h2>
+<div class="card" data-name="技术前提卡">
+<div class="callout warn" data-name="VAD前提">
+<b>1. "开口"怎么判 — VAD 端点检测</b>
+柔和态→激活态靠 VAD。阈值太松被环境音误触发(柔和态被瞬间打断,前功尽弃),太紧漏掉小声开口的孩子。<strong>必须在真实课堂噪声下调</strong>。这条做不到,整个方案失效。
+</div>
+<div class="callout warn" data-name="两态视觉前提">
+<b>2. 两态视觉差的分寸</b>
+差太小学生看不出=没做;差太大变两种模式=破一致性。得是"同一根竖条的两种情绪",需要设计出动效稿在真机验证。
+</div>
+</div>
+
+<h2 data-name="第八节标题">八、第一版范围小结</h2>
+<div class="card" data-name="范围小结卡">
+<ul>
+<li><span class="tag brand">交互</span> 两段式竖条:全课一套动画,柔和待命→检测开口→激活录音。时机不动、收音全程开、开口即转录。</li>
+<li><span class="tag brand">时长</span> 按年级标准档(L2-L4 7-8秒 / L5 8秒 / L6 10秒)。</li>
+<li><span class="tag brand">范围</span> 先上受影响最大的前 10 道(覆盖76%受影响人次),拿 A/B 数据再铺开到 25 道。</li>
+<li><span class="tag brand">实现</span> 25道题离线打 flag,上课按题号查,运行时零计算。</li>
+<li><span class="tag brand">前提</span> VAD 端点检测 + 两态动效稿,是上线 gate。</li>
+</ul>
+</div>
+</div>
+<!-- 版本条 -->
+<div id="verBadge" onclick="toggleVer()" style="position:fixed;top:14px;right:16px;z-index:9000;background:var(--brand);color:#fff;font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;cursor:pointer;box-shadow:0 2px 8px rgba(91,110,245,.4);font-family:-apple-system,sans-serif">版本 v1</div>
+<div id="verPanel" style="display:none;position:fixed;top:48px;right:16px;z-index:9000;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 8px 28px rgba(31,39,51,.16);max-width:320px;font-family:-apple-system,sans-serif"></div>
+
+<!-- 批注开关 -->
+<div id="annToggle" onclick="toggleAnn()" style="position:fixed;bottom:20px;right:16px;z-index:9000;background:#fff;border:1px solid var(--line);color:var(--ink);font-size:13px;font-weight:600;padding:8px 14px;border-radius:22px;cursor:pointer;box-shadow:0 2px 10px rgba(31,39,51,.12);font-family:-apple-system,sans-serif">✏️ 批注模式</div>
+<div id="annExport" onclick="exportAnn()" style="display:none;position:fixed;bottom:20px;right:150px;z-index:9000;background:var(--brand);color:#fff;font-size:13px;font-weight:600;padding:8px 14px;border-radius:22px;cursor:pointer;box-shadow:0 2px 10px rgba(91,110,245,.35);font-family:-apple-system,sans-serif">导出给 Claude</div>
+
+<div id="annPanel" style="display:none;position:fixed;top:70px;right:16px;width:230px;max-height:70vh;overflow:auto;z-index:8500;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:0 8px 28px rgba(31,39,51,.16);font-family:-apple-system,sans-serif"></div>
+<div id="annEditor" style="display:none;position:fixed;z-index:9500;width:260px;background:#fff;border:1px solid var(--brand);border-radius:10px;padding:10px;box-shadow:0 8px 28px rgba(31,39,51,.2);font-family:-apple-system,sans-serif">
+  <div id="annTarget" style="font-size:12px;color:var(--brand);font-weight:600;margin-bottom:6px"></div>
+  <textarea id="annText" rows="3" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:6px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box"></textarea>
+  <div style="font-size:11px;color:var(--sub);margin-top:5px">回车保存 · Shift+回车换行 · Esc 取消(打字选字的回车不会误提交)</div>
+</div>
+<div id="toast" style="display:none;position:fixed;bottom:70px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--ink);color:#fff;font-size:13px;padding:9px 18px;border-radius:22px;font-family:-apple-system,sans-serif"></div>
+
+<style>
+#doc.ann-on [data-name]:hover{outline:2px dashed var(--brand);outline-offset:2px;cursor:pointer}
+.ann-mark{position:absolute;z-index:8000;width:20px;height:20px;background:var(--bad);color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.3);font-family:-apple-system,sans-serif}
+@keyframes annFlash{0%{background:var(--warm-soft)}100%{background:transparent}}
+.ann-flash{animation:annFlash 1.2s ease-out}
+.ann-item.active{outline:2px solid var(--brand);outline-offset:1px}
+</style>
+
+<script>
+const VERSIONS=[{v:1,date:"2026-09-24",desc:"第一版:两段式竖条(柔和待命→激活录音)+按年级标准档+前10题+A/B口径+VAD/动效两前提。确定不分模式、时机不动、开口即转录三条一致性底线。"}];
+(function(){document.getElementById('verBadge').textContent='版本 v'+VERSIONS[VERSIONS.length-1].v;})();
+function toggleVer(){const p=document.getElementById('verPanel');if(p.style.display==='none'){let h='<div style="font-weight:700;font-size:13px;margin-bottom:8px">版本历史</div>';[...VERSIONS].reverse().forEach(x=>{h+='<div style="border-left:3px solid var(--brand);padding:0 0 10px 10px;margin-bottom:2px"><div style="font-size:12px;font-weight:600">v'+x.v+' <span style="color:var(--sub);font-weight:400">· '+x.date+'</span></div><div style="font-size:12px;color:var(--sub);line-height:1.5;margin-top:2px">'+x.desc+'</div></div>';});p.innerHTML=h;p.style.display='block';}else p.style.display='none';}
+
+let annOn=false, anns=[], editingTarget=null;
+const doc=document.getElementById('doc');
+function toggleAnn(){annOn=!annOn;doc.classList.toggle('ann-on',annOn);document.getElementById('annToggle').textContent=annOn?'✏️ 批注中':'✏️ 批注模式';document.getElementById('annPanel').style.display=annOn?'block':'none';document.getElementById('annExport').style.display=annOn?'block':'none';renderAll();}
+document.addEventListener('click',function(e){
+  if(!annOn)return;
+  const t=e.target;
+  const ed=document.getElementById('annEditor'),pn=document.getElementById('annPanel');
+  if(ed.contains(t)||pn.contains(t)||t===document.getElementById('annToggle')||t===document.getElementById('annExport')||t.closest('.ann-mark')||t===document.getElementById('verBadge')||document.getElementById('verPanel').contains(t))return;
+  const el=t.closest('[data-name]');
+  if(!el)return;
+  openEditor(el);
+});
+function openEditor(el){
+  editingTarget=el;
+  const ed=document.getElementById('annEditor');
+  document.getElementById('annTarget').textContent='📍 '+el.getAttribute('data-name');
+  const existing=anns.find(a=>a.target===el);
+  document.getElementById('annText').value=existing?existing.txt:'';
+  ed.style.display='block';
+  const r=el.getBoundingClientRect();
+  ed.style.left=Math.max(10,Math.min(r.left,window.innerWidth-270))+'px';
+  ed.style.top=Math.max(10,Math.min(r.bottom+6,window.innerHeight-180))+'px';
+  document.getElementById('annText').focus();
+}
+document.getElementById('annText').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();saveAnn();}
+  else if(e.key==='Escape'){document.getElementById('annEditor').style.display='none';editingTarget=null;}
+});
+function saveAnn(){
+  const txt=document.getElementById('annText').value.trim();
+  const existing=anns.find(a=>a.target===editingTarget);
+  if(txt){if(existing)existing.txt=txt;else anns.push({name:editingTarget.getAttribute('data-name'),txt:txt,target:editingTarget});}
+  else if(existing)anns=anns.filter(a=>a!==existing);
+  document.getElementById('annEditor').style.display='none';editingTarget=null;renderAll();
+}
+function renderAll(){
+  document.querySelectorAll('.ann-mark').forEach(m=>m.remove());
+  const pn=document.getElementById('annPanel');
+  if(!anns.length){pn.innerHTML='<div style="font-size:12px;color:var(--sub)">点选页面元素添加批注</div>';return;}
+  let h='<div style="font-weight:700;font-size:13px;margin-bottom:8px">批注 ('+anns.length+')</div>';
+  anns.forEach((a,i)=>{
+    h+='<div class="ann-item" onclick="focusAnn('+i+')" style="font-size:12px;padding:6px 8px;border-radius:6px;background:#fafbfd;margin-bottom:5px;cursor:pointer"><div style="font-weight:600;color:var(--bad)">'+(i+1)+'. '+a.name+' <span onclick="event.stopPropagation();delAnn('+i+')" style="float:right;color:var(--sub);cursor:pointer">✕</span></div><div style="color:var(--sub);margin-top:2px;line-height:1.4">'+a.txt+'</div></div>';
+    const mk=document.createElement('div');mk.className='ann-mark';mk.textContent=i+1;mk.onclick=()=>focusAnn(i);
+    document.body.appendChild(mk);
+  });
+  pn.innerHTML=h;repositionMarks();
+}
+function repositionMarks(){
+  const marks=document.querySelectorAll('.ann-mark');
+  anns.forEach((a,i)=>{if(!marks[i])return;const r=a.target.getBoundingClientRect();marks[i].style.left=(window.scrollX+r.left-10)+'px';marks[i].style.top=(window.scrollY+r.top-10)+'px';});
+}
+function focusAnn(i){
+  const a=anns[i];if(!a)return;
+  a.target.scrollIntoView({block:'center',behavior:'smooth'});
+  a.target.classList.remove('ann-flash');void a.target.offsetWidth;a.target.classList.add('ann-flash');
+  document.querySelectorAll('.ann-item').forEach((el,j)=>el.classList.toggle('active',j===i));
+}
+function delAnn(i){anns.splice(i,1);renderAll();}
+window.addEventListener('scroll',repositionMarks,{passive:true});
+window.addEventListener('resize',repositionMarks);
+function showToast(msg,bad){const t=document.getElementById('toast');t.textContent=msg;t.style.background=bad?'var(--bad)':'var(--ink)';t.style.display='block';setTimeout(()=>t.style.display='none',2600);}
+function exportAnn(){
+  if(!anns.length){showToast('还没有批注',true);return;}
+  let out='# 批注反馈\n\n';anns.forEach((a,i)=>{out+=(i+1)+'. 【'+a.name+'】'+a.txt+'\n';});
+  const done=()=>showToast('✅ 已复制,回对话框 Cmd/Ctrl+V 粘贴');
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(out).then(done).catch(()=>fallback(out,done));}
+  else fallback(out,done);
+}
+function fallback(text,done){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){showToast('复制失败,请重试',true);}document.body.removeChild(ta);}
+</script>
+</body>
+</html>
