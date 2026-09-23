@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI大阅读答题体验 · 该给多少时间再开麦</title>
+<style>
+:root {
+  color-scheme: light;
+  --surface-1: #fcfcfb;
+  --surface-page: #f9f9f7;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+  --gridline: #e1e0d9;
+  --baseline: #c3c2b7;
+  --border: rgba(11,11,11,0.10);
+  --A: #eb6834;
+  --B: #eda100;
+  --OK: #1baf7a;
+  --good: #0ca30c;
+  --critical: #d03b3b;
+  --accent: #184f95;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", "PingFang SC", sans-serif;
+  background: var(--surface-page);
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+.wrap { max-width: 1040px; margin: 0 auto; padding: 32px 24px 96px; }
+h1 { font-size: 26px; margin: 0 0 6px; }
+h2 { font-size: 20px; margin: 46px 0 14px; padding-top: 16px; border-top: 1px solid var(--gridline); }
+h3 { font-size: 16px; margin: 26px 0 10px; }
+.subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 22px; }
+.card {
+  background: var(--surface-1); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 24px; margin-bottom: 16px;
+}
+.big-take {
+  background: #fff8ef; border: 1px solid #f0dcae; border-radius: 12px;
+  padding: 20px 24px; margin: 16px 0; font-size: 15px;
+}
+.big-take b { color: #8a4b00; }
+.callout { background: #fff8ef; border: 1px solid #f0dcae; border-radius: 10px; padding: 14px 18px; font-size: 14px; margin: 12px 0; }
+.callout.warn { background: #fdeeee; border-color: #f0c2c2; }
+.callout.good { background: #eefaef; border-color: #b9e3ba; }
+.toc { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; margin-bottom: 22px; }
+.toc a { color: var(--accent); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+.pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; margin-right: 4px; }
+.pill-A { background: rgba(235,104,52,0.15); color: #a3401a; }
+.pill-B { background: rgba(237,161,0,0.18); color: #8a6100; }
+.pill-OK { background: rgba(27,175,122,0.15); color: #0e6a49; }
+table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.data th, table.data td { padding: 8px 10px; border-bottom: 1px solid var(--gridline); text-align: left; vertical-align: top; }
+table.data th { color: var(--text-secondary); font-weight: 600; background: var(--surface-page); }
+table.data tr:hover { background: #f5f5f2; }
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+.three-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 16px 0; }
+.stat { border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+.stat .k { font-size: 13px; color: var(--text-secondary); }
+.stat .v { font-size: 34px; font-weight: 700; margin: 4px 0; }
+.stat .d { font-size: 12px; color: var(--text-muted); }
+.stat.A { border-left: 4px solid var(--A); } .stat.A .v { color: var(--A); }
+.stat.B { border-left: 4px solid var(--B); } .stat.B .v { color: #b57c00; }
+.stat.OK { border-left: 4px solid var(--OK); } .stat.OK .v { color: var(--OK); }
+.filters { display: flex; gap: 8px; margin: 14px 0; flex-wrap: wrap; }
+.filters select, .filters input { padding: 6px 10px; border: 1px solid var(--baseline); border-radius: 6px; font-size: 13px; background: var(--surface-1); }
+.subq-row { cursor: pointer; }
+.subq-detail { display: none; background: var(--surface-page); }
+.subq-detail.open { display: table-row; }
+.subq-detail td { padding: 14px 16px; }
+.samp { font-size: 12px; background: var(--surface-1); border: 1px solid var(--border); border-radius: 6px; padding: 7px 9px; margin-bottom: 5px; color: var(--text-secondary); }
+.samp .lc { font-weight: 600; color: var(--text-primary); font-size: 11px; margin-right: 6px; }
+.footer-note { font-size: 12px; color: var(--text-muted); margin-top: 46px; padding-top: 16px; border-top: 1px solid var(--gridline); }
+.bar { display:flex; height:22px; border-radius:5px; overflow:hidden; margin:6px 0; min-width:200px; }
+.bar span { height:100%; }
+
+/* ---- annotate layer (定稿形态) ---- */
+[data-name].ann-hoverable:hover { outline: 2px dashed #eb6834; outline-offset: 2px; cursor: crosshair; }
+.ann-mark { position: absolute; width: 22px; height: 22px; border-radius: 50%; background: #eb6834; color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.25); z-index: 9998; transform: translate(-50%, -50%); }
+.ann-highlight-flash { animation: annFlash 1.1s ease; }
+@keyframes annFlash { 0% { outline: 3px solid #eb6834; background: rgba(235,104,52,0.12); } 100% { outline: 3px solid transparent; background: transparent; } }
+#ann-toggle { position: fixed; bottom: 20px; right: 20px; z-index: 10000; background: #184f95; color: white; border: none; border-radius: 999px; padding: 10px 18px; font-size: 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+#ann-toggle.active { background: #eb6834; }
+#ann-panel { position: fixed; right: 20px; bottom: 70px; width: 300px; max-height: 55vh; overflow-y: auto; background: #fff; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); padding: 10px; z-index: 9999; display: none; }
+#ann-panel.open { display: block; }
+#ann-panel .ann-list-item { font-size: 12px; border-bottom: 1px solid var(--gridline); padding: 8px 4px; cursor: pointer; display: flex; gap: 8px; align-items: flex-start; }
+#ann-panel .ann-list-item:hover, #ann-panel .ann-list-item.active { background: #fdf3ec; }
+#ann-panel .ann-list-item .ann-num { flex: 0 0 18px; height: 18px; border-radius: 50%; background: #eb6834; color: #fff; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+#ann-panel .ann-list-item .ann-body { flex: 1; }
+#ann-panel .ann-list-item .ann-name { color: var(--text-muted); font-size: 11px; }
+#ann-panel .ann-list-item .ann-del { color: #d03b3b; font-size: 11px; flex: 0 0 auto; }
+#ann-export { width: 100%; margin-top: 8px; padding: 8px; border: none; border-radius: 6px; background: #0ca30c; color: #fff; font-size: 12px; cursor: pointer; }
+#ann-editor { position: fixed; width: 240px; z-index: 10001; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); padding: 8px; display: none; }
+#ann-editor.open { display: block; }
+#ann-editor textarea { width: 100%; min-height: 60px; font-size: 13px; border: 1px solid var(--baseline); border-radius: 4px; padding: 6px; resize: vertical; font-family: inherit; }
+#ann-editor .ann-hint { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+#ann-toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: #0b0b0b; color: #fff; font-size: 12px; padding: 8px 16px; border-radius: 6px; z-index: 10002; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+#ann-toast.show { opacity: 0.95; }
+#ann-toast.err { background: #d03b3b; }
+#ann-version { position: fixed; top: 16px; right: 16px; z-index: 9997; background: #4a3aa7; color: #fff; border: none; border-radius: 999px; padding: 5px 14px; font-size: 12px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+#ann-version-panel { position: fixed; top: 50px; right: 16px; width: 280px; max-height: 50vh; overflow-y: auto; background: #fff; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); padding: 12px; z-index: 9997; display: none; }
+#ann-version-panel.open { display: block; }
+.ann-version-item { border-left: 2px solid #4a3aa7; padding-left: 10px; margin-bottom: 10px; font-size: 12px; }
+.ann-version-item .v-tag { font-weight: 700; color: #4a3aa7; }
+.ann-version-item .v-date { color: var(--text-muted); font-size: 11px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>AI大阅读答题体验：到底该给多少时间再开麦</h1>
+<div class="subtitle">15节课 · 118个小问 · 需求方 陈兰兰 &nbsp;|&nbsp; 一句话：只有约 <b>1/5</b> 的题该多等几秒，剩下的立即开麦没问题</div>
+
+<div class="toc">
+  <a href="#q1">问题是什么</a>
+  <a href="#q2">怎么判断一道题该不该等</a>
+  <a href="#q3">三类题 + 各占多少</a>
+  <a href="#q4">该等的题，等多久</a>
+  <a href="#q5">哪种题型最该等</a>
+  <a href="#q6">逐题明细</a>
+  <a href="#q7">怎么算出来的</a>
+</div>
+
+<section id="q1">
+<h2>一、问题是什么</h2>
+<div class="card">
+<p>AI老师提完问，几乎是<b>立刻就开麦</b>让学生回答。有学生反馈：话还没想好，就被催着开口了。</p>
+<p>需求方想搞清楚的其实是三件事：</p>
+<ul>
+<li><b>哪些题该多给点时间</b>——学生确实在认真组织答案，催他反而打断思路；</li>
+<li><b>哪些题立刻开麦就行</b>——答案本来就短，多等纯属浪费；</li>
+<li><b>有没有那种"给再多时间也没用"的题</b>——如果有，说明题目本身太难，得改题，不是调时间能解决的。</li>
+</ul>
+<p>我们扒了 15 节课、118 个小问的真实对话和收音数据，把每道题归了类，下面就是答案。</p>
+</div>
+</section>
+
+<section id="q2">
+<h2>二、怎么判断一道题该不该等</h2>
+<div class="card">
+<p>用两个能从数据直接算出来的信号，两步走：</p>
+
+<h3>第一步：这道题"慢的人多不多"</h3>
+<p>看一道题里，<b>回答前愣了 5 秒以上</b>的学生占多大比例（我们叫它"慢答占比"）。占比高，说明这题让不少人卡了一下，是需要关注的候选题。</p>
+<p>门槛不是拍脑袋定的，是各年级自己的数据分布定的——因为<b>高年级整体就比低年级慢</b>（题更难、答案更长）。用统一门槛会冤枉高年级、放过低年级，所以按年级分开：</p>
+<div class="callout" style="margin:10px 0;">
+各年级"慢答占比"门槛（超过它才算候选题）：<br>
+二年级 <b>24%</b> ｜ 三年级 <b>23%</b> ｜ 四年级 <b>22%</b> ｜ 五年级 <b>25%</b> ｜ <b>六年级 34%</b>（明显更高，因为六年级本来就慢）
+</div>
+
+<h3>第二步：慢，是"在憋长答案"还是"憋不出来"</h3>
+<p>光慢还不够，得看慢的人<b>到底在干嘛</b>。我们看这批慢的人里，<b>说得很短（15字以内）的占多大比例</b>：</p>
+<ul>
+<li>短答占比<b>低</b> → 慢的人大多在说长句子，是真的在组织答案 → <span class="pill pill-A">该给时间</span></li>
+<li>短答占比<b>高</b> → 慢的人说来说去就几个字 → 要么答案本来就短，要么卡住了，进一步看内容判断</li>
+</ul>
+<div class="callout warn" style="margin:10px 0;">
+<b>为什么不能只看"慢不慢"？</b> 我们一开始用过一个更粗的算法（比较慢的人和快的人谁说得长），结果把好几道<b>长答题误判成了卡壳题</b>——因为这些题里，答得快的人反而说得更长（他们读透了直接一大段），把平均值带偏了。换成"慢的人里短答占多少"这个更直接的口径后，13 道被冤枉的长答题全部纠正回来了。
+</div>
+</div>
+</section>
+
+<section id="q3">
+<h2>三、三类题，各占多少</h2>
+<div class="card">
+<p>118 个小问，按上面两步归成三类：</p>
+<div class="three-grid">
+  <div class="stat OK"><div class="k">立即开麦就行</div><div class="v" id="s-ok">82</div><div class="d">占 69%，维持现状</div></div>
+  <div class="stat A"><div class="k">该多等几秒</div><div class="v" id="s-a">25</div><div class="d">占 21%，加静默缓冲</div></div>
+  <div class="stat B"><div class="k">答案本就短</div><div class="v" id="s-b">11</div><div class="d">占 9%，也不用等</div></div>
+</div>
+
+<div class="big-take">
+<b>最重要的结论：没有一道"给时间也没用、必须改题"的题。</b><br>
+我们把那 11 道"慢而短"的题挨条抽出来看了原文——慢的人绝大多数在说<b>正确的短答</b>（比如"好，我们一起走""贪吃""挑拨离间"），只是低龄孩子组织语言慢了点，不是不会答。真正"不知道/答不出"的比例都很低。<br>
+换句话说，学生喊"被催"，主要是那 <b>21% 该等的题没等够</b>，而不是题目出难了。<b>产品动作聚焦到"按题调开麦等待时间"就行，不用返工改题库。</b>
+</div>
+
+<h3>分年级看</h3>
+<p>低年级"该给时间"的题占比更高，高年级反而更多是"慢而短"（说明高年级的慢，很多是在斟酌用词说短答，给时间收益没那么大）：</p>
+<table class="data" id="grade-table">
+<thead><tr><th>年级</th><th class="num">小问数</th><th class="num">立即开麦</th><th class="num">该等</th><th class="num">答案本就短</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+</section>
+
+<section id="q4">
+<h2>四、该等的题，到底等多久</h2>
+<div class="card">
+<p>对那 25 道"该等"的题，我们看了慢的人实际花多久才开口（首帧时间，含 1-2 秒链路延迟，比实际略偏大）：</p>
+<p>整体来说，慢的人里<b>一半在 8 秒内开口，四分之三在 12 秒内，九成在 21 秒内</b>。当前是"立即开麦"、几乎没缓冲，所以催促感很明显。</p>
+
+<h3>建议的等待时长（按年级）</h3>
+<p>取每个年级"该等的题"里、四分之三人能开口的时间作标准档：</p>
+<table class="data">
+<thead><tr><th>年级</th><th>标准档（覆盖约 3/4 学生）</th><th>宽松档（覆盖约 9 成）</th></tr></thead>
+<tbody>
+<tr><td>二 / 三 / 四年级</td><td class="num">7–8 秒</td><td class="num">12 秒</td></tr>
+<tr><td>五年级</td><td class="num">8 秒</td><td class="num">14 秒</td></tr>
+<tr><td><b>六年级</b></td><td class="num"><b>10 秒</b></td><td class="num"><b>18 秒</b></td></tr>
+</tbody>
+</table>
+<div class="callout good">
+<b>落地关键：别让想好的孩子干等。</b> 缓冲期内一旦检测到孩子开口就立刻转录，没开口才等满窗口。否则"多等几秒"本身又会变成新的催促来源（反过来惹到答得快的孩子）。
+</div>
+</div>
+</section>
+
+<section id="q5">
+<h2>五、哪种题型最该给时间</h2>
+<div class="card">
+<p>我们从题库拿到了每道题的官方题型标签（15 种题型，118 题全部匹配上）。按题型看"该等占比"：</p>
+<table class="data" id="qt-table">
+<thead><tr><th>题型</th><th class="num">题数</th><th class="num">该等</th><th class="num">该等占比</th><th class="num">该等题的慢答参考(3/4位)</th></tr></thead>
+<tbody></tbody>
+</table>
+
+<div class="big-take" style="margin-top:16px;">
+<b>一个反直觉的发现：人物形象题不该给时间。</b><br>
+"人物形象题"有 25 道，是数量最多的题型之一，慢答的人确实不少（愣 15 秒以上很常见）。但它的"该等占比"只有 <b>4%</b>——因为慢的人几乎都在说<b>正确的短答</b>（"贪吃""挑拨离间""很勇敢"这种概括词）。这种题<b>光看"慢不慢"会判错，必须叠加"慢的人在说长句还是短词"</b>才不冤枉它。<br>
+真正该给时间的，是需要<b>把好几个要点串起来说</b>的题型：信息提取、开放表达、信息推断、概括梳理。
+</div>
+
+<div class="callout">
+<b>落地可以做成"题型 × 年级"双保险：</b> 信息提取 / 开放表达 / 信息推断 / 概括梳理 这几类默认给缓冲；人物形象 / 主旨情感 / 赏析类默认立即开麦。再用实测的"慢答占比 + 短答占比"动态微调。时长仍按上面的年级档（该等题的慢答基本落在 10–12 秒，和年级档吻合）。
+</div>
+</div>
+</section>
+
+<section id="q6">
+<h2>六、逐题明细（118 个小问）</h2>
+<div class="card">
+<p>点每一行可以展开看该题慢答学生的原话抽样。分类：<span class="pill pill-OK">立即开麦</span> <span class="pill pill-A">该等</span> <span class="pill pill-B">答案本就短</span></p>
+<div class="filters">
+  <select id="f-grade"><option value="">全部年级</option></select>
+  <select id="f-cls"><option value="">全部分类</option><option value="A">该等</option><option value="OK">立即开麦</option><option value="B">答案本就短</option></select>
+  <select id="f-qt"><option value="">全部题型</option></select>
+  <input id="f-search" placeholder="搜题号…" style="flex:1;min-width:120px;">
+</div>
+<table class="data">
+<thead><tr>
+  <th>年级</th><th>题号</th><th>题型</th><th>能力</th>
+  <th class="num">慢答占比</th><th class="num">短答占比</th><th class="num">慢答人开口(半数/多数/九成)</th><th>分类</th>
+</tr></thead>
+<tbody id="subq-body"></tbody>
+</table>
+</div>
+</section>
+
+<section id="q7">
+<h2>七、这些数是怎么算出来的</h2>
+<div class="card">
+<table class="data">
+<tr><th style="width:130px;">课程范围</th><td>15 节课，L2–L6 每年级 3 节、跨不同书目随机抽取，都是真实有效对话 300 人次以上的课；共 118 个小问。</td></tr>
+<tr><th>小问怎么切</th><td>按 AI 消息里的官方标记 <code>&lt;reply question="N"&gt;</code> 切分，不是我们猜的。</td></tr>
+<tr><th>时间怎么算</th><td>从"开麦"到"收到第一帧语音"的时间差。含 1–2 秒链路延迟，所以绝对值略偏大，但用来横向比较题和题是可靠的。</td></tr>
+<tr><th>题型标签</th><td>来自题库表的官方标注（能力8类 / 题型15类 / 难度3档），118 题全部匹配到，0 缺失。</td></tr>
+<tr><th>语音噪声</th><td>识别乱码（纯字母/数字那种）只占 0.1%，已剔除；"嗯""不知道"这类不算噪声——那正是判断卡壳的信号，保留。</td></tr>
+</table>
+<div class="callout">
+<b>还能再往下做（可选）：</b>"慢答占比"和"短答占比"都能每天从日志离线算，新书目上线后自动给每道题打上 立即开麦/该等 的标签，不用人工重跑。
+</div>
+</div>
+</section>
+
+</div>
+
+<button id="ann-toggle">✏️ 批注模式</button>
+<div id="ann-panel"></div>
+<button id="ann-version">版本</button>
+<div id="ann-version-panel"></div>
+<div id="ann-toast"></div>
+<div id="ann-editor"><textarea placeholder="写下你的批注…"></textarea><div class="ann-hint">回车保存 · Shift+回车换行 · Esc 取消</div></div>
+
+<script id="DATA" type="application/json">{"n_lessons": 15, "n_subq": 118, "total": {"OK": 82, "A": 25, "B": 11}, "grade_thr": {"2": 24.3, "3": 22.7, "4": 21.7, "5": 25.1, "6": 34.1}, "grade_sum": [{"g": "2", "thr": 24.3, "total": 19, "OK": 13, "A": 5, "B": 1, "a_p75": 10.7}, {"g": "3", "thr": 22.7, "total": 32, "OK": 23, "A": 5, "B": 4, "a_p75": 10.8}, {"g": "4", "thr": 21.7, "total": 20, "OK": 14, "A": 4, "B": 2, "a_p75": 9.7}, {"g": "5", "thr": 25.1, "total": 19, "OK": 13, "A": 4, "B": 2, "a_p75": 10.9}, {"g": "6", "thr": 34.1, "total": 28, "OK": 19, "A": 7, "B": 2, "a_p75": 12.4}], "qt_sum": [{"qtype": "信息推断题", "total": 11, "OK": 6, "A": 4, "B": 1, "a_ratio": 36, "a_p75": 10.9}, {"qtype": "内容辨析题", "total": 3, "OK": 2, "A": 1, "B": 0, "a_ratio": 33, "a_p75": 18.1}, {"qtype": "概括梳理题", "total": 6, "OK": 4, "A": 2, "B": 0, "a_ratio": 33, "a_p75": 9.7}, {"qtype": "信息提取题", "total": 27, "OK": 15, "A": 8, "B": 4, "a_ratio": 30, "a_p75": 11.8}, {"qtype": "开放表达题", "total": 26, "OK": 16, "A": 7, "B": 3, "a_ratio": 27, "a_p75": 10.0}, {"qtype": "人物心理题", "total": 12, "OK": 10, "A": 2, "B": 0, "a_ratio": 17, "a_p75": 12.4}, {"qtype": "人物形象题", "total": 25, "OK": 22, "A": 1, "B": 2, "a_ratio": 4, "a_p75": 15.3}, {"qtype": "句子含义题", "total": 1, "OK": 1, "A": 0, "B": 0, "a_ratio": 0, "a_p75": null}, {"qtype": "主旨情感题", "total": 6, "OK": 5, "A": 0, "B": 1, "a_ratio": 0, "a_p75": null}, {"qtype": "赏析表达题", "total": 1, "OK": 1, "A": 0, "B": 0, "a_ratio": 0, "a_p75": null}], "recs": [{"g": "2", "bk": "4", "qid": "1391356", "N": "1", "n": 472, "over5": 29.7, "stuck": 46.4, "thr": 24.3, "cls": "B", "ability": "信息提取", "qtype": "信息提取题", "diff": null, "p50": 7.5, "p75": 11.1, "p90": 17.1, "samples": [[9.9, 10, "他不声不响地离开了。"], [5.5, 8, "他没有迈出一步。"], [8.7, 15, "没过去，没过去，没过去，没过去"], [6.8, 7, "嗯，我不知道。"]]}, {"g": "2", "bk": "4", "qid": "1026685", "N": "1", "n": 466, "over5": 28.5, "stuck": 40.6, "thr": 24.3, "cls": "A", "ability": "信息提取", "qtype": "信息提取题", "diff": null, "p50": 7.7, "p75": 13.1, "p90": 17.3, "samples": [[5.3, 3, "不知道"], [10.8, 14, "斑比像老龙王之前教他的一样。"], [14.0, 8, "想不起来找不到。"], [6.7, 11, "绿色危险斑马是，嗯嗯。"]]}, {"g": "2", "bk": "4", "qid": "1026685", "N": "2", "n": 455, "over5": 8.6, "stuck": 69.2, "thr": 24.3, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 6.2, "p75": 7.7, "p90": 12.5, "samples": [[8.8, 4, "谁说谁？"], [5.5, 5, "勇敢的小鹿"], [7.6, 5, "勇敢的小鹿"], [5.2, 5, "勇敢的小鹿"]]}, {"g": "2", "bk": "4", "qid": "1392512", "N": "1", "n": 458, "over5": 21.4, "stuck": 59.2, "thr": 24.3, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": null, "p50": 6.8, "p75": 10.4, "p90": 19.5, "samples": [[30.7, 8, "去看看新的世界。"], [5.0, 6, "去危险的地方"], [5.6, 7, "这是一件事呀。"], [6.0, 4, "我不知道"]]}, {"g": "2", "bk": "4", "qid": "1036433", "N": "1", "n": 502, "over5": 13.1, "stuck": 10.6, "thr": 24.3, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": null, "p50": 7.0, "p75": 9.1, "p90": 12.8, "samples": [[12.6, 3, "我忘了"], [13.0, 14, "姐姐也想吃这么好的饭，嘎嘎嘎"], [8.7, 12, "一样会疼痛，一样会被杀。"], [82.6, 3, "还需要"]]}, {"g": "2", "bk": "4", "qid": "1036434", "N": "1", "n": 467, "over5": 20.3, "stuck": 62.1, "thr": 24.3, "cls": "OK", "ability": "分析理解", "qtype": "句子含义题", "diff": null, "p50": 6.3, "p75": 9.1, "p90": 12.8, "samples": [[5.2, 5, "勇敢的表现"], [9.2, 4, "不再恐惧"], [5.7, 5, "这个是橘子"], [15.2, 11, "他会，他会冷，他会冷静"]]}, {"g": "2", "bk": "4", "qid": "1036435", "N": "1", "n": 469, "over5": 32.2, "stuck": 37.7, "thr": 24.3, "cls": "A", "ability": "思辨表达", "qtype": "开放表达题", "diff": null, "p50": 8.0, "p75": 11.6, "p90": 15.9, "samples": [[8.5, 15, "我觉得，上台发言很难，我做不到"], [5.7, 12, "我觉得上台发言是很难的。"], [21.8, 11, "我觉得学跳绳是很难的。"], [5.8, 13, "我觉得上台发言是很困难的。"]]}, {"g": "2", "bk": "4", "qid": "1036435", "N": "2", "n": 383, "over5": 15.1, "stuck": 12.1, "thr": 24.3, "cls": "OK", "ability": "思辨表达", "qtype": "开放表达题", "diff": null, "p50": 7.7, "p75": 9.8, "p90": 16.8, "samples": [[24.7, 7, "勇敢的试一试。"], [8.3, 12, "先把自由泳学会，再学仰泳"], [6.2, 15, "上讲台发言的时候，我会勇敢的。"], [28.2, 1, "嗯"]]}, {"g": "2", "bk": "100", "qid": "1666463", "N": "1", "n": 358, "over5": 24.6, "stuck": 17.0, "thr": 24.3, "cls": "A", "ability": "信息提取", "qtype": "信息提取题", "diff": 2, "p50": 6.9, "p75": 10.3, "p90": 14.4, "samples": [[5.2, 12, "从大炮跳到了另一发大炮。"], [8.5, 3, "不知道"], [14.3, 11, "男爵用了炮弹返回原地。"], [6.3, 10, "啊，嗯，咖喱，咖喱。"]]}, {"g": "2", "bk": "100", "qid": "1666464", "N": "2", "n": 320, "over5": 17.5, "stuck": 41.1, "thr": 24.3, "cls": "OK", "ability": "分析推断", "qtype": "信息推断题", "diff": 1, "p50": 8.5, "p75": 12.2, "p90": 23.5, "samples": [[8.5, 4, "他成功了"], [6.2, 10, "结果还是没有跳过去。"], [7.1, 5, "没有跳过去"], [6.5, 6, "掉进了泥潭。"]]}, {"g": "2", "bk": "100", "qid": "1666465", "N": "1", "n": 338, "over5": 30.5, "stuck": 17.5, "thr": 24.3, "cls": "A", "ability": "信息提取", "qtype": "信息提取题", "diff": 2, "p50": 6.8, "p75": 10.7, "p90": 17.4, "samples": [[15.4, 2, "它是"], [5.9, 15, "他是用，他是用自己的聪明才智。"], [5.3, 8, "他想抓住的是马。"], [6.8, 15, "拽着自己辫子，用腿夹住马马跳。"]]}, {"g": "2", "bk": "100", "qid": "1666466", "N": "1", "n": 351, "over5": 18.5, "stuck": 12.3, "thr": 24.3, "cls": "OK", "ability": "思辨表达", "qtype": "开放表达题", "diff": 2, "p50": 6.1, "p75": 7.7, "p90": 10.9, "samples": [[8.1, 9, "但他本就是很厉害。"], [6.0, 8, "因为能在天上飞。"], [14.5, 13, "普通人的智商比男爵小一点。"], [5.4, 13, "因为男爵做的姿势太大胆了。"]]}, {"g": "2", "bk": "100", "qid": "1666467", "N": "1", "n": 326, "over5": 20.6, "stuck": 74.6, "thr": 24.3, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": 1, "p50": 7.3, "p75": 9.4, "p90": 14.5, "samples": [[5.0, 4, "勇敢无畏"], [6.3, 8, "我会用胆大如牛。"], [8.9, 5, "不知道啊？"], [6.7, 7, "很牛，很勇敢。"]]}, {"g": "2", "bk": "100", "qid": "1666468", "N": "1", "n": 349, "over5": 10.0, "stuck": 22.9, "thr": 24.3, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": 1, "p50": 6.2, "p75": 9.5, "p90": 15.3, "samples": [[15.4, 9, "它顺着嫩芽爬上去。"], [9.6, 11, "想出了什么办法爬上去？"], [15.1, 13, "一颗豌豆一直打到了月亮上。"], [28.9, 3, "不知道"]]}, {"g": "2", "bk": "100", "qid": "1666469", "N": "1", "n": 338, "over5": 21.3, "stuck": 33.3, "thr": 24.3, "cls": "OK", "ability": "创造创新", "qtype": "开放表达题", "diff": 2, "p50": 8.0, "p75": 12.7, "p90": 15.7, "samples": [[5.2, 1, "嗯"], [5.4, 9, "我刚刚跑的飞过去。"], [15.4, 10, "我会跟他一样的想法。"], [15.5, 4, "我不知道"]]}, {"g": "2", "bk": "100", "qid": "1666464", "N": "1", "n": 340, "over5": 23.5, "stuck": 23.8, "thr": 24.3, "cls": "OK", "ability": "信息提取", "qtype": "内容辨析题", "diff": 2, "p50": 8.0, "p75": 13.4, "p90": 24.8, "samples": [[10.8, 9, "让我跳过这个泥潭。"], [5.0, 8, "你再讲一遍题目。"], [5.4, 8, "他让马跳过泥潭。"], [5.7, 12, "让马助跑使劲跳过了泥潭。"]]}, {"g": "2", "bk": "100", "qid": "1666470", "N": "1", "n": 357, "over5": 30.0, "stuck": 9.3, "thr": 24.3, "cls": "A", "ability": "归纳概括", "qtype": "概括梳理题", "diff": 3, "p50": 6.5, "p75": 8.7, "p90": 11.4, "samples": [[9.3, 11, "我好爱你，臭逼，傻逼。"], [5.3, 5, "告诉你，我"], [9.2, 4, "我不知道"], [6.3, 1, "有"]]}, {"g": "2", "bk": "100", "qid": "1667498", "N": "1", "n": 349, "over5": 18.3, "stuck": 21.9, "thr": 24.3, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": 3, "p50": 6.9, "p75": 10.0, "p90": 16.1, "samples": [[8.3, 3, "晃一点"], [9.9, 9, "嗯，哦，累死我了。"], [7.9, 5, "嗯，七等奖"], [7.3, 13, "他遇到麻烦，从来不慌不慌。"]]}, {"g": "2", "bk": "100", "qid": "1667499", "N": "1", "n": 347, "over5": 20.2, "stuck": 51.4, "thr": 24.3, "cls": "OK", "ability": "创造创新", "qtype": "开放表达题", "diff": 2, "p50": 6.7, "p75": 8.7, "p90": 15.5, "samples": [[7.1, 15, "如果有人打我的话，我就会还手。"], [13.5, 7, "我会解决麻烦。"], [5.8, 2, "想吧"], [6.4, 7, "最近没有麻烦。"]]}, {"g": "3", "bk": "6", "qid": "9071", "N": "1", "n": 2030, "over5": 22.7, "stuck": 60.3, "thr": 22.7, "cls": "B", "ability": "信息提取", "qtype": "信息提取题", "diff": null, "p50": 6.7, "p75": 9.2, "p90": 13.7, "samples": [[6.0, 11, "拇指姑娘，她非常紧张。"], [60.9, 3, "不开心"], [6.3, 8, "拇指姑娘很伤心。"], [21.8, 8, "非常伤心，害怕。"]]}, {"g": "3", "bk": "6", "qid": "9071", "N": "2", "n": 2025, "over5": 15.9, "stuck": 72.3, "thr": 22.7, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 6.7, "p75": 9.3, "p90": 18.7, "samples": [[19.0, 3, "很无助"], [5.2, 10, "嗯，留下可怜的印象。"], [6.6, 2, "小巧"], [7.6, 5, "弱小的梦想"]]}, {"g": "3", "bk": "6", "qid": "9073", "N": "1", "n": 2031, "over5": 15.3, "stuck": 59.2, "thr": 22.7, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": null, "p50": 6.9, "p75": 9.0, "p90": 14.7, "samples": [[68.1, 3, "他准备"], [26.5, 2, "开心"], [7.8, 8, "说出自己的感受。"], [5.4, 2, "害怕"]]}, {"g": "3", "bk": "6", "qid": "9073", "N": "2", "n": 1995, "over5": 11.0, "stuck": 40.9, "thr": 22.7, "cls": "OK", "ability": "创造创新", "qtype": "开放表达题", "diff": null, "p50": 6.5, "p75": 9.2, "p90": 14.2, "samples": [[5.4, 8, "我带你去你的家。"], [5.8, 6, "嗯嗯，大老黑"], [17.3, 5, "刷小猿电子"], [5.3, 13, "他会说，他把拇指姑娘带走。"]]}, {"g": "3", "bk": "6", "qid": "9074", "N": "1", "n": 2009, "over5": 28.0, "stuck": 72.2, "thr": 22.7, "cls": "B", "ability": "信息提取", "qtype": "信息提取题", "diff": null, "p50": 7.4, "p75": 11.0, "p90": 17.7, "samples": [[11.6, 14, "他痛快地说，好，我们一起走。"], [5.4, 9, "不是他，不是狗血。"], [8.0, 6, "不要，不要。"], [25.4, 7, "痛快地答应了。"]]}, {"g": "3", "bk": "6", "qid": "9075", "N": "1", "n": 2060, "over5": 22.0, "stuck": 13.9, "thr": 22.7, "cls": "OK", "ability": "归纳概括", "qtype": "概括梳理题", "diff": null, "p50": 6.8, "p75": 9.3, "p90": 13.6, "samples": [[7.0, 1, "哭"], [5.7, 15, "一开始，拇指姑娘渐渐的，她能够"], [8.1, 9, "很害羞，呃，很害怕"], [10.0, 4, "我不知道"]]}, {"g": "3", "bk": "6", "qid": "9075", "N": "2", "n": 1863, "over5": 22.6, "stuck": 72.7, "thr": 22.7, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 7.0, "p75": 10.1, "p90": 18.6, "samples": [[23.4, 4, "从软到硬"], [5.1, 12, "从好到坏，不对，反过来。"], [5.5, 8, "我有点答不上来。"], [7.1, 4, "勇敢坚强"]]}, {"g": "3", "bk": "6", "qid": "9075", "N": "3", "n": 1997, "over5": 19.6, "stuck": 35.8, "thr": 22.7, "cls": "OK", "ability": "分析理解", "qtype": "主旨情感题", "diff": null, "p50": 6.9, "p75": 9.2, "p90": 13.1, "samples": [[8.1, 14, "真的成长是能够主动说出原因。"], [8.4, 11, "真正的成长是能够主动。"], [10.9, 12, "真正的成长才能主动长大。"], [6.0, 5, "对呀，嗯。"]]}, {"g": "3", "bk": "6", "qid": "9076", "N": "1", "n": 1964, "over5": 21.5, "stuck": 59.7, "thr": 22.7, "cls": "OK", "ability": "分析理解", "qtype": "主旨情感题", "diff": null, "p50": 7.1, "p75": 9.7, "p90": 14.8, "samples": [[8.2, 12, "丑小鸭的成长是一直前进。"], [11.0, 10, "真正的成长不怎么样。"], [6.4, 13, "绝对不往里走，一直往外走。"], [7.7, 6, "是绝不变的。"]]}, {"g": "3", "bk": "8", "qid": "893324", "N": "2", "n": 631, "over5": 7.0, "stuck": 65.9, "thr": 22.7, "cls": "OK", "ability": "分析推断", "qtype": "信息推断题", "diff": null, "p50": 6.5, "p75": 10.0, "p90": 14.2, "samples": [[9.0, 7, "因为呢，那是九"], [6.0, 12, "那个什么饮料很可能是酒。"], [5.7, 7, "嗯，我不知道。"], [5.9, 3, "不知道"]]}, {"g": "3", "bk": "8", "qid": "893324", "N": "1", "n": 626, "over5": 7.8, "stuck": 81.6, "thr": 22.7, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": null, "p50": 6.9, "p75": 9.2, "p90": 13.6, "samples": [[8.0, 11, "他怎么了？说话想回家。"], [8.3, 9, "他突然觉得不舒服。"], [5.5, 7, "突然被灌醉了。"], [5.2, 3, "不舒服"]]}, {"g": "3", "bk": "8", "qid": "893325", "N": "1", "n": 698, "over5": 37.1, "stuck": 56.4, "thr": 22.7, "cls": "B", "ability": "信息提取", "qtype": "信息提取题", "diff": null, "p50": 7.7, "p75": 13.2, "p90": 20.2, "samples": [[5.8, 3, "不知道"], [5.6, 13, "说我的，我要去拿土豆根茎。"], [8.2, 6, "去去找医生。"], [5.1, 9, "做了准备就找医生。"]]}, {"g": "3", "bk": "8", "qid": "893325", "N": "2", "n": 676, "over5": 16.1, "stuck": 77.1, "thr": 22.7, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 7.0, "p75": 8.8, "p90": 14.7, "samples": [[5.9, 10, "知道情况就行动的人。"], [9.9, 3, "很善良"], [9.6, 4, "耐心的人"], [8.8, 5, "非常勇敢的"]]}, {"g": "3", "bk": "8", "qid": "893326", "N": "1", "n": 700, "over5": 25.7, "stuck": 22.8, "thr": 22.7, "cls": "A", "ability": "信息提取", "qtype": "信息提取题", "diff": null, "p50": 6.9, "p75": 9.7, "p90": 15.3, "samples": [[5.7, 13, "安妮给他喝了药，就脱离了。"], [7.1, 4, "安妮一边"], [5.3, 12, "让点火，让烧水，让喝药。"], [9.7, 3, "不知道"]]}, {"g": "3", "bk": "8", "qid": "893327", "N": "1", "n": 689, "over5": 16.7, "stuck": 61.7, "thr": 22.7, "cls": "OK", "ability": "归纳概括", "qtype": "概括梳理题", "diff": null, "p50": 6.5, "p75": 8.9, "p90": 14.6, "samples": [[7.5, 9, "结果就是病治好了。"], [5.2, 14, "最后，明尼梅的喉头炎病好了。"], [15.1, 14, "这件事最后是一个开心的结果。"], [6.5, 10, "好了，完成了，好了。"]]}, {"g": "3", "bk": "8", "qid": "893328", "N": "1", "n": 689, "over5": 22.6, "stuck": 34.6, "thr": 22.7, "cls": "OK", "ability": "分析理解", "qtype": "人物心理题", "diff": null, "p50": 7.0, "p75": 9.5, "p90": 13.6, "samples": [[18.5, 12, "不知道，哎，都说那快滚。"], [6.5, 8, "快点来回答问题。"], [5.4, 11, "因为他安妮救了明尼梅。"], [5.9, 10, "因为他救了他们家的孩"]]}, {"g": "3", "bk": "8", "qid": "893329", "N": "1", "n": 690, "over5": 16.7, "stuck": 49.6, "thr": 22.7, "cls": "OK", "ability": "分析理解", "qtype": "主旨情感题", "diff": null, "p50": 7.3, "p75": 10.1, "p90": 18.8, "samples": [[12.2, 8, "妈还没回来呢，没"], [7.7, 11, "说呀，为什么能修复啊？"], [5.8, 15, "因为安妮帮助了戴安娜一件大事。"], [5.1, 7, "因为他救人了。"]]}, {"g": "3", "bk": "8", "qid": "893329", "N": "2", "n": 674, "over5": 11.0, "stuck": 74.3, "thr": 22.7, "cls": "OK", "ability": "思辨表达", "qtype": "开放表达题", "diff": null, "p50": 6.8, "p75": 8.7, "p90": 13.2, "samples": [[102.0, 8, "不用越来越好了。"], [5.1, 2, "更好"], [78.0, 14, "嗯，有一后边会变得越来越好。"], [5.2, 11, "会越来越好，越来越好。"]]}, {"g": "3", "bk": "8", "qid": "893330", "N": "1", "n": 456, "over5": 33.8, "stuck": 41.6, "thr": 22.7, "cls": "A", "ability": "迁移运用", "qtype": "开放表达题", "diff": null, "p50": 7.4, "p75": 10.0, "p90": 15.5, "samples": [[14.0, 11, "嗯，天气干燥，他流鼻血"], [6.0, 10, "我都没有发生过，可是"], [49.1, 10, "我把我的零食分给他。"], [5.8, 10, "我把好东西分给了他。"]]}, {"g": "3", "bk": "8", "qid": "893331", "N": "1", "n": 221, "over5": 29.9, "stuck": 37.9, "thr": 22.7, "cls": "A", "ability": "迁移运用", "qtype": "开放表达题", "diff": null, "p50": 8.2, "p75": 11.4, "p90": 14.6, "samples": [[12.4, 4, "他没有我"], [10.2, 12, "我不会的题，他教会了我。"], [5.3, 6, "朋友帮过我是"], [8.1, 4, "嗯，挨打"]]}, {"g": "3", "bk": "58", "qid": "1284420", "N": "1", "n": 1624, "over5": 29.6, "stuck": 33.8, "thr": 22.7, "cls": "A", "ability": "分析推断", "qtype": "信息推断题", "diff": 1, "p50": 7.4, "p75": 10.8, "p90": 18.4, "samples": [[6.6, 4, "能教教我"], [6.0, 12, "因为他们都在帮别人拉车。"], [5.3, 13, "因为那些人是帮别人拉车的。"], [21.8, 13, "老师就永远第一线，不怕死。"]]}, {"g": "3", "bk": "58", "qid": "1284421", "N": "1", "n": 1558, "over5": 52.8, "stuck": 15.6, "thr": 22.7, "cls": "A", "ability": "信息提取", "qtype": "信息提取题", "diff": 2, "p50": 8.8, "p75": 14.5, "p90": 22.8, "samples": [[10.7, 11, "一个国际歌，他们很忙。"], [9.6, 8, "你再说一遍问题。"], [13.5, 15, "因为厨子成为了别人的做菜机器。"], [16.1, 8, "我还需要再思考。"]]}, {"g": "3", "bk": "58", "qid": "1285531", "N": "2", "n": 1441, "over5": 16.7, "stuck": 53.1, "thr": 22.7, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": 2, "p50": 6.6, "p75": 9.7, "p90": 13.9, "samples": [[5.5, 15, "他们都在做一些没有意义的事情。"], [10.5, 3, "不知道"], [17.9, 13, "自己干的事不可以自己决定。"], [5.9, 8, "他们都在做事情。"]]}, {"g": "3", "bk": "58", "qid": "1590192", "N": "1", "n": 1460, "over5": 15.5, "stuck": 28.2, "thr": 22.7, "cls": "OK", "ability": "分析理解", "qtype": "人物心理题", "diff": 2, "p50": 7.1, "p75": 11.3, "p90": 20.1, "samples": [[5.2, 1, "呃"], [6.5, 10, "因为他帮助了很多人。"], [29.9, 12, "嗯，没有人奥利给多，因为"], [7.2, 15, "因为能在天空中自由的飞翔翱翔。"]]}, {"g": "3", "bk": "58", "qid": "1590193", "N": "1", "n": 1466, "over5": 8.9, "stuck": 45.0, "thr": 22.7, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": 1, "p50": 6.4, "p75": 9.1, "p90": 16.8, "samples": [[15.1, 9, "是为了自己唱唱歌。"], [5.8, 2, "古人"], [5.5, 13, "是为了，是为了给歌儿高兴。"], [12.7, 7, "什么样的歌儿？"]]}, {"g": "3", "bk": "58", "qid": "1590193", "N": "2", "n": 1444, "over5": 7.4, "stuck": 52.3, "thr": 22.7, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": 2, "p50": 6.3, "p75": 9.2, "p90": 15.1, "samples": [[5.7, 9, "为了辛苦的人唱歌。"], [23.4, 6, "他唱是会是。"], [7.2, 9, "现在画眉鸟唱歌是为"], [5.2, 5, "是为了自己"]]}, {"g": "3", "bk": "58", "qid": "1590194", "N": "1", "n": 576, "over5": 8.9, "stuck": 41.2, "thr": 22.7, "cls": "OK", "ability": "迁移运用", "qtype": "开放表达题", "diff": 2, "p50": 6.0, "p75": 6.9, "p90": 8.5, "samples": [[6.0, 11, "因为他是需要帮助的人。"], [5.7, 7, "因为他生病了。"], [5.8, 7, "因为他生病了。"], [6.8, 13, "因为他生病了，很疲惫难受。"]]}, {"g": "3", "bk": "58", "qid": "1590197", "N": "1", "n": 1403, "over5": 34.4, "stuck": 55.5, "thr": 22.7, "cls": "B", "ability": "迁移运用", "qtype": "开放表达题", "diff": 1, "p50": 7.0, "p75": 9.5, "p90": 14.3, "samples": [[6.3, 12, "嗯，我把地扫得干干净净。"], [27.6, 8, "专心完成一幅画。"], [5.7, 8, "安慰难过的朋友。"], [10.9, 8, "重新完成一幅画。"]]}, {"g": "3", "bk": "58", "qid": "1709738", "N": "1", "n": 1455, "over5": 15.3, "stuck": 37.4, "thr": 22.7, "cls": "OK", "ability": "迁移运用", "qtype": "开放表达题", "diff": 2, "p50": 6.7, "p75": 9.3, "p90": 12.4, "samples": [[9.2, 8, "因为我喜欢画画。"], [6.8, 8, "因为我很爱画画。"], [5.8, 14, "因因，因为我看他感觉特别疼。"], [17.2, 5, "因为我喜欢"]]}, {"g": "3", "bk": "58", "qid": "1285531", "N": "1", "n": 1490, "over5": 14.6, "stuck": 26.7, "thr": 22.7, "cls": "OK", "ability": "信息提取", "qtype": "内容辨析题", "diff": 2, "p50": 6.6, "p75": 9.0, "p90": 14.2, "samples": [[14.1, 11, "画眉鸟的心情是是伤心。"], [5.3, 14, "他的心情现在很不开心，很苦恼"], [5.4, 7, "很悲惨，很伤心"], [5.9, 13, "他是非常非常非常非常伤心。"]]}, {"g": "3", "bk": "58", "qid": "1590196", "N": "1", "n": 444, "over5": 6.5, "stuck": 20.7, "thr": 22.7, "cls": "OK", "ability": "迁移运用", "qtype": "开放表达题", "diff": 2, "p50": 6.2, "p75": 8.0, "p90": 11.5, "samples": [[5.7, 10, "因为他是为别人付出。"], [8.2, 10, "因为画快递员他很累。"], [6.3, 4, "我没灵感"], [12.2, 8, "二分之五分之二。"]]}, {"g": "3", "bk": "58", "qid": "1590195", "N": "1", "n": 418, "over5": 9.1, "stuck": 26.3, "thr": 22.7, "cls": "OK", "ability": "迁移运用", "qtype": "开放表达题", "diff": 2, "p50": 6.5, "p75": 8.5, "p90": 11.8, "samples": [[6.7, 7, "因为他很孤单。"], [7.1, 8, "因为他非常孤单。"], [5.6, 13, "因为这样老奶奶就不孤单了。"], [6.9, 14, "帮我小猿搜题，知道了，知道了"]]}, {"g": "4", "bk": "28", "qid": "334206", "N": "1", "n": 1214, "over5": 14.3, "stuck": 86.8, "thr": 21.7, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": null, "p50": 7.1, "p75": 10.5, "p90": 19.3, "samples": [[5.1, 7, "嗯，普罗米修斯"], [11.1, 4, "普罗米修"], [7.0, 3, "说女娲"], [9.1, 4, "是雅典娜"]]}, {"g": "4", "bk": "28", "qid": "511374", "N": "1", "n": 1232, "over5": 20.4, "stuck": 42.2, "thr": 21.7, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": null, "p50": 6.9, "p75": 9.1, "p90": 14.0, "samples": [[6.7, 15, "嗯，计算时间，表达自己的想法。"], [6.1, 4, "驯服动物"], [6.0, 10, "治疗疾病，驯服动物。"], [8.8, 10, "制造法厄童治疗疾病。"]]}, {"g": "4", "bk": "28", "qid": "334207", "N": "1", "n": 1194, "over5": 11.2, "stuck": 64.9, "thr": 21.7, "cls": "OK", "ability": "分析理解", "qtype": "人物心理题", "diff": null, "p50": 7.8, "p75": 11.6, "p90": 20.3, "samples": [[6.0, 10, "因为，所以科学道理。"], [11.6, 9, "因为它是为了人类。"], [5.2, 15, "因为它想帮助人类，是不是？嗯？"], [9.3, 8, "因为它为了人们。"]]}, {"g": "4", "bk": "28", "qid": "334208", "N": "1", "n": 1180, "over5": 23.5, "stuck": 69.3, "thr": 21.7, "cls": "B", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 7.0, "p75": 9.7, "p90": 14.3, "samples": [[7.3, 7, "那你非常善良。"], [5.1, 8, "他甘于奉献的特点"], [5.5, 7, "嗯，不怕困难。"], [16.1, 4, "呃，坚强"]]}, {"g": "4", "bk": "28", "qid": "334695", "N": "1", "n": 1211, "over5": 31.7, "stuck": 24.7, "thr": 21.7, "cls": "A", "ability": "归纳概括", "qtype": "概括梳理题", "diff": null, "p50": 7.1, "p75": 9.7, "p90": 14.2, "samples": [[6.9, 6, "不用不容易。"], [7.9, 6, "嗯，不容易。"], [9.5, 2, "哎呀"], [13.1, 5, "我不太知道"]]}, {"g": "4", "bk": "28", "qid": "334696", "N": "1", "n": 1144, "over5": 19.1, "stuck": 65.1, "thr": 21.7, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 7.4, "p75": 11.1, "p90": 15.9, "samples": [[5.6, 8, "我觉得法厄同是一"], [11.2, 2, "嗯嗯"], [23.6, 4, "坚定的人"], [15.4, 5, "共军控制的"]]}, {"g": "4", "bk": "28", "qid": "334697", "N": "1", "n": 1208, "over5": 11.9, "stuck": 50.7, "thr": 21.7, "cls": "OK", "ability": "分析推断", "qtype": "信息推断题", "diff": null, "p50": 6.8, "p75": 9.1, "p90": 15.4, "samples": [[5.2, 7, "是法厄同狂妄自"], [5.1, 12, "是法厄童非要骑太阳马车？"], [6.1, 9, "法厄同，嗯，法厄同"], [6.8, 14, "法厄同执意要，执意要坐马车。"]]}, {"g": "4", "bk": "28", "qid": "334697", "N": "2", "n": 1173, "over5": 12.7, "stuck": 40.3, "thr": 21.7, "cls": "OK", "ability": "思辨表达", "qtype": "开放表达题", "diff": null, "p50": 6.8, "p75": 10.1, "p90": 13.2, "samples": [[11.9, 7, "不能自以为是。"], [5.7, 10, "做不到的事情就别做。"], [14.4, 8, "做事不能太鲁莽。"], [7.1, 6, "嗯，不知道。"]]}, {"g": "4", "bk": "28", "qid": "334698", "N": "1", "n": 1192, "over5": 21.7, "stuck": 24.7, "thr": 21.7, "cls": "A", "ability": "迁移运用", "qtype": "开放表达题", "diff": null, "p50": 6.9, "p75": 9.4, "p90": 15.0, "samples": [[22.7, 14, "你能不能，可以先休息一下呗？"], [11.2, 5, "嗯，没有。"], [6.6, 4, "农民伯伯"], [8.5, 7, "我进过这种题。"]]}, {"g": "4", "bk": "28", "qid": "334699", "N": "1", "n": 1165, "over5": 35.4, "stuck": 62.4, "thr": 21.7, "cls": "B", "ability": "迁移运用", "qtype": "开放表达题", "diff": null, "p50": 7.5, "p75": 11.3, "p90": 16.5, "samples": [[5.1, 9, "看看，等工资到了。"], [5.1, 6, "呃，保护同学"], [5.8, 2, "没有"], [11.5, 3, "第二个"]]}, {"g": "4", "bk": "28", "qid": "334695", "N": "2", "n": 62, "over5": 17.7, "stuck": 54.5, "thr": 21.7, "cls": "OK", "ability": "归纳概括", "qtype": "概括梳理题", "diff": null, "p50": 7.8, "p75": 14.3, "p90": 26.5, "samples": [[26.5, 7, "你就十分艰难。"], [5.7, 12, "以为乘坐他的马车很简单。"], [7.8, 10, "嗯，一开始是是很旺。"], [7.3, 6, "没有，没有。"]]}, {"g": "4", "bk": "30", "qid": "1671305", "N": "1", "n": 522, "over5": 20.9, "stuck": 12.8, "thr": 21.7, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": 1, "p50": 6.7, "p75": 9.5, "p90": 17.0, "samples": [[6.8, 14, "眼一睁是白天，眼一闭是黑夜。"], [8.0, 12, "烛龙可以控制太阳和月亮。"], [13.3, 3, "很伟大"], [6.8, 9, "太多了，说不出来。"]]}, {"g": "4", "bk": "30", "qid": "2015445", "N": "1", "n": 501, "over5": 21.6, "stuck": 62.0, "thr": 21.7, "cls": "OK", "ability": "分析理解", "qtype": "主旨情感题", "diff": 2, "p50": 7.6, "p75": 9.3, "p90": 13.1, "samples": [[5.8, 8, "好，很爱问问题。"], [7.6, 4, "爱动脑筋"], [5.7, 4, "热于动脑"], [10.7, 15, "我感受到了古人追随浪漫的特点。"]]}, {"g": "4", "bk": "30", "qid": "1671307", "N": "1", "n": 502, "over5": 32.5, "stuck": 17.2, "thr": 21.7, "cls": "A", "ability": "信息提取", "qtype": "信息提取题", "diff": 2, "p50": 8.4, "p75": 11.8, "p90": 16.6, "samples": [[7.9, 14, "一把弓居然可以直接射下太阳？"], [6.7, 2, "不会"], [12.7, 12, "他们用弓箭把把太阳给射。"], [16.4, 12, "呃，后羿拿着很多弓箭去射"]]}, {"g": "4", "bk": "30", "qid": "1672142", "N": "1", "n": 493, "over5": 34.9, "stuck": 15.7, "thr": 21.7, "cls": "A", "ability": "信息提取", "qtype": "信息提取题", "diff": 2, "p50": 7.0, "p75": 9.5, "p90": 14.9, "samples": [[25.1, 12, "嗯，洗了啊，洗了我洗了。"], [13.8, 9, "嗯嗯，他没有视力。"], [6.7, 15, "雷母先电大地，雷公再去电人类。"], [42.4, 2, "没有"]]}, {"g": "4", "bk": "30", "qid": "1672143", "N": "1", "n": 483, "over5": 11.0, "stuck": 50.9, "thr": 21.7, "cls": "OK", "ability": "分析推断", "qtype": "信息推断题", "diff": 2, "p50": 6.2, "p75": 9.0, "p90": 18.1, "samples": [[6.1, 4, "打雷现象"], [12.2, 12, "嗯，下雨的时候都会打雷。"], [10.3, 9, "早说，嗯，雷暴雨。"], [5.2, 11, "打雷呀，什么什么什么。"]]}, {"g": "4", "bk": "30", "qid": "1672147", "N": "1", "n": 432, "over5": 12.0, "stuck": 75.0, "thr": 21.7, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": 1, "p50": 7.4, "p75": 10.5, "p90": 18.0, "samples": [[21.8, 7, "我想给流星划过"], [6.5, 2, "彩虹"], [6.3, 13, "我想给彩虹编一个神话故事。"], [6.2, 1, "嗯"]]}, {"g": "4", "bk": "30", "qid": "1672148", "N": "1", "n": 515, "over5": 19.4, "stuck": 19.0, "thr": 21.7, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": 2, "p50": 7.5, "p75": 12.1, "p90": 16.5, "samples": [[14.2, 8, "这冷战想不出来。"], [5.1, 2, "地宫"], [15.1, 7, "不，我不知道。"], [16.8, 7, "嗯，我想到啊。"]]}, {"g": "4", "bk": "30", "qid": "1672148", "N": "2", "n": 507, "over5": 17.4, "stuck": 17.0, "thr": 21.7, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": 2, "p50": 6.7, "p75": 8.9, "p90": 14.4, "samples": [[6.4, 14, "星神吹一口气，星流星就出现。"], [5.4, 13, "啊，喂，你说，你说我咋说？"], [7.3, 2, "跺脚"], [5.1, 15, "他手指一挥，就让流星划过天空。"]]}, {"g": "4", "bk": "30", "qid": "1671308", "N": "1", "n": 446, "over5": 19.7, "stuck": 65.9, "thr": 21.7, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": 1, "p50": 6.9, "p75": 11.3, "p90": 16.7, "samples": [[7.2, 6, "全校都测不出"], [5.7, 1, "很"], [13.6, 1, "干"], [11.6, 15, "嗯，是一个没有水，没有粮食的景"]]}, {"g": "5", "bk": "14", "qid": "10754", "N": "1", "n": 4357, "over5": 15.2, "stuck": 28.8, "thr": 25.1, "cls": "OK", "ability": "思辨表达", "qtype": "开放表达题", "diff": null, "p50": 6.8, "p75": 9.3, "p90": 16.4, "samples": [[14.8, 2, "悟空"], [5.2, 2, "总共"], [8.8, 2, "悟空"], [13.5, 2, "悟空"]]}, {"g": "5", "bk": "14", "qid": "10754", "N": "2", "n": 4018, "over5": 15.5, "stuck": 4.5, "thr": 25.1, "cls": "OK", "ability": "创造创新", "qtype": "开放表达题", "diff": null, "p50": 6.3, "p75": 8.2, "p90": 12.8, "samples": [[6.2, 4, "百度新闻"], [11.9, 4, "我要等你"], [5.2, 4, "嗯，对。"], [43.1, 7, "喂，喂，喂喂。"]]}, {"g": "5", "bk": "14", "qid": "78078", "N": "1", "n": 4023, "over5": 18.9, "stuck": 27.4, "thr": 25.1, "cls": "OK", "ability": "分析理解", "qtype": "主旨情感题", "diff": null, "p50": 6.9, "p75": 9.5, "p90": 14.0, "samples": [[10.1, 3, "不知道"], [7.7, 10, "互相信任，不再顽皮。"], [10.9, 14, "什么事情都要先想清楚再去说。"], [9.0, 13, "觉得他们以后会更加的团结。"]]}, {"g": "5", "bk": "14", "qid": "10519", "N": "1", "n": 4349, "over5": 26.7, "stuck": 65.8, "thr": 25.1, "cls": "B", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 7.5, "p75": 11.5, "p90": 19.6, "samples": [[53.0, 13, "反映出它的嗯嗯，好坏不分。"], [9.5, 2, "这边"], [9.8, 8, "目光短，见识浅。"], [16.8, 3, "不知道"]]}, {"g": "5", "bk": "14", "qid": "10519", "N": "2", "n": 4254, "over5": 23.8, "stuck": 57.4, "thr": 25.1, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 7.4, "p75": 11.1, "p90": 18.1, "samples": [[5.5, 4, "不分青白"], [7.6, 15, "反映出了他没有自己的主观意见。"], [37.4, 9, "他对孙悟空的厌恶。"], [6.5, 8, "他不辨是非的他。"]]}, {"g": "5", "bk": "14", "qid": "10519", "N": "3", "n": 4087, "over5": 15.9, "stuck": 62.7, "thr": 25.1, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 7.1, "p75": 10.6, "p90": 16.8, "samples": [[8.9, 4, "尊重师长"], [6.7, 10, "不害怕任何的个难头。"], [6.8, 7, "真的不知道呀。"], [5.4, 7, "他很善良正直。"]]}, {"g": "5", "bk": "14", "qid": "110840", "N": "1", "n": 4238, "over5": 25.8, "stuck": 34.6, "thr": 25.1, "cls": "A", "ability": "分析推断", "qtype": "信息推断题", "diff": null, "p50": 7.2, "p75": 10.2, "p90": 17.7, "samples": [[7.1, 6, "嗯，不知道。"], [8.0, 12, "他这一次有点舍不得师傅。"], [9.1, 12, "之前离队的时候，人很少。"], [13.3, 5, "哇，一点。"]]}, {"g": "5", "bk": "14", "qid": "10753", "N": "1", "n": 3991, "over5": 25.0, "stuck": 58.5, "thr": 25.1, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 7.1, "p75": 10.6, "p90": 19.0, "samples": [[6.2, 4, "嗯，机智"], [15.3, 3, "很没用"], [11.1, 2, "还行"], [5.1, 5, "愚笨又智慧"]]}, {"g": "5", "bk": "16", "qid": "1034123", "N": "1", "n": 666, "over5": 23.0, "stuck": 45.1, "thr": 25.1, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": null, "p50": 6.9, "p75": 10.8, "p90": 19.9, "samples": [[7.1, 4, "不知道呀"], [6.2, 1, "嗯"], [5.4, 10, "看到阳光炙烤着大地。"], [5.3, 8, "你知道吗，校霸？"]]}, {"g": "5", "bk": "16", "qid": "1034124", "N": "1", "n": 662, "over5": 9.2, "stuck": 31.1, "thr": 25.1, "cls": "OK", "ability": "创造创新", "qtype": "开放表达题", "diff": null, "p50": 7.7, "p75": 10.7, "p90": 19.2, "samples": [[6.0, 13, "能成功，因为他们坚持团队。"], [5.1, 5, "嗯，成功了"], [7.8, 3, "成功了"], [5.4, 1, "嗯"]]}, {"g": "5", "bk": "16", "qid": "1034125", "N": "1", "n": 646, "over5": 13.2, "stuck": 51.8, "thr": 25.1, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 6.8, "p75": 10.2, "p90": 15.4, "samples": [[5.8, 12, "我觉得汉斯变得更温柔了。"], [6.2, 14, "有他不像以前那么冷酷无情了。"], [9.8, 13, "嗯，有变化，变得更坚强了。"], [12.6, 1, "牛"]]}, {"g": "5", "bk": "16", "qid": "1034126", "N": "1", "n": 623, "over5": 12.0, "stuck": 61.3, "thr": 25.1, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 7.0, "p75": 9.4, "p90": 16.3, "samples": [[8.1, 15, "他变得更那个，更爱刨根问底了。"], [5.2, 1, "有"], [6.7, 13, "嗯，变了，变得温和了一点。"], [8.2, 6, "实数有变化。"]]}, {"g": "5", "bk": "16", "qid": "1034127", "N": "1", "n": 618, "over5": 8.9, "stuck": 56.4, "thr": 25.1, "cls": "OK", "ability": "分析理解", "qtype": "人物心理题", "diff": null, "p50": 7.0, "p75": 10.7, "p90": 19.9, "samples": [[6.0, 8, "喜欢上了地质学。"], [21.2, 6, "他变勇敢了。"], [30.4, 9, "你问什么问题来着？"], [13.0, 8, "积累了很多知识。"]]}, {"g": "5", "bk": "120", "qid": "2541073", "N": "1", "n": 311, "over5": 25.1, "stuck": 42.3, "thr": 25.1, "cls": "A", "ability": "分析推断", "qtype": "信息推断题", "diff": 2, "p50": 7.9, "p75": 12.9, "p90": 29.8, "samples": [[5.3, 14, "因为没有东南风所以才生的病。"], [88.0, 5, "嗯嗯，百花"], [6.2, 10, "嗯，是嗯，过于骄傲。"], [38.9, 2, "日照"]]}, {"g": "5", "bk": "120", "qid": "2541073", "N": "2", "n": 288, "over5": 25.3, "stuck": 63.0, "thr": 25.1, "cls": "B", "ability": "分析推断", "qtype": "信息推断题", "diff": 2, "p50": 6.6, "p75": 9.2, "p90": 12.0, "samples": [[7.5, 3, "东南风"], [11.6, 8, "不能用药得氯气。"], [9.3, 7, "诸葛亮的东南右"], [5.6, 15, "嗯，行，嗯，我不会发誓，谁呀？"]]}, {"g": "5", "bk": "120", "qid": "2541074", "N": "1", "n": 310, "over5": 34.5, "stuck": 15.0, "thr": 25.1, "cls": "A", "ability": "分析推断", "qtype": "信息推断题", "diff": 3, "p50": 7.9, "p75": 10.9, "p90": 16.2, "samples": [[5.6, 12, "收到了吗？收到了吗？不到"], [7.8, 3, "人数多"], [9.1, 10, "赤壁之战，曹操，曹操"], [15.2, 14, "嗯嗯，就是他。嗯，我不知道。"]]}, {"g": "5", "bk": "120", "qid": "2541075", "N": "1", "n": 304, "over5": 14.1, "stuck": 37.2, "thr": 25.1, "cls": "OK", "ability": "思辨表达", "qtype": "开放表达题", "diff": 2, "p50": 7.0, "p75": 10.4, "p90": 14.5, "samples": [[10.8, 8, "不会因为恩情已还"], [15.7, 5, "我不会放走"], [30.2, 7, "嗯，嗯嗯，这个"], [10.2, 2, "不会"]]}, {"g": "5", "bk": "120", "qid": "2541075", "N": "2", "n": 293, "over5": 22.9, "stuck": 56.7, "thr": 25.1, "cls": "OK", "ability": "思辨表达", "qtype": "开放表达题", "diff": 2, "p50": 6.5, "p75": 9.3, "p90": 14.9, "samples": [[6.5, 5, "我也不知道"], [5.2, 14, "啊，放出曹操会付出军令状的。"], [13.9, 15, "曹操的军队就会永远记着这个仇。"], [5.5, 9, "被别人说恩将仇报？"]]}, {"g": "5", "bk": "120", "qid": "2541076", "N": "1", "n": 303, "over5": 26.1, "stuck": 29.1, "thr": 25.1, "cls": "A", "ability": "思辨表达", "qtype": "开放表达题", "diff": 3, "p50": 7.2, "p75": 9.8, "p90": 15.3, "samples": [[10.1, 7, "这个我不知道。"], [8.2, 3, "一除是"], [11.6, 13, "gmgmgmgmgmgm。"], [5.7, 5, "难在情义上"]]}, {"g": "6", "bk": "20", "qid": "474355", "N": "1", "n": 390, "over5": 34.4, "stuck": 48.5, "thr": 34.1, "cls": "B", "ability": "创造创新", "qtype": "开放表达题", "diff": null, "p50": 8.0, "p75": 12.6, "p90": 18.6, "samples": [[6.3, 6, "如同很自豪。"], [11.7, 13, "一副满意的表情欣赏着自己。"], [7.2, 3, "痴呆的"], [5.5, 14, "呃，应该是得意的表情和动作。"]]}, {"g": "6", "bk": "20", "qid": "894312", "N": "1", "n": 362, "over5": 25.1, "stuck": 69.2, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物心理题", "diff": null, "p50": 7.5, "p75": 9.6, "p90": 13.3, "samples": [[7.7, 8, "嗯，四号吧，应该"], [6.2, 13, "路路通的心情，他非常喜悦。"], [9.3, 12, "我能感受他很自豪的心情。"], [10.3, 7, "嗯，嗯，嗯嗯。"]]}, {"g": "6", "bk": "20", "qid": "474357", "N": "1", "n": 368, "over5": 26.4, "stuck": 59.8, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物心理题", "diff": null, "p50": 7.0, "p75": 10.8, "p90": 17.2, "samples": [[17.2, 2, "绅士"], [5.5, 2, "朋友"], [5.4, 2, "警察"], [6.4, 2, "火案"]]}, {"g": "6", "bk": "20", "qid": "474358", "N": "1", "n": 372, "over5": 56.2, "stuck": 16.7, "thr": 34.1, "cls": "A", "ability": "分析理解", "qtype": "人物心理题", "diff": null, "p50": 7.8, "p75": 11.2, "p90": 19.0, "samples": [[12.5, 13, "看，我要看，我把你喝破产。"], [6.9, 13, "i don't know."], [5.5, 7, "拿个什么过来？"], [20.6, 13, "他的心理活动应该是非常的得"]]}, {"g": "6", "bk": "20", "qid": "474359", "N": "1", "n": 381, "over5": 39.4, "stuck": 32.0, "thr": 34.1, "cls": "A", "ability": "分析理解", "qtype": "人物心理题", "diff": null, "p50": 7.7, "p75": 12.4, "p90": 20.8, "samples": [[51.7, 7, "嗯，嗯，嗯嗯。"], [11.8, 9, "他非常生气和吃惊。"], [15.4, 7, "怎么说呢，坚定"], [14.7, 7, "是生气和愤怒？"]]}, {"g": "6", "bk": "20", "qid": "474360", "N": "1", "n": 374, "over5": 24.3, "stuck": 42.9, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物心理题", "diff": null, "p50": 7.7, "p75": 10.6, "p90": 17.1, "samples": [[8.1, 2, "忘了"], [8.2, 8, "菲克斯刚刚问话。"], [14.7, 11, "他刚才掏出了警察证件。"], [6.5, 8, "让路路通，背叛主"]]}, {"g": "6", "bk": "20", "qid": "474361", "N": "1", "n": 375, "over5": 28.5, "stuck": 64.5, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物心理题", "diff": null, "p50": 6.7, "p75": 9.5, "p90": 14.0, "samples": [[6.6, 10, "嗯，非常恐怖，吓人。"], [7.9, 9, "自我怀疑，在思考。"], [17.7, 9, "害怕震惊不可置信。"], [5.9, 2, "害怕"]]}, {"g": "6", "bk": "20", "qid": "474362", "N": "1", "n": 373, "over5": 27.6, "stuck": 27.2, "thr": 34.1, "cls": "OK", "ability": "分析推断", "qtype": "信息推断题", "diff": null, "p50": 7.4, "p75": 10.7, "p90": 17.6, "samples": [[5.1, 8, "呃，给乞丐给钱。"], [6.4, 12, "他亲眼看见过福格救别人。"], [12.5, 4, "你说呢？"], [73.3, 8, "嗯，不符合，因为"]]}, {"g": "6", "bk": "20", "qid": "474363", "N": "1", "n": 373, "over5": 44.5, "stuck": 9.6, "thr": 34.1, "cls": "A", "ability": "创造创新", "qtype": "开放表达题", "diff": null, "p50": 7.0, "p75": 9.9, "p90": 14.2, "samples": [[11.2, 14, "呃，你直接告诉我吧，我不知道"], [8.2, 12, "直接把菲克斯拖出去砍了。"], [57.6, 9, "把你的水给我开开。"], [7.8, 14, "嗯，害怕的声音和信任的声音。"]]}, {"g": "6", "bk": "24", "qid": "2841", "N": "1", "n": 328, "over5": 32.0, "stuck": 42.9, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物心理题", "diff": null, "p50": 7.2, "p75": 10.5, "p90": 18.3, "samples": [[14.6, 8, "有点担心，害怕。"], [25.9, 7, "感觉自己要没了"], [8.8, 2, "心虚"], [5.9, 8, "这都是我的成就。"]]}, {"g": "6", "bk": "24", "qid": "2842", "N": "1", "n": 355, "over5": 27.9, "stuck": 53.5, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 7.5, "p75": 10.0, "p90": 22.5, "samples": [[6.9, 2, "勇猛"], [8.0, 10, "神通广大，仔细智慧。"], [7.4, 9, "二郎神非常的聪明。"], [105.9, 10, "老板，妈妈，我去这么"]]}, {"g": "6", "bk": "24", "qid": "2842", "N": "2", "n": 340, "over5": 23.5, "stuck": 41.2, "thr": 34.1, "cls": "OK", "ability": "评价鉴赏", "qtype": "赏析表达题", "diff": null, "p50": 8.3, "p75": 13.8, "p90": 20.2, "samples": [[12.2, 12, "说明孙悟空，悟空也高强。"], [35.7, 12, "嗯，我肚子疼啊，我肚子疼"], [14.3, 12, "可以把课文变得生动形象。"], [10.5, 11, "突出孙悟空的神通广大。"]]}, {"g": "6", "bk": "24", "qid": "23621", "N": "1", "n": 326, "over5": 23.3, "stuck": 43.4, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物心理题", "diff": null, "p50": 7.1, "p75": 10.9, "p90": 15.1, "samples": [[25.5, 7, "我会感到高兴。"], [5.8, 13, "他们天庭也没有这么厉害嘛？"], [11.1, 11, "我会觉得我一定安全了。"], [8.0, 11, "天庭的人还没有我厉害。"]]}, {"g": "6", "bk": "24", "qid": "26577", "N": "1", "n": 331, "over5": 32.0, "stuck": 67.0, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": null, "p50": 7.7, "p75": 12.6, "p90": 22.0, "samples": [[8.3, 5, "非常像执着"], [5.0, 4, "傲慢蛮横"], [7.0, 6, "狂妄，狂妄。"], [10.8, 13, "悟空，嗯，自以为是的精神。"]]}, {"g": "6", "bk": "24", "qid": "26628", "N": "1", "n": 334, "over5": 31.1, "stuck": 29.8, "thr": 34.1, "cls": "OK", "ability": "归纳概括", "qtype": "概括梳理题", "diff": null, "p50": 7.6, "p75": 12.9, "p90": 21.5, "samples": [[14.8, 9, "没逃出他的手掌心。"], [6.5, 10, "他好，孙悟空的骄傲。"], [16.6, 9, "嗯，刚才没录上啊。"], [5.4, 3, "靠智慧"]]}, {"g": "6", "bk": "24", "qid": "26629", "N": "1", "n": 344, "over5": 25.3, "stuck": 46.0, "thr": 34.1, "cls": "OK", "ability": "分析推断", "qtype": "信息推断题", "diff": null, "p50": 7.2, "p75": 10.9, "p90": 16.0, "samples": [[5.7, 9, "因为大圣太好胜了。"], [10.3, 9, "大圣太过于自大了。"], [6.3, 8, "因为他自以为是。"], [10.8, 8, "因为他骄傲自大。"]]}, {"g": "6", "bk": "24", "qid": "26630", "N": "1", "n": 343, "over5": 36.4, "stuck": 32.0, "thr": 34.1, "cls": "A", "ability": "思辨表达", "qtype": "开放表达题", "diff": null, "p50": 7.8, "p75": 10.7, "p90": 18.4, "samples": [[20.5, 3, "不知道"], [8.4, 2, "磨练"], [10.1, 15, "意味着悟空在天庭闹的事的惩罚。"], [14.8, 2, "惩罚"]]}, {"g": "6", "bk": "52", "qid": "1672495", "N": "1", "n": 2382, "over5": 20.9, "stuck": 30.6, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": 1, "p50": 7.0, "p75": 9.8, "p90": 15.8, "samples": [[12.5, 10, "体现了舅舅自私自利。"], [6.8, 14, "体现了舅舅他们非常容易暴怒。"], [6.5, 7, "动作与神态描写"], [6.0, 3, "爱争吵"]]}, {"g": "6", "bk": "52", "qid": "1672496", "N": "1", "n": 2223, "over5": 18.5, "stuck": 40.9, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": 1, "p50": 6.8, "p75": 10.2, "p90": 17.1, "samples": [[8.2, 13, "表现了外公嗯，贪财的特点。"], [5.5, 14, "这两句是对外公的语言描写，嗯"], [6.2, 13, "我也不知道呀，他在说话呀。"], [12.5, 4, "哦，暴躁"]]}, {"g": "6", "bk": "52", "qid": "1672497", "N": "1", "n": 2130, "over5": 20.5, "stuck": 35.8, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": 2, "p50": 7.4, "p75": 11.1, "p90": 21.0, "samples": [[5.4, 11, "是一个非常之权威的人。"], [9.0, 2, "慈爱"], [5.1, 12, "他是一个爱护孩子的好人。"], [5.7, 13, "温暖还是一个很爱孩子的人。"]]}, {"g": "6", "bk": "52", "qid": "1672498", "N": "1", "n": 2070, "over5": 25.8, "stuck": 37.6, "thr": 34.1, "cls": "OK", "ability": "信息提取", "qtype": "信息提取题", "diff": 1, "p50": 7.6, "p75": 12.4, "p90": 21.4, "samples": [[25.3, 7, "把衣服染了色。"], [8.9, 13, "把布，把白桌布染成了蓝色。"], [7.7, 9, "把桌布染成了蓝色。"], [5.4, 4, "换下一题"]]}, {"g": "6", "bk": "52", "qid": "1672499", "N": "1", "n": 2061, "over5": 34.7, "stuck": 50.2, "thr": 34.1, "cls": "B", "ability": "分析理解", "qtype": "主旨情感题", "diff": 3, "p50": 8.0, "p75": 12.0, "p90": 21.1, "samples": [[8.6, 8, "他变得情绪低落。"], [35.2, 5, "哦，病倒了"], [6.3, 4, "他病倒了"], [6.9, 3, "不知道"]]}, {"g": "6", "bk": "52", "qid": "1672500", "N": "1", "n": 2003, "over5": 24.6, "stuck": 39.1, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": 3, "p50": 7.2, "p75": 10.0, "p90": 17.2, "samples": [[5.1, 2, "方块"], [8.3, 15, "神态描写表现了外公欢快的状态。"], [5.5, 11, "温柔的样子，内疚的状态"], [6.8, 13, "神态描写，此刻外公是开心。"]]}, {"g": "6", "bk": "52", "qid": "1672501", "N": "1", "n": 1895, "over5": 26.9, "stuck": 33.8, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": 3, "p50": 7.3, "p75": 10.8, "p90": 18.2, "samples": [[6.2, 2, "很苦"], [5.2, 12, "嗯，体现了他坚强的特点。"], [111.7, 15, "然后，我觉得浪烟生活非常辛苦。"], [19.6, 12, "他当年的性格是非常柔弱。"]]}, {"g": "6", "bk": "52", "qid": "1672502", "N": "1", "n": 1921, "over5": 39.4, "stuck": 29.4, "thr": 34.1, "cls": "A", "ability": "信息提取", "qtype": "内容辨析题", "diff": 2, "p50": 8.7, "p75": 18.1, "p90": 32.8, "samples": [[40.4, 8, "因为认知也很臭。"], [5.2, 5, "难闻的气味"], [13.0, 6, "哎，外公的揍"], [7.1, 15, "因为他每天都要受到外公的毒打。"]]}, {"g": "6", "bk": "52", "qid": "1672503", "N": "1", "n": 1921, "over5": 44.1, "stuck": 23.1, "thr": 34.1, "cls": "A", "ability": "分析理解", "qtype": "人物形象题", "diff": 3, "p50": 8.4, "p75": 15.3, "p90": 26.9, "samples": [[15.1, 6, "呃，不知道。"], [6.9, 13, "一个哭喊，一个对外公动手。"], [7.6, 8, "我忘了怎么办呀？"], [5.3, 9, "阿巴，阿巴，阿巴。"]]}, {"g": "6", "bk": "52", "qid": "1672504", "N": "1", "n": 1797, "over5": 40.2, "stuck": 12.9, "thr": 34.1, "cls": "A", "ability": "信息提取", "qtype": "信息提取题", "diff": 3, "p50": 8.0, "p75": 12.8, "p90": 21.6, "samples": [[14.2, 4, "外公残暴"], [6.3, 4, "大阿廖沙"], [17.8, 4, "我不知道"], [5.9, 7, "呃，我不知道。"]]}, {"g": "6", "bk": "52", "qid": "1672504", "N": "2", "n": 1742, "over5": 22.0, "stuck": 42.6, "thr": 34.1, "cls": "OK", "ability": "分析理解", "qtype": "人物形象题", "diff": 3, "p50": 7.2, "p75": 10.5, "p90": 16.7, "samples": [[10.3, 9, "性情复杂复杂的人。"], [9.7, 15, "嗯嗯，做事粗暴，嗯，赏罚分明。"], [13.1, 12, "呃，是一个简单而又粗暴的"], [5.2, 15, "外公是一个又残暴又有欢乐的人。"]]}]}</script>
+<script>
+const DATA = JSON.parse(document.getElementById('DATA').textContent);
+const CLS_LABEL = {A:'该等', OK:'立即开麦', B:'答案本就短'};
+const CLS_PILL = {A:'pill-A', OK:'pill-OK', B:'pill-B'};
+
+// 顶部三个数
+document.getElementById('s-ok').textContent = DATA.total.OK;
+document.getElementById('s-a').textContent = DATA.total.A;
+document.getElementById('s-b').textContent = DATA.total.B;
+
+// 年级表
+(function(){
+  const tb = document.querySelector('#grade-table tbody');
+  tb.innerHTML = DATA.grade_sum.map(g =>
+    `<tr><td>${g.g}年级 <span style="color:var(--text-muted);font-size:11px;">(门槛${g.thr}%)</span></td>
+     <td class="num">${g.total}</td>
+     <td class="num">${g.OK}</td>
+     <td class="num"><b style="color:var(--A)">${g.A}</b></td>
+     <td class="num">${g.B}</td></tr>`).join('');
+})();
+
+// 题型表
+(function(){
+  const tb = document.querySelector('#qt-table tbody');
+  tb.innerHTML = DATA.qt_sum.map(q => {
+    const hi = q.a_ratio >= 30;
+    return `<tr>
+     <td>${q.qtype}</td>
+     <td class="num">${q.total}</td>
+     <td class="num">${q.A}</td>
+     <td class="num" style="${hi?'font-weight:700;color:var(--A)':''}">${q.a_ratio}%</td>
+     <td class="num">${q.a_p75!=null? q.a_p75+'s' : '—'}</td></tr>`;
+  }).join('');
+})();
+
+// 逐题表
+function renderSubq(){
+  const g = document.getElementById('f-grade').value;
+  const c = document.getElementById('f-cls').value;
+  const qt = document.getElementById('f-qt').value;
+  const kw = document.getElementById('f-search').value.trim();
+  const tb = document.getElementById('subq-body');
+  const rows = DATA.recs.filter(r =>
+    (!g || r.g===g) && (!c || r.cls===c) && (!qt || r.qtype===qt) && (!kw || r.qid.includes(kw)));
+  tb.innerHTML = rows.map((r,i) => {
+    const samp = r.samples.length
+      ? r.samples.map(s => `<div class="samp"><span class="lc">${s[0]}s·${s[1]}字</span>${(s[2]||'').replace(/</g,'&lt;')}</div>`).join('')
+      : '<div style="color:var(--text-muted);font-size:12px;">无慢答短样本</div>';
+    const lat = (r.p50!=null) ? `${r.p50} / ${r.p75} / ${r.p90}s` : '—';
+    return `<tr class="subq-row" data-i="${i}">
+       <td>${r.g}年级</td><td>${r.qid}<span style="color:var(--text-muted)">-${r.N}</span></td>
+       <td>${r.qtype}</td><td style="color:var(--text-secondary);font-size:12px">${r.ability}</td>
+       <td class="num">${r.over5}%</td>
+       <td class="num">${r.stuck!=null? r.stuck+'%' : '—'}</td>
+       <td class="num" style="font-size:12px">${lat}</td>
+       <td><span class="pill ${CLS_PILL[r.cls]}">${CLS_LABEL[r.cls]}</span></td>
+     </tr>
+     <tr class="subq-detail"><td colspan="8">
+       <div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px;">
+         该题共 ${r.n} 人作答 · 慢答占比 ${r.over5}%（门槛 ${r.thr}%）· 难度 ${r.diff!=null?['','简单','中等','困难'][r.diff]:'未标'}</div>
+       <div style="font-size:12px;font-weight:600;margin-bottom:4px;">慢而短的学生说了啥（抽样）：</div>
+       ${samp}
+     </td></tr>`;
+  }).join('');
+  tb.querySelectorAll('.subq-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const d = row.nextElementSibling;
+      const open = d.classList.contains('open');
+      tb.querySelectorAll('.subq-detail.open').forEach(x=>x.classList.remove('open'));
+      if (!open) d.classList.add('open');
+    });
+  });
+}
+(function(){
+  const gs=[...new Set(DATA.recs.map(r=>r.g))].sort();
+  gs.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v+'年级';document.getElementById('f-grade').appendChild(o);});
+  const qts=[...new Set(DATA.recs.map(r=>r.qtype))];
+  qts.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;document.getElementById('f-qt').appendChild(o);});
+  ['f-grade','f-cls','f-qt'].forEach(id=>document.getElementById(id).addEventListener('change',renderSubq));
+  document.getElementById('f-search').addEventListener('input',renderSubq);
+})();
+renderSubq();
+
+/* ---- annotate layer (定稿形态) ---- */
+(function() {
+  const VERSIONS = [
+    {v:1, date:'2026-09-23', desc:'首版(2节课): 四象限+ABCD验证+24小问明细'},
+    {v:2, date:'2026-09-24', desc:'扩到15节课118小问; 改大白话; 年级分档门槛; 三分类(立即/该等/本就短); C类=0结论; 开麦等待时长档; 按题型策略+人物形象题反直觉发现'},
+  ];
+  const NAMEABLE = 'h1,h2,h3,.card,.big-take,.callout,.stat,section > .card table.data tr,.footer-note';
+  document.querySelectorAll(NAMEABLE).forEach(el => {
+    if (!el.hasAttribute('data-name')) {
+      let nm = (el.textContent || '').trim().replace(/\s+/g,' ').slice(0, 24) || el.tagName.toLowerCase();
+      el.setAttribute('data-name', nm);
+    }
+  });
+  let annMode = false;
+  const anns = [];
+  const toggleBtn = document.getElementById('ann-toggle');
+  const panel = document.getElementById('ann-panel');
+  const editor = document.getElementById('ann-editor');
+  const editorTa = editor.querySelector('textarea');
+  const toast = document.getElementById('ann-toast');
+  const verBtn = document.getElementById('ann-version');
+  const verPanel = document.getElementById('ann-version-panel');
+  let editingTarget = null, editingIdx = null;
+  verBtn.textContent = '版本 v' + VERSIONS[VERSIONS.length-1].v;
+  function showToast(msg, isErr) {
+    toast.textContent = msg;
+    toast.className = isErr ? 'err show' : 'show';
+    setTimeout(() => toast.className = toast.className.replace('show','').trim(), 2200);
+  }
+  function repositionMarks() {
+    document.querySelectorAll('.ann-mark').forEach(mark => {
+      const t = anns[+mark.dataset.idx] && anns[+mark.dataset.idx].target;
+      if (!t) return;
+      const r = t.getBoundingClientRect();
+      mark.style.left = (window.scrollX + r.left + 10) + 'px';
+      mark.style.top = (window.scrollY + r.top + 10) + 'px';
+    });
+  }
+  function focusAnn(i) {
+    const t = anns[i] && anns[i].target;
+    if (!t) return;
+    t.scrollIntoView({block:'center', behavior:'smooth'});
+    t.classList.remove('ann-highlight-flash'); void t.offsetWidth; t.classList.add('ann-highlight-flash');
+    panel.querySelectorAll('.ann-list-item').forEach((el,idx) => el.classList.toggle('active', idx===i));
+  }
+  function renderAll() {
+    document.querySelectorAll('.ann-mark').forEach(m => m.remove());
+    anns.forEach((a, i) => {
+      const mark = document.createElement('div');
+      mark.className = 'ann-mark'; mark.dataset.idx = i; mark.textContent = i + 1;
+      mark.onclick = (e) => { e.stopPropagation(); focusAnn(i); };
+      document.body.appendChild(mark);
+    });
+    repositionMarks();
+    if (!anns.length) {
+      panel.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px;">批注模式开启后，点选页面元素即可添加批注</div>';
+      return;
+    }
+    panel.innerHTML = anns.map((a, i) =>
+      `<div class="ann-list-item" data-idx="${i}"><div class="ann-num">${i+1}</div>
+        <div class="ann-body"><div>${a.txt.replace(/</g,'&lt;')}</div><div class="ann-name">${a.name}</div></div>
+        <div class="ann-del" data-idx="${i}">删除</div></div>`
+    ).join('') + '<button id="ann-export">导出给 Claude</button>';
+    panel.querySelectorAll('.ann-list-item').forEach(el => { el.onclick = () => focusAnn(+el.dataset.idx); });
+    panel.querySelectorAll('.ann-del').forEach(el => { el.onclick = (e) => { e.stopPropagation(); anns.splice(+el.dataset.idx, 1); renderAll(); }; });
+    const exp = document.getElementById('ann-export');
+    if (exp) exp.onclick = exportAnns;
+  }
+  function openEditor(target, idx) {
+    editingTarget = target; editingIdx = idx;
+    editorTa.value = (idx !== null && anns[idx]) ? anns[idx].txt : '';
+    const r = target.getBoundingClientRect();
+    editor.classList.add('open');
+    let left = Math.max(10, Math.min(r.left, window.innerWidth - 270));
+    let top = Math.max(10, Math.min(r.bottom + 6, window.innerHeight - 180));
+    editor.style.left = left + 'px'; editor.style.top = top + 'px'; editorTa.focus();
+  }
+  function closeEditor() { editor.classList.remove('open'); editingTarget = null; editingIdx = null; }
+  function saveAnn() {
+    const txt = editorTa.value.trim();
+    if (!txt) { closeEditor(); return; }
+    if (editingIdx !== null && anns[editingIdx]) { anns[editingIdx].txt = txt; }
+    else { anns.push({name: editingTarget.getAttribute('data-name') || '未命名', txt, target: editingTarget}); }
+    closeEditor(); renderAll();
+    if (!panel.classList.contains('open')) panel.classList.add('open');
+  }
+  editorTa.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); saveAnn(); }
+    else if (e.key === 'Escape') { e.preventDefault(); closeEditor(); }
+  });
+  function exportAnns() {
+    if (!anns.length) { showToast('还没有批注', true); return; }
+    const text = anns.map((a, i) => `【${i+1}】${a.name}\n${a.txt}`).join('\n\n');
+    const done = () => showToast('✅ 已复制，回对话框 Cmd/Ctrl+V 粘贴');
+    const fail = () => showToast('复制失败，请重试', true);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done, fail));
+    } else { fallbackCopy(text, done, fail); }
+  }
+  function fallbackCopy(text, done, fail) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy') ? done() : fail(); } catch (e) { fail(); }
+    document.body.removeChild(ta);
+  }
+  toggleBtn.onclick = () => {
+    annMode = !annMode;
+    toggleBtn.classList.toggle('active', annMode);
+    toggleBtn.textContent = annMode ? '✏️ 批注中（点选元素）' : '✏️ 批注模式';
+    document.querySelectorAll('[data-name]').forEach(el => el.classList.toggle('ann-hoverable', annMode));
+    panel.classList.toggle('open', annMode || anns.length > 0);
+    if (annMode) renderAll();
+  };
+  document.addEventListener('click', (e) => {
+    if (!annMode) return;
+    const t = e.target;
+    if (editor.contains(t) || panel.contains(t) || t === toggleBtn || t.closest('.ann-mark') || t === verBtn || verPanel.contains(t)) return;
+    const target = t.closest('[data-name]');
+    if (!target) return;
+    e.preventDefault(); e.stopPropagation(); openEditor(target, null);
+  }, true);
+  window.addEventListener('scroll', repositionMarks, {passive:true});
+  window.addEventListener('resize', repositionMarks);
+  verBtn.onclick = () => {
+    verPanel.classList.toggle('open');
+    if (verPanel.classList.contains('open')) {
+      verPanel.innerHTML = VERSIONS.slice().reverse().map(v =>
+        `<div class="ann-version-item"><span class="v-tag">v${v.v}</span> <span class="v-date">${v.date}</span><div>${v.desc}</div></div>`
+      ).join('');
+    }
+  };
+  renderAll();
+})();
+
+</script>
+</body>
+</html>
