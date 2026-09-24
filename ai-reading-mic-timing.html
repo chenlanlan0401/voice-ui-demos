@@ -220,11 +220,21 @@ table.data tr:hover { background: #f5f5f2; }
 <div class="card">
 <h3>验证一：那几条线，换到 118 道题上还站得住</h3>
 <p>单课里，5 秒是靠"每道题各自的曲线都在 5 秒后掉台阶"证出来的。<b>推广的验证方法完全一样：把全部 118 道题各自的分布曲线叠在一起看，检查是不是<u>每道题</u>都还在 5 秒（15 字）这个位置转折</b>——而不是把所有回答混成一堆看总峰值（那样的峰值只反映题目构成）。</p>
+
+<div class="callout" style="margin:12px 0;">
+<b>这张图怎么看（三步）：</b>
+<ol style="margin:8px 0;line-height:1.9;">
+<li><b>一条线 = 一道题。</b>纵轴是"这道题里，有百分之多少的学生开口用了这个秒数"（每道题各自算，全线加起来 = 100%）。所以两道题作答人数差再多，都能叠一起比<b>形状</b>。</li>
+<li><b>看曲线的走势。</b>典型形状是：2–3 秒冲到最高峰（大多数孩子在这儿开口，是"正常反应"），之后一路往下，过了 5 秒压得很低、拖成一条细长尾巴（少数明显偏慢的人）。</li>
+<li><b>重点看"掉台阶"。</b>曲线跨过 5 秒时明显往下<b>掉一截</b>（4–5 秒那档的人，明显多于 5–6 秒那档），像下楼梯踩空一级。<b>这道坎就是"正常反应"和"偏慢长尾"的天然分界</b>——如果曲线是平滑连续下降、没有坎，那 5 秒就是随便切的；正因为几乎每条线都在 5 秒这里集体掉台阶，才说明这是所有题共通的自然分界，切在这里最准。</li>
+</ol>
+</div>
+
 <div style="font-size:13px;font-weight:600;margin:14px 0 0;">开口时间：118 道题，几乎每道都在 5 秒后掉台阶</div>
 <div id="lat-hist"></div>
-<div style="font-size:13px;font-weight:600;margin:16px 0 0;">回答字数：118 道题，多数在 15 字后下坠</div>
+<div style="font-size:13px;font-weight:600;margin:16px 0 0;">回答字数：118 道题，多数在 15 字后下坠（同理，15 字左边是"一句短答"，右边是"展开说"）</div>
 <div id="ch-hist"></div>
-<p style="font-size:13px;color:var(--text-secondary);margin-top:10px;">两条线换到 118 道题上依然是各题<b>共同</b>的分界：开口时间上 5 秒近乎无一例外，字数上 15 字也是主流分界（少数题答案天生偏长或偏短，属正常）。<b>单课定的两条线，推广后没有漂。</b></p>
+<p style="font-size:13px;color:var(--text-secondary);margin-top:10px;">怎么解读结果：两张图上，<b>几乎每条线都在同一个位置转折</b>——开口时间在 5 秒集体掉台阶（116/118 道），字数在 15 字后集体下坠（98/118 道）。这说明这两条坎不是某道题特有，而是<b>所有题共通</b>的规律，所以能当通用分界线。<b>单课定的两条线，推广到 118 道题后没有漂。</b>（字数图上少数线在 50+ 那格翘起来，是那些答案天生就长的题，属正常。）</p>
 
 <h3 style="margin-top:24px;">但慢答门槛不能一刀切——这是推广才暴露的新问题</h3>
 <p>单课里门槛是 24.3%，那是二年级的数。可<b>高年级本来就比低年级慢</b>（题更难、要说的更多）。如果偷懒给所有年级用一条统一门槛，会出什么问题？看各年级的实际水平：</p>
@@ -702,7 +712,7 @@ document.getElementById('s-b').textContent = DATA.total.B;
   // 通用: 118题归一化叠加曲线. curves=[{over5,p:[...]}], cutIdx=分界线所在档索引, cutLabel
   function overlayCurves(el, curves, labels, cutIdx, cutLabel, accent, footHtml){
     if(!el||!curves) return;
-    const W=680,H=210,P={l:34,r:12,t:12,b:30};
+    const W=680,H=210,P={l:48,r:12,t:12,b:30};
     const iw=W-P.l-P.r, ih=H-P.t-P.b, nb=labels.length;
     let ymax=0; curves.forEach(c=>c.p.forEach(v=>{if(v>ymax)ymax=v;}));
     ymax=Math.min(Math.ceil(ymax/10)*10,80);
@@ -715,6 +725,8 @@ document.getElementById('s-b').textContent = DATA.total.B;
     let g=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;margin:10px 0 2px;font-family:inherit;">`;
     for(let v=0;v<=ymax;v+=20){g+=`<line x1="${P.l}" y1="${sy(v)}" x2="${W-P.r}" y2="${sy(v)}" stroke="#eee" stroke-width="1"/>`;
       g+=`<text x="${P.l-5}" y="${sy(v)+3}" font-size="9" fill="#9a9a95" text-anchor="end">${v}%</text>`;}
+    // 纵轴标题(竖排)
+    g+=`<text x="13" y="${P.t+ih/2}" font-size="10" fill="#52514e" text-anchor="middle" transform="rotate(-90 13 ${P.t+ih/2})">该题落在此档的学生占比</text>`;
     const xc=sx(cutIdx);
     g+=`<line x1="${xc}" y1="${P.t}" x2="${xc}" y2="${P.t+ih}" stroke="${accent}" stroke-width="1.5" stroke-dasharray="4 3"/>`;
     g+=`<text x="${xc}" y="${P.t-2}" font-size="10" fill="${accent}" text-anchor="middle" font-weight="700">${cutLabel}</text>`;
@@ -912,6 +924,7 @@ renderSubq();
     {v:14, date:'2026-09-24', desc:'②分档粒度2秒→1秒(与"等几秒"决策粒度对齐); 5秒依据图换维度: 删掉人次维度8046次总分布直方图(会被题目构成带偏), 改成题维度15条折线(每题一条1秒档曲线), 用"14/15题都在5秒后掉台阶"证明5秒是各题共同分界'},
     {v:15, date:'2026-09-24', desc:'推广段重构(单课→118题, 同一套方法论): 加过渡命题段(一节课走通≠能推广, 三问:阈值稳不稳/框架套上去分不分得开/结论对不对得上反馈); 验证一=5秒/15字大盘确认+年级门槛(推广才暴露的修正,统一26%会让六年级61%误判); 验证二=118题套四象限散点仍三色分离; 去掉与单课重复的阈值长篇论证'},
     {v:16, date:'2026-09-24', desc:'验证一改题维度(修正前后不一致): 删掉13万次混合直方图(会被题目构成带偏,与单课否决人次维度矛盾), 换成118题各自归一化曲线叠加, 用"116/118题5秒后掉台阶+100%峰值在5秒内、98/118题15字后下坠"证明两条线是各题共同分界'},
+    {v:17, date:'2026-09-24', desc:'验证一补自解释: 加"这张图怎么看(三步)"引导框(一条线=一道题/纵轴=该题落在此档的学生占比/掉台阶=过5秒陡降是正常反应与偏慢长尾的天然坎), SVG加纵轴标题, 图注点明"几乎每条线同位置转折→通用分界"的解读'},
   ];
   const NAMEABLE = 'h1,h2,h3,.card,.big-take,.callout,.stat,section > .card table.data tr,.footer-note';
   document.querySelectorAll(NAMEABLE).forEach(el => {
