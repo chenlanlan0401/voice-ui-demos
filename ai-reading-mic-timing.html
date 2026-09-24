@@ -157,13 +157,11 @@ table.data tr:hover { background: #f5f5f2; }
 <p>最直接的念头是"看哪道题慢的人多"。但"慢"要怎么切、切几段，不该拍脑袋。<b>先把粒度打细</b>——把这节课 15 道题各自的开口时长按 <b>每 1 秒一档</b>铺开（时间单位得跟后面"等几秒"的决策一样细），每行一道题，看它们的分布形状到底一不一样：</p>
 <div id="bambi-dist"></div>
 <p style="font-size:13px;color:var(--text-secondary);margin-top:10px;">
-<b>趋势非常清楚：不同题的分布形状差得很远。</b>排在上面的题（比如"给老鹿王回信"），深色块明显往右挪，重心落在 4~6 秒，还拖着长尾；排在下面的题（比如"用一个词形容老鹿王"），深色几乎全挤在 2~3 秒，6 秒之后基本是空白。<b>正因为分布形状分化得这么明显，"把开口快慢分档来看"才站得住</b>——不是我们要分，是数据本身就分开了。顺着这个观察，后面就可以把它归并成"快 / 中 / 慢"几档来用。</p>
-
-<div class="callout" style="margin-top:12px;">
-<b>那分界切在几秒？先定"慢"的那条线。</b>注意：不能把 15 道题的回答<b>混在一起</b>统计——那样的峰值只反映"这节课快题多还是慢题多"，会被题目构成带偏。正确的做法是<b>看每道题各自的曲线，检查它们是不是在同一个地方转折</b>。把 15 道题每题一条开口时间曲线画出来：
-<div id="bambi-lat"></div>
-<div style="margin-top:6px;">不管快题慢题，几乎每条线都在 <b>5 秒</b>之后转入下坠——<b>15 道题里 14 道都在 5 秒后掉台阶</b>（4~5 秒档的人明显多于 5~6 秒档），唯一的例外正是最慢的回信题。这说明 5 秒不是某一道题的特例、也不是被题目构成凑出来的，而是<b>各道题共同</b>的"正常反应"与"偏慢长尾"的分界。切在这里，既不会把正常反应误判成慢，也不会漏掉真正慢的。（这条线在全大盘 13 万次回答上也是同一位置，后面大盘那节会再验证一次。）</div>
-</div>
+<b>这张图一眼能看出两件事。</b></p>
+<p style="font-size:13px;color:var(--text-secondary);margin-top:6px;">
+<b>一、不同题的分布形状差得很远。</b>排在上面的题（比如"给老鹿王回信"），深色块明显往右挪，重心落在 4~6 秒、还拖着长尾；排在下面的题（比如"用一个词形容老鹿王"），深色几乎全挤在 2~3 秒、6 秒后基本是空白。<b>正因为分化得这么明显，"把开口快慢分档来看"才站得住</b>——不是我们要分，是数据本身就分开了。</p>
+<p style="font-size:13px;color:var(--text-secondary);margin-top:6px;">
+<b>二、分界该切在 5 秒——而且这不是拍的。</b>顺着每一行看：无论慢题快题，深色格子基本都止步在第 5 秒（红竖线）那里，往后急剧变浅。<b>15 道题里 14 道都在 5 秒后"掉台阶"</b>（4~5 秒那格的人明显多于 5~6 秒那格），唯一的例外正是最慢的回信题。这说明 5 秒不是某道题的特例、也不是把所有回答混在一起凑出来的假象，而是<b>每道题各自都成立</b>的"正常反应"与"偏慢长尾"的天然分界。（大盘 13 万次回答上也是同一位置，后面再验证。）</p>
 
 <p style="margin-top:12px;">有了 5 秒这条线，就能算出每道题的<b>慢答占比</b>（开口超过 5 秒的人占多少）——上面那张热力图最右列就是它。</p>
 
@@ -582,14 +580,14 @@ document.getElementById('s-b').textContent = DATA.total.B;
   if (dist && seg){
     const labels=dist.labels, mx=dist.maxp;
     const rows=dist.rows.slice().sort((x,y)=>y.over5-x.over5);
-    // 色阶: 占比0→浅, mx→深红
+    // 色阶: gamma压缩(0.55)拉大中低值色差, 让分布形状更醒目; 浅米→深红
     const cell=p=>{
-      if(p<=0) return '#f5f5f3';
-      const t=Math.min(p/mx,1);
-      const r=Math.round(247-(247-201)*t), g=Math.round(243-(243-107)*t), b=Math.round(240-(240-84)*t);
+      if(p<=0) return '#faf9f7';
+      const t=Math.pow(Math.min(p/mx,1),0.55);
+      const r=Math.round(250-(250-176)*t), g=Math.round(244-(244-42)*t), b=Math.round(238-(238-37)*t);
       return `rgb(${r},${g},${b})`;
     };
-    const txtcol=p=>p/mx>0.5?'#fff':'#7a7a75';
+    const txtcol=p=>Math.pow(p/mx,0.55)>0.45?'#fff':'#8a8580';
     // 表头: 每1秒一档, 标注秒数
     let head='<div style="display:flex;align-items:flex-end;gap:8px;margin:10px 0 2px;">'
       +'<div style="flex:0 0 200px;"></div><div style="flex:1;display:flex;gap:1px;">';
@@ -603,7 +601,9 @@ document.getElementById('s-b').textContent = DATA.total.B;
       o.hist1p.forEach((p,i)=>{
         // 5秒线: 第6格(index=5, "5-6秒")左缘=5秒, 加左描边示意"慢"从这里开始
         const isSlowStart=(i===5);
-        cells+=`<div title="${labels[i]}~${i>=15?'':(i+1)}秒 ${p}%" style="flex:1;height:20px;background:${cell(p)};display:flex;align-items:center;justify-content:center;font-size:8px;color:${txtcol(p)};${isSlowStart?'box-shadow:inset 2px 0 0 var(--A);':''}">${p>=12?Math.round(p):''}</div>`;
+        // 每格占比>0就显示数字(整数, <1的显示<1避免挤)
+        const num = p<=0 ? '' : (p<1 ? '·' : Math.round(p));
+        cells+=`<div title="${labels[i]}~${i>=15?'':(i+1)}秒 ${p}%" style="flex:1;height:22px;background:${cell(p)};display:flex;align-items:center;justify-content:center;font-size:8px;color:${txtcol(p)};${isSlowStart?'box-shadow:inset 2px 0 0 var(--A);':''}">${num}</div>`;
       });
       html+=`<div style="display:flex;align-items:center;gap:8px;margin:2px 0;">
         <div style="flex:0 0 200px;font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${(o.title||o.qid).replace(/"/g,'')}">${o.title||o.qid}</div>
@@ -611,63 +611,9 @@ document.getElementById('s-b').textContent = DATA.total.B;
         <div style="flex:0 0 46px;font-size:12px;font-weight:600;color:var(--A);text-align:right;">${o.over5}%</div>
       </div>`;
     });
-    html+='<div style="font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.7;">'
-      +'每行一道题（按慢答占比从高到低排），每格是一个 1 秒时长档（0~1、1~2……15+），<b>颜色越深=越多人落在这个档</b>；最右列是该题 &gt;5秒 的占比。'
-      +'<span style="color:var(--A)">▎</span> 红色竖线标出第 5 秒（下一步会证明为什么切在 5 秒）。<br>'
-      +'<b>看趋势：</b>越靠上的慢题，深色块明显往右挪（重心在 4~6 秒，还拖着长尾）；越靠下的快题，深色几乎全挤在 2~3 秒、6 秒后基本空白。<b>题和题的分布形状差得很远，这才说明“该分档看”是有道理的。</b></div>';
+    html+='<div style="font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.8;">'
+      +'每行一道题（按慢答占比从高到低排），每格是一个 1 秒时长档（0~1、1~2……15+），格里数字=该档学生占比%，<b>颜色越深=越多人落在这个档</b>；最右列是该题 &gt;5秒 的占比。<span style="color:var(--A)">▎</span> 红色竖线标出第 5 秒。</div>';
     seg.innerHTML=html;
-  }
-  // 5秒依据(题维度): 15条折线, 每题一条自己的1秒档占比曲线, 看是否都在5秒后下坠
-  const le=document.getElementById('bambi-lat');
-  if (DATA.bambi_dist && le){
-    const D=DATA.bambi_dist, rows=D.rows;
-    const W=680,H=230,P={l:38,r:14,t:14,b:34};
-    const iw=W-P.l-P.r, ih=H-P.t-P.b;
-    const nbins=16; // 0..15+
-    // y最大: 所有题所有档的最大占比
-    let ymax=0; rows.forEach(o=>o.hist1p.forEach(p=>{if(p>ymax)ymax=p;}));
-    ymax=Math.ceil(ymax/10)*10;
-    const sx=i=>P.l+iw*(i/(nbins-1));
-    const sy=v=>P.t+ih*(1-v/ymax);
-    // 快题→浅灰, 慢题→深红, 拉大对比: 让"不管快慢都在5秒转折"更醒目
-    const lineCol=o=>{
-      const t=Math.min(o.over5/55,1); // 0(最快)→1(最慢)
-      if(t<0.5){ // 快题: 浅灰到中灰
-        const g=Math.round(190-(190-140)*(t/0.5));
-        return `rgba(${g},${g},${g},0.55)`;
-      }
-      // 慢题: 灰红过渡到深红
-      const tt=(t-0.5)/0.5;
-      const r=Math.round(150+(190-150)*tt), g=Math.round(140-(140-40)*tt), b=Math.round(140-(140-40)*tt);
-      return `rgba(${r},${g},${b},${0.6+0.35*tt})`;
-    };
-    const lineW=o=>o.over5>=(o.thr||24.3)?2.2:1.3; // 过门槛的慢题线更粗
-    let g=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;margin:8px 0 2px;font-family:inherit;">`;
-    // y网格
-    for(let v=0;v<=ymax;v+=10){
-      g+=`<line x1="${P.l}" y1="${sy(v)}" x2="${W-P.r}" y2="${sy(v)}" stroke="#eee" stroke-width="1"/>`;
-      g+=`<text x="${P.l-6}" y="${sy(v)+3}" font-size="9" fill="#9a9a95" text-anchor="end">${v}%</text>`;
-    }
-    // 5秒竖线(第5秒 = bin index 5 的左缘, 用 i=5 位置)
-    const x5=sx(5);
-    g+=`<line x1="${x5}" y1="${P.t}" x2="${x5}" y2="${P.t+ih}" stroke="var(--A)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
-    g+=`<text x="${x5}" y="${P.t-3}" font-size="10" fill="var(--A)" text-anchor="middle" font-weight="700">5秒</text>`;
-    // x刻度
-    for(let i=0;i<nbins;i++){
-      const lab=i===15?'15+':i;
-      g+=`<text x="${sx(i)}" y="${H-P.b+16}" font-size="9" fill="#9a9a95" text-anchor="middle">${lab}</text>`;
-    }
-    g+=`<text x="${P.l+iw/2}" y="${H-4}" font-size="10" fill="#52514e" text-anchor="middle">开口用了几秒（每 1 秒一档）→</text>`;
-    // 15条线: 先画快题(浅灰)再画慢题(深红), 保证慢题压在上层更醒目
-    rows.slice().sort((a,b)=>a.over5-b.over5).forEach(o=>{
-      const pts=o.hist1p.map((p,i)=>`${sx(i).toFixed(1)},${sy(p).toFixed(1)}`).join(' ');
-      g+=`<polyline points="${pts}" fill="none" stroke="${lineCol(o)}" stroke-width="${lineW(o)}" stroke-linejoin="round"><title>${(o.title||'').replace(/"/g,'')} 慢${o.over5}%</title></polyline>`;
-    });
-    g+='</svg>';
-    le.innerHTML=g
-      +'<div style="font-size:11px;color:var(--text-muted);text-align:center;line-height:1.7;">'
-      +'每条线是<b>一道题</b>自己的开口时间分布（15 条=15 道题）：<span style="color:#999;">浅灰=偏快的题</span>、<span style="color:var(--A);font-weight:600;">深红=偏慢的题</span>（越慢线越粗）。<br>'
-      +'不管快题慢题，几乎每条线都在 <span style="color:var(--A)">5 秒</span>之后转入下坠——<b>15 道题里 14 道都在 5 秒后掉台阶（4~5 秒档 &gt; 5~6 秒档）</b>，唯一的例外正是最慢的回信题。5 秒是各题<b>共同</b>的“正常反应”与“偏慢长尾”分界，不是被题目构成凑出来的。（大盘 13 万次回答上也是同一位置，后面再验证。）</div>';
   }
   // 写信题板书
   const lb=document.getElementById('letter-board');
@@ -1017,6 +963,7 @@ renderSubq();
     {v:19, date:'2026-09-24', desc:'补单课"切分线怎么定"缺口(此前45%空降/说"后面大盘讲"): 新增④单课自证切分线—先抛开指标看7道过门槛题原话给独立判定A/B, 再看短答占比轴上A类全≤37.6%/B类全≥50.9%/中间13.3pp空档无题落入, 45%落在缝中. 分界线是"先分类、类间自己让出空档"逼出来的非拍脑袋. 原④(15题全跑)顺延为⑤, 收尾callout改成"5秒/15字/门槛/切分线四条全来自本课数据"'},
     {v:20, date:'2026-09-24', desc:'补慢答占比门槛的对称论证(此前只定了5秒=慢, 没说占比多少算慢题): 在②慢答占比定义后加说明—把15题按慢答占比排开看分波, 回信54.8%+悄悄话44.2%两道热力图形态明显拖过5秒=慢题波, 其余13道≤32%=快题波, 单课坎约44%; 但15题太少定不准, 明确要铺到118题拿证据(呼应推广年级门槛). 与短答"摆开看分波"对称'},
     {v:21, date:'2026-09-24', desc:'修单课逻辑矛盾(用户发现): ②说慢题仅2道坎44% 与 ③④⑤基于门槛24.3%说7道候选 相冲突(若慢题只2道且都该等, 第二根轴在单课无用武之地). 改法: ②只证"慢答占比能把题拉开、是有效信号", 不定死门槛数值/不说慢题2道, 门槛具体值明确交118题+年级分位; ③⑤改口径为"先借候选门槛把流程跑通, 具体值大盘定"; 收尾callout把门槛从"单课定出的线"里拿掉, 单课只定5秒/15字/切分线三样, 门槛留给推广'},
+    {v:22, date:'2026-09-24', desc:'②两张图合并(用户: 说的是一件事): 删掉15条折线图, 只留1秒档热力图并强化—色阶gamma压缩(0.55)拉大深浅对比让分布形状更醒目, 每格占比>0都回显数字(原只≥12%显示). 折线图的"5秒掉台阶(14/15题)"结论用文字组织进热力图下方"一眼看出两件事:①题间形状差异大②分界切5秒且各题各自成立". 一张图承载分档依据+5秒依据'},
   ];
   const NAMEABLE = 'h1,h2,h3,.card,.big-take,.callout,.stat,section > .card table.data tr,.footer-note';
   document.querySelectorAll(NAMEABLE).forEach(el => {
