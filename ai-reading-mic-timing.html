@@ -161,7 +161,7 @@ table.data tr:hover { background: #f5f5f2; }
 <p style="font-size:13px;color:var(--text-secondary);margin-top:6px;">
 <b>一、不同题的分布形状差得很远。</b>排在上面的题（比如"给老鹿王回信"），偏红的格子明显往右挪，重心落在 4~6 秒、还拖着长尾；排在下面的题（比如"用一个词形容老鹿王"），扎堆的格子几乎全挤在 2~3 秒、6 秒后基本是空白。<b>正因为分化得这么明显，"把开口快慢分档来看"才站得住</b>——不是我们要分，是数据本身就分开了。</p>
 <p style="font-size:13px;color:var(--text-secondary);margin-top:6px;">
-<b>二、分界该切在 5 秒——而且这不是拍的。</b>顺着每一行看：无论慢题快题，有颜色的格子基本都止步在第 5 秒（红竖线）那里，往后迅速褪成灰白。<b>15 道题里 14 道都在 5 秒后"掉台阶"</b>（4~5 秒那格的人明显多于 5~6 秒那格），唯一的例外正是最慢的回信题。这说明 5 秒不是某道题的特例、也不是把所有回答混在一起凑出来的假象，而是<b>每道题各自都成立</b>的"正常反应"与"偏慢长尾"的天然分界。（大盘 13 万次回答上也是同一位置，后面再验证。）</p>
+<b>二、分界该切在 5 秒——而且这不是拍的。</b>顺着每一行看：无论慢题快题，红黄格子（人扎堆的那几档）基本都集中在第 5 秒（红竖线）以内，跨过 5 秒就迅速褪成绿、再变灰白。<b>15 道题里 14 道都在 5 秒后"掉台阶"</b>（4~5 秒那格的人明显多于 5~6 秒那格），唯一的例外正是最慢的回信题。这说明 5 秒不是某道题的特例、也不是把所有回答混在一起凑出来的假象，而是<b>每道题各自都成立</b>的"正常反应"与"偏慢长尾"的天然分界。（大盘 13 万次回答上也是同一位置，后面再验证。）</p>
 
 <p style="margin-top:12px;">有了 5 秒这条线，就能算出每道题的<b>慢答占比</b>（开口超过 5 秒的人占多少）——上面那张热力图最右列就是它。</p>
 
@@ -578,12 +578,12 @@ document.getElementById('s-b').textContent = DATA.total.B;
   // 每题2秒档开口分布(细粒度观察题间趋势): 每行一题, 每格一个2秒档, 色深=该档占比
   const dist=DATA.bambi_dist, seg=document.getElementById('bambi-dist');
   if (dist && seg){
-    const labels=dist.labels, mx=dist.maxp;
+    const labels=dist.labels;
     const rows=dist.rows.slice().sort((x,y)=>y.over5-x.over5);
-    // 色阶: 交通灯 绿→黄→红 (低占比=绿/快, 高占比=红/慢). gamma压缩0.6拉大中低值区分
-    const cell=p=>{
+    // 色阶: 交通灯 绿→黄→红. 题内归一化—每道题用自己的最大档做红、最小做绿(rowMax作分母)
+    const cell=(p,rowMax)=>{
       if(p<=0) return '#f7f7f5';
-      const t=Math.pow(Math.min(p/mx,1),0.6);
+      const t=Math.pow(Math.min(p/rowMax,1),0.7);
       // 三段插值: 0=绿(46,164,79) 0.5=黄(240,190,40) 1=红(200,45,40)
       let r,g,b;
       if(t<0.5){const k=t/0.5; r=Math.round(46+(240-46)*k); g=Math.round(164+(190-164)*k); b=Math.round(79+(40-79)*k);}
@@ -591,7 +591,7 @@ document.getElementById('s-b').textContent = DATA.total.B;
       return `rgb(${r},${g},${b})`;
     };
     // 文字色: 黄区(中值)用深灰保证可读, 绿/红两端用白
-    const txtcol=p=>{const t=Math.pow(p/mx,0.6); return (t>0.35&&t<0.68)?'#5a5a55':'#fff';};
+    const txtcol=(p,rowMax)=>{const t=Math.pow(p/rowMax,0.7); return (t>0.35&&t<0.68)?'#5a5a55':'#fff';};
     // 表头: 每1秒一档, 标注秒数
     let head='<div style="display:flex;align-items:flex-end;gap:8px;margin:10px 0 2px;">'
       +'<div style="flex:0 0 200px;"></div><div style="flex:1;display:flex;gap:1px;">';
@@ -602,12 +602,13 @@ document.getElementById('s-b').textContent = DATA.total.B;
     let html=head;
     rows.forEach(o=>{
       let cells='';
+      const rowMax=Math.max(...o.hist1p); // 每道题自己的最大档=红
       o.hist1p.forEach((p,i)=>{
         // 5秒线: 第6格(index=5, "5-6秒")左缘=5秒, 加左描边示意"慢"从这里开始
         const isSlowStart=(i===5);
         // 每格占比>0就显示数字(整数, <1的显示<1避免挤)
         const num = p<=0 ? '' : (p<1 ? '·' : Math.round(p));
-        cells+=`<div title="${labels[i]}~${i>=15?'':(i+1)}秒 ${p}%" style="flex:1;height:22px;background:${cell(p)};display:flex;align-items:center;justify-content:center;font-size:8px;color:${txtcol(p)};${isSlowStart?'box-shadow:inset 2px 0 0 var(--A);':''}">${num}</div>`;
+        cells+=`<div title="${labels[i]}~${i>=15?'':(i+1)}秒 ${p}%" style="flex:1;height:22px;background:${cell(p,rowMax)};display:flex;align-items:center;justify-content:center;font-size:8px;color:${txtcol(p,rowMax)};${isSlowStart?'box-shadow:inset 2px 0 0 var(--A);':''}">${num}</div>`;
       });
       html+=`<div style="display:flex;align-items:center;gap:8px;margin:2px 0;">
         <div style="flex:0 0 200px;font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${(o.title||o.qid).replace(/"/g,'')}">${o.title||o.qid}</div>
@@ -616,7 +617,7 @@ document.getElementById('s-b').textContent = DATA.total.B;
       </div>`;
     });
     html+='<div style="font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.8;">'
-      +'每行一道题（按慢答占比从高到低排），每格是一个 1 秒时长档（0~1、1~2……15+），格里数字=该档学生占比%。<b>颜色 <span style="color:#2ea44f">绿</span>→<span style="color:#d6a800">黄</span>→<span style="color:#c82d28">红</span> 表示这一档人越来越多</b>（绿=没什么人、红=很多人扎堆）；最右列是该题 &gt;5秒 的占比。<span style="color:var(--A)">▎</span> 红色竖线标出第 5 秒。</div>';
+      +'每行一道题（按慢答占比从高到低排），每格是一个 1 秒时长档（0~1、1~2……15+），格里数字=该档学生占比%。<b>颜色 <span style="color:#2ea44f">绿</span>→<span style="color:#d6a800">黄</span>→<span style="color:#c82d28">红</span> 表示在<u>这道题内部</u>这一档人越来越多</b>（绿=没什么人、红=这道题里人最扎堆的那几档）——每道题各自比，所以看的是"这道题的人集中在第几秒"。最右列是该题 &gt;5秒 的占比。<span style="color:var(--A)">▎</span> 红色竖线标出第 5 秒。</div>';
     seg.innerHTML=html;
   }
   // 写信题板书
@@ -969,6 +970,7 @@ renderSubq();
     {v:21, date:'2026-09-24', desc:'修单课逻辑矛盾(用户发现): ②说慢题仅2道坎44% 与 ③④⑤基于门槛24.3%说7道候选 相冲突(若慢题只2道且都该等, 第二根轴在单课无用武之地). 改法: ②只证"慢答占比能把题拉开、是有效信号", 不定死门槛数值/不说慢题2道, 门槛具体值明确交118题+年级分位; ③⑤改口径为"先借候选门槛把流程跑通, 具体值大盘定"; 收尾callout把门槛从"单课定出的线"里拿掉, 单课只定5秒/15字/切分线三样, 门槛留给推广'},
     {v:22, date:'2026-09-24', desc:'②两张图合并(用户: 说的是一件事): 删掉15条折线图, 只留1秒档热力图并强化—色阶gamma压缩(0.55)拉大深浅对比让分布形状更醒目, 每格占比>0都回显数字(原只≥12%显示). 折线图的"5秒掉台阶(14/15题)"结论用文字组织进热力图下方"一眼看出两件事:①题间形状差异大②分界切5秒且各题各自成立". 一张图承载分档依据+5秒依据'},
     {v:23, date:'2026-09-24', desc:'②热力图换多色系(用户: 不同色系区分更显著): 单色浅米→深红 改成 交通灯 绿→黄→红(gamma0.6), 低占比=绿(快/没人)、中=黄、高=红(慢/扎堆), 冷暖色相变化比单纯深浅区分度强、且语义直觉(绿=快红=慢). 图例+正文"深色"措辞同步改成绿黄红'},
+    {v:24, date:'2026-09-24', desc:'②热力图改题内归一化(用户指定): 颜色分母从全局maxp改成每题自己的rowMax—每道题用自己最扎堆的档做红、最少做绿, 看"这道题的人集中在第几秒"更清楚. 图例注明"每道题各自比", 正文二改成"红黄格子(扎堆档)集中在5秒内"匹配新口径'},
   ];
   const NAMEABLE = 'h1,h2,h3,.card,.big-take,.callout,.stat,section > .card table.data tr,.footer-note';
   document.querySelectorAll(NAMEABLE).forEach(el => {
