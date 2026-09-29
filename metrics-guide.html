@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>指标详解 · 大字版</title>
+<style>
+:root{
+  --bg:#f7f8fa;--card:#fff;--ink:#1a1a2e;--sub:#5b6472;--line:#e8ebf0;
+  --brand:#6c5ce7;--wait:#e17055;--hint:#f0a500;--ok:#00b894;
+  --shadow:0 2px 14px rgba(30,30,60,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.9;padding:36px 28px 90px;font-size:18px}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-size:32px;font-weight:800;letter-spacing:.5px}
+.sub{color:var(--sub);font-size:17px;margin-top:8px}
+.metric{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:24px 28px;box-shadow:var(--shadow);margin-top:22px;border-left:6px solid var(--brand)}
+.metric h2{font-size:24px;font-weight:800;display:flex;align-items:center;gap:10px}
+.metric .num{width:34px;height:34px;border-radius:50%;background:var(--brand);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.row{margin-top:14px}
+.row .lab{font-size:15px;font-weight:700;color:var(--brand);letter-spacing:.5px}
+.row .txt{font-size:18px;margin-top:2px}
+.row.blind .lab{color:var(--wait)}
+.big{font-size:20px;font-weight:700;background:#fff7ef;padding:2px 8px;border-radius:6px}
+.combo{background:linear-gradient(135deg,#f3f1ff,#fff);border:1px solid #e0d9ff;
+  border-radius:16px;padding:22px 26px;margin-top:18px}
+.combo h3{font-size:21px;font-weight:800;color:var(--brand)}
+.combo .q{font-size:18px;margin-top:8px}
+.combo .q b{color:var(--ink)}
+hr{border:none;border-top:2px dashed var(--line);margin:34px 0}
+.tip{background:#fff8e6;border-left:5px solid var(--hint);border-radius:0 12px 12px 0;
+  padding:18px 22px;margin-top:22px;font-size:18px}
+mark{background:#fff2b8;padding:1px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>📐 五个指标各是什么 · 大字版</h1>
+<p class="sub">每个指标:是什么 → 单独能说明什么 → 盲区在哪。看完下面的"组合",你自己判断要哪个。</p>
+
+<div class="metric" data-name="慢答占比">
+  <h2><span class="num">1</span>慢答占比</h2>
+  <div class="row"><div class="lab">定义</div><div class="txt">一道题里,开口时间超过 5 秒的学生占多少。</div></div>
+  <div class="row"><div class="lab">量的是</div><div class="txt"><span class="big">这道题让多少人需要时间</span>——多少人不能脱口而出。</div></div>
+  <div class="row blind"><div class="lab">盲区</div><div class="txt">只知道"慢",不知道<b>为什么慢</b>。慢可能是在认真思考、可能是卡住不会、也可能是走神。这三种它分不清。</div></div>
+</div>
+
+<div class="metric" data-name="长答率">
+  <h2><span class="num">2</span>慢答者长答率</h2>
+  <div class="row"><div class="lab">定义</div><div class="txt">回答≥15字算"长答"。慢答者长答率 = <b>慢的那批人里</b>,多少人写了长答。</div></div>
+  <div class="row"><div class="lab">量的是</div><div class="txt"><span class="big">慢的这些人,最后是不是说出了有内容的东西</span>。</div></div>
+  <div class="row blind"><div class="lab">盲区</div><div class="txt">有个陷阱:如果题目<b>本来就要求写长答</b>(如回信题),那不管快慢人人都写长答,这时长答率高是<b>题目要求造成的</b>,不是"慢换来了内容"。它分不清"因为慢所以长"和"这题本来就得长"。</div></div>
+</div>
+
+<div class="metric" data-name="单题趋势">
+  <h2><span class="num">3</span>单题内的趋势(开口时间→字数)</h2>
+  <div class="row"><div class="lab">定义</div><div class="txt">同一道题里,把学生按开口快慢分组,看<b>开口越慢的人字数是不是越多</b>。递增=越等越能说;平坦=等不等一样;倒挂=越慢越少。</div></div>
+  <div class="row"><div class="lab">量的是</div><div class="txt"><span class="big">在这道题上,多给时间到底换不换得来内容</span>——唯一直接回答"等待有没有用"的指标。</div></div>
+  <div class="row blind"><div class="lab">盲区</div><div class="txt">只看"字数变没变",看不到<b>字数没变但体验变差</b>。回信题快慢都写40字(平坦),但写信写到一半被打断,字数没少、连贯性和体验却受损了——这它看不到。</div></div>
+</div>
+
+<div class="metric" data-name="误伤率">
+  <h2><span class="num">4</span>误伤率</h2>
+  <div class="row"><div class="lab">定义</div><div class="txt">一道题里,<b>既慢(>5秒)又写了长答(≥15字)</b>的学生占全班比例。其实就是"慢答占比 × 慢答者长答率"。</div></div>
+  <div class="row"><div class="lab">量的是</div><div class="txt"><span class="big">零等待下,多大比例的学生本想好好说一段、却可能被立刻打断</span>。</div></div>
+  <div class="row blind"><div class="lab">盲区</div><div class="txt">合成一个数,信息被压没:19%可能是"很多人慢、一半长答",也可能是"少数人慢、几乎全长答",含义不同数字却一样。而且继承了②的陷阱(题目要求长答→虚高)。</div></div>
+</div>
+
+<div class="metric" data-name="无措率" style="border-left-color:var(--hint)">
+  <h2><span class="num" style="background:var(--hint)">5</span>无措率</h2>
+  <div class="row"><div class="lab" style="color:var(--hint)">定义</div><div class="txt">开口后说"嗯/呃/不知道"、结巴重复、放弃作答的人占多少。<b>和"慢"是两回事。</b></div></div>
+  <div class="row"><div class="lab" style="color:var(--hint)">量的是</div><div class="txt"><span class="big">有多少人不知道说啥</span>——唯一直接对应你看到的"学生无措"那个现象。</div></div>
+  <div class="row blind"><div class="lab">盲区</div><div class="txt">靠回答文本判定,依赖识别质量和规则(踩过"紧张/害怕"被误判的坑,已修)。测的是"开口后"的无措,测不到"开口前"的犹豫。</div></div>
+</div>
+
+<hr>
+
+<h1 style="font-size:28px">🧩 合在一起能刻画什么</h1>
+<p class="sub">单看任何一个都片面。两两组合,回答的是不同层次的问题——你要哪个,取决于你想回答哪个问题。</p>
+
+<div class="combo" data-name="组合A">
+  <h3>组合 A:慢答占比 × 无措率</h3>
+  <div class="q">刻画:把"<b>需要时间</b>"和"<b>不知道说啥</b>"两种困难分开。</div>
+  <div class="q">回答的问题:<b>这题该给等待,还是该给提示?</b>(手段决策)</div>
+</div>
+
+<div class="combo" data-name="组合B">
+  <h3>组合 B:慢答占比 × 单题趋势</h3>
+  <div class="q">刻画:"很多人慢"且"多等真能换来内容"的题。</div>
+  <div class="q">回答的问题:<b>给等待到底值不值/会不会白等?</b>(最严,但会放走"字数不涨但体验差"的回信题)</div>
+</div>
+
+<div class="combo" data-name="组合C">
+  <h3>组合 C:慢答者长答率 × 单题趋势</h3>
+  <div class="q">刻画:区分"慢是在<b>憋长答</b>"还是"慢是在<b>卡壳</b>"。</div>
+  <div class="q">回答的问题:<b>慢的人到底在思考还是在卡壳?</b>(拆穿"长答率高"的假象)</div>
+</div>
+
+<div class="combo" data-name="组合D">
+  <h3>组合 D:误伤率榜 + 无措率榜(两张排序表并列)</h3>
+  <div class="q">刻画:"谁被催得损失最大"和"谁最不知道说啥"两个榜单。</div>
+  <div class="q">回答的问题:<b>综合看,哪几道题最该先动?</b></div>
+</div>
+
+<div class="tip" data-name="怎么选">
+  <b>怎么选:先想清楚你要回答哪个问题。</b><br>
+  · 要"该等待还是该提示" → <mark>组合A</mark><br>
+  · 要"给等待值不值" → <mark>组合B</mark><br>
+  · 要"慢的人在思考还是卡壳" → <mark>组合C</mark><br>
+  · 要"哪几道题最该先动" → <mark>组合D</mark><br>
+  <br>或者你觉得都不是——那把你脑子里"想要的那个东西"用一句话说出来,我帮你看该拿哪几个指标拼。
+</div>
+
+</div>
+
+<!-- ===== 版本条 ===== -->
+<style>
+#verBadge{position:fixed;top:14px;right:16px;background:#6c5ce7;color:#fff;
+  font:600 12px/1 sans-serif;padding:7px 12px;border-radius:20px;cursor:pointer;z-index:9998;
+  box-shadow:0 2px 8px rgba(108,92,231,.4)}
+#verPanel{position:fixed;top:48px;right:16px;width:280px;background:#fff;border:1px solid #e8ebf0;
+  border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.15);padding:14px 16px;z-index:9998;display:none}
+#verPanel h4{font:700 14px sans-serif;margin-bottom:10px;color:#1a1a2e}
+.vitem{border-left:2px solid #6c5ce7;padding:0 0 12px 12px;position:relative}
+.vitem:last-child{padding-bottom:0}
+.vitem b{font:700 12px sans-serif;color:#6c5ce7}
+.vitem .d{font:11px sans-serif;color:#8890a0;margin-left:6px}
+.vitem p{font:12px/1.5 sans-serif;color:#5b6472;margin-top:2px}
+/* 批注层 */
+#annToggle{position:fixed;bottom:20px;right:20px;background:#1a1a2e;color:#fff;
+  font:600 13px sans-serif;padding:10px 16px;border-radius:24px;cursor:pointer;z-index:9998;
+  box-shadow:0 4px 16px rgba(0,0,0,.25);user-select:none}
+#annToggle.on{background:#6c5ce7}
+body.annmode [data-name]{cursor:crosshair}
+body.annmode [data-name]:hover{outline:2px dashed #6c5ce7;outline-offset:2px}
+.ann-mark{position:absolute;width:22px;height:22px;background:#e74c3c;color:#fff;
+  border-radius:50%;font:700 12px sans-serif;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:9997;box-shadow:0 2px 6px rgba(231,76,60,.5);transform:translate(-50%,-50%)}
+#annEditor{position:fixed;width:260px;background:#fff;border:1px solid #6c5ce7;border-radius:10px;
+  box-shadow:0 8px 30px rgba(0,0,0,.2);padding:10px;z-index:9999;display:none}
+#annEditor textarea{width:100%;height:64px;border:1px solid #e8ebf0;border-radius:6px;padding:6px;
+  font:13px sans-serif;resize:none;outline:none}
+#annEditor .hint{font:10px sans-serif;color:#8890a0;margin-top:5px}
+#annPanel{position:fixed;bottom:70px;right:20px;width:280px;max-height:50vh;overflow:auto;
+  background:#fff;border:1px solid #e8ebf0;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.15);
+  padding:12px;z-index:9998;display:none}
+#annPanel h4{font:700 13px sans-serif;margin-bottom:8px}
+.annrow{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid #f0f0f0;cursor:pointer}
+.annrow .no{color:#e74c3c;font:700 12px sans-serif;flex-shrink:0}
+.annrow .tx{font:12px/1.4 sans-serif;color:#1a1a2e;flex:1}
+.annrow .nm{color:#8890a0;font-size:10px}
+.annrow .del{color:#bbb;font-size:14px;flex-shrink:0}
+.annrow.active{background:#f3f1ff;border-radius:6px}
+#annExport{margin-top:8px;width:100%;background:#6c5ce7;color:#fff;border:none;border-radius:8px;
+  padding:8px;font:600 12px sans-serif;cursor:pointer}
+@keyframes annflash{0%{background:#fff3cd}100%{background:transparent}}
+.annflash{animation:annflash 1.2s ease}
+#annToast{position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:#1a1a2e;
+  color:#fff;font:13px sans-serif;padding:10px 18px;border-radius:24px;z-index:10000;display:none}
+</style>
+
+<div id="verBadge">版本 v1</div>
+<div id="verPanel"></div>
+<div id="annToggle">✏️ 批注模式</div>
+<div id="annPanel"><h4>📝 批注清单</h4><div id="annList"></div>
+  <button id="annExport">📋 导出给 Claude</button></div>
+<div id="annEditor"><textarea id="annText" placeholder="写下你的修改意见…"></textarea>
+  <div class="hint">回车保存 · Shift+回车换行 · Esc 取消(打字选字的回车不会误提交)</div></div>
+<div id="annToast"></div>
+
+<script>
+// ===== 版本条 =====
+const VERSIONS=[{v:1,date:"2026-09-28",desc:"指标详解大字版:慢答占比/长答率/单题趋势/误伤率/无措率各自含义+盲区,及ABCD四种组合能回答的问题"}];
+(function(){
+  const badge=document.getElementById('verBadge'),panel=document.getElementById('verPanel');
+  badge.textContent='版本 v'+VERSIONS[VERSIONS.length-1].v;
+  panel.innerHTML='<h4>版本历史</h4>'+[...VERSIONS].reverse().map(x=>
+    `<div class="vitem"><b>v${x.v}</b><span class="d">${x.date}</span><p>${x.desc}</p></div>`).join('');
+  badge.onclick=()=>panel.style.display=panel.style.display==='block'?'none':'block';
+})();
+
+// ===== 批注层 =====
+(function(){
+  const toggle=document.getElementById('annToggle');
+  const editor=document.getElementById('annEditor');
+  const textEl=document.getElementById('annText');
+  const panel=document.getElementById('annPanel');
+  const list=document.getElementById('annList');
+  const toast=document.getElementById('annToast');
+  let anns=[];          // {name, txt, target}
+  let mode=false, pendingTarget=null, editingIdx=-1;
+
+  toggle.onclick=()=>{
+    mode=!mode;
+    document.body.classList.toggle('annmode',mode);
+    toggle.classList.toggle('on',mode);
+    toggle.textContent=mode?'✅ 批注中(点元素)':'✏️ 批注模式';
+    panel.style.display=mode?'block':(anns.length?'block':'none');
+  };
+
+  document.addEventListener('click',(e)=>{
+    if(!mode) return;
+    const t=e.target;
+    if(editor.contains(t)||panel.contains(t)||t===toggle||t.closest('.ann-mark')
+       ||t===document.getElementById('verBadge')||document.getElementById('verPanel').contains(t)) return;
+    const host=t.closest('[data-name]');
+    if(!host) return;
+    e.preventDefault();e.stopPropagation();
+    pendingTarget=host; editingIdx=-1;
+    textEl.value='';
+    openEditorAt(host);
+  },true);
+
+  function openEditorAt(el){
+    const r=el.getBoundingClientRect();
+    editor.style.display='block';
+    let left=Math.max(10,Math.min(r.left,window.innerWidth-270));
+    let top=Math.max(10,Math.min(r.bottom+6,window.innerHeight-180));
+    editor.style.left=left+'px'; editor.style.top=top+'px';
+    setTimeout(()=>textEl.focus(),30);
+  }
+
+  textEl.addEventListener('keydown',(e)=>{
+    if(e.key==='Enter' && !e.shiftKey && !e.isComposing && e.keyCode!==229){
+      e.preventDefault(); saveAnn();
+    } else if(e.key==='Escape'){ closeEditor(); }
+  });
+
+  function saveAnn(){
+    const txt=textEl.value.trim();
+    if(!txt){closeEditor();return;}
+    if(editingIdx>=0){ anns[editingIdx].txt=txt; }
+    else { anns.push({name:pendingTarget.getAttribute('data-name'),txt,target:pendingTarget}); }
+    closeEditor(); renderAll();
+    panel.style.display='block';
+  }
+  function closeEditor(){editor.style.display='none';pendingTarget=null;editingIdx=-1;}
+
+  function renderAll(){
+    document.querySelectorAll('.ann-mark').forEach(m=>m.remove());
+    anns.forEach((a,i)=>{
+      const r=a.target.getBoundingClientRect();
+      const mark=document.createElement('div');
+      mark.className='ann-mark';mark.textContent=i+1;
+      mark.style.left=(window.scrollX+r.left+r.width-6)+'px';
+      mark.style.top=(window.scrollY+r.top+10)+'px';
+      mark.onclick=(ev)=>{ev.stopPropagation();focusAnn(i);};
+      document.body.appendChild(mark);
+    });
+    list.innerHTML=anns.map((a,i)=>
+      `<div class="annrow" data-i="${i}"><span class="no">${i+1}</span>
+       <span class="tx">${esc(a.txt)}<div class="nm">@${esc(a.name)}</div></span>
+       <span class="del" data-del="${i}">✕</span></div>`).join('')
+       ||'<p style="color:#aaa;font:12px sans-serif">还没有批注,开启批注模式后点任意区块</p>';
+    list.querySelectorAll('.annrow').forEach(row=>{
+      row.onclick=(e)=>{if(e.target.dataset.del!==undefined)return;focusAnn(+row.dataset.i);};
+    });
+    list.querySelectorAll('[data-del]').forEach(b=>{
+      b.onclick=(e)=>{e.stopPropagation();anns.splice(+b.dataset.del,1);renderAll();};
+    });
+  }
+  function focusAnn(i){
+    const el=anns[i].target;
+    el.scrollIntoView({block:'center',behavior:'smooth'});
+    el.classList.remove('annflash');void el.offsetWidth;el.classList.add('annflash');
+    list.querySelectorAll('.annrow').forEach(r=>r.classList.toggle('active',+r.dataset.i===i));
+  }
+  function repositionMarks(){
+    document.querySelectorAll('.ann-mark').forEach((m,i)=>{
+      if(!anns[i])return;
+      const r=anns[i].target.getBoundingClientRect();
+      m.style.left=(window.scrollX+r.left+r.width-6)+'px';
+      m.style.top=(window.scrollY+r.top+10)+'px';
+    });
+  }
+  window.addEventListener('scroll',repositionMarks,{passive:true});
+  window.addEventListener('resize',()=>setTimeout(repositionMarks,160));
+
+  document.getElementById('annExport').onclick=()=>{
+    if(!anns.length){showToast('还没有批注',true);return;}
+    const md=anns.map((a,i)=>`${i+1}. 【${a.name}】${a.txt}`).join('\n');
+    const payload='请根据以下批注修改这个数据分析报告页面:\n\n'+md;
+    copyText(payload);
+  };
+  function copyText(t){
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(()=>showToast('✅ 已复制,回对话框 Cmd/Ctrl+V 粘贴'))
+        .catch(()=>fallback(t));
+    } else fallback(t);
+  }
+  function fallback(t){
+    const ta=document.createElement('textarea');ta.value=t;
+    ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');showToast('✅ 已复制,回对话框 Cmd/Ctrl+V 粘贴');}
+    catch(e){showToast('复制失败,请重试',true);}
+    document.body.removeChild(ta);
+  }
+  function showToast(msg,err){
+    toast.textContent=msg;toast.style.background=err?'#c0392b':'#1a1a2e';
+    toast.style.display='block';setTimeout(()=>toast.style.display='none',2200);
+  }
+  function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+})();
+</script>
+
+</body>
+</html>
