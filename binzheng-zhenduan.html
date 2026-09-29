@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI伴读 · 15题作答漏斗诊断</title>
+<title>AI伴读 · 15题作答诊断</title>
 <style>
   :root{
     --bg:#f5f6f8; --card:#fff; --ink:#1a1a1a; --sub:#5b6572;
@@ -13,275 +13,302 @@
   body{
     background:var(--bg); color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-    line-height:1.85; font-size:20px;
-    padding:48px 20px; -webkit-font-smoothing:antialiased;
+    line-height:1.8; font-size:20px; padding:44px 20px; -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:920px;margin:0 auto}
-  h1{font-size:40px;font-weight:800;letter-spacing:-.5px;margin-bottom:20px}
+  .wrap{max-width:960px;margin:0 auto}
+  h1{font-size:38px;font-weight:800;letter-spacing:-.5px;margin-bottom:18px}
+  .modtitle{font-size:26px;font-weight:800;margin:52px 0 8px;padding-left:14px;border-left:6px solid #3d7de8}
+  .modnote{color:var(--sub);font-size:17px;margin-bottom:22px;padding-left:14px}
   .lead{
     background:#eef2f7;border-left:5px solid #b9c4d2;border-radius:10px;
-    padding:20px 24px;color:var(--sub);font-size:19px;margin-bottom:14px;
+    padding:18px 22px;color:var(--sub);font-size:18px;margin-bottom:8px;
   }
   .lead b{color:var(--ink)}
-  .src{color:var(--gray);font-size:16px;margin-bottom:40px}
-  .sec{margin:44px 0 18px}
-  .sec h2{font-size:27px;font-weight:800;display:flex;align-items:center;gap:10px}
-  .sec p.desc{color:var(--sub);font-size:18px;margin-top:8px}
-  .badge{font-size:15px;font-weight:700;padding:3px 12px;border-radius:20px;color:#fff}
-  .b-red{background:var(--red)} .b-orange{background:var(--orange)}
-  .b-green{background:var(--green)} .b-gray{background:var(--gray)}
+
+  /* 原始数据表 */
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);font-size:18px}
+  th,td{padding:13px 12px;text-align:center;border-bottom:1px solid var(--line)}
+  th{background:#2f3a48;color:#fff;font-weight:700;font-size:17px}
+  td.q{text-align:left;font-weight:600}
+  tr:last-child td{border-bottom:0}
+  .hi{color:var(--red);font-weight:800}
+  .best{color:var(--green);font-weight:800}
+  td.mut{color:var(--gray)}
+
+  /* 题目诊断卡 */
   .card{
     background:var(--card);border:1px solid var(--line);border-radius:14px;
-    padding:24px 28px;margin:16px 0;box-shadow:0 1px 3px rgba(0,0,0,.04);
+    padding:22px 26px;margin:16px 0;box-shadow:0 1px 3px rgba(0,0,0,.04);
   }
-  .card h3{font-size:22px;font-weight:700;margin-bottom:14px}
-  .sigs{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
-  .sig{
-    background:#f2f4f7;border-radius:9px;padding:8px 14px;font-size:17px;color:var(--sub);
-  }
-  .sig b{color:var(--ink);font-size:19px;font-weight:700}
-  .sig.hi b{color:var(--red)}
-  .sig.hi{background:#fdecec}
-  .sig.best b{color:var(--green)}
-  .sig.best{background:#e8f7ee}
-  .row{display:flex;gap:14px;margin-top:10px;align-items:baseline}
-  .row .k{flex:0 0 62px;font-weight:700;color:var(--sub);font-size:17px}
-  .row .v{flex:1;font-size:19px}
-  .cost{display:inline-block;font-size:16px;font-weight:700;padding:2px 12px;border-radius:7px;background:#f0f2f5;color:var(--sub)}
-  .cost.low{background:#e8f7ee;color:#1f8a54}
-  .cost.mid{background:#fff3e0;color:#c47912}
-  .cost.zero{background:#eef0f3;color:#8a94a0}
-  hr{border:0;border-top:1px solid var(--line);margin:40px 0}
-  .recap{background:#1f2733;color:#e8ecf1;border-radius:16px;padding:32px 34px;margin-top:44px}
-  .recap h2{font-size:26px;font-weight:800;margin-bottom:20px;color:#fff}
-  .recap ul{list-style:none}
-  .recap li{font-size:19px;padding:12px 0;border-bottom:1px solid #2f3a48;line-height:1.7}
-  .recap li:last-child{border:0}
-  .recap .tag{font-weight:800;color:#fff}
-  .recap .arrow{color:#8fd6b0}
+  .card.act{border-left:6px solid var(--red)}
+  .card.mild{border-left:6px solid var(--orange)}
+  .card.ok{border-left:6px solid var(--green)}
+  .card h3{font-size:21px;font-weight:700;margin-bottom:12px}
+  .card h3 .tag{font-size:14px;color:#fff;padding:2px 10px;border-radius:20px;margin-left:8px;vertical-align:middle}
+  .t-red{background:var(--red)} .t-orange{background:var(--orange)} .t-green{background:var(--green)}
+  .sigs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .sig{background:#f2f4f7;border-radius:8px;padding:6px 12px;font-size:16px;color:var(--sub)}
+  .sig b{color:var(--ink);font-size:18px}
+  .sig.hi{background:#fdecec} .sig.hi b{color:var(--red)}
+  .sig.best{background:#e8f7ee} .sig.best b{color:var(--green)}
+
+  .qa{border-top:1px dashed var(--line);padding-top:14px;margin-top:4px}
+  .qa-pair{display:flex;gap:0;flex-direction:column;margin-bottom:14px}
+  .qa-pair:last-child{margin-bottom:0}
+  .q-line,.a-line{display:flex;gap:10px;align-items:baseline;padding:3px 0}
+  .lbl{flex:0 0 74px;font-weight:800;font-size:16px;border-radius:6px;text-align:center;padding:2px 0}
+  .q-line .lbl{background:#fdecec;color:var(--red)}
+  .a-line .lbl{background:#e8f7ee;color:#1f8a54}
+  .txt{flex:1;font-size:19px}
+  .txt .cost{font-size:15px;font-weight:700;padding:1px 9px;border-radius:6px;background:#f0f2f5;color:var(--sub);margin-left:6px}
+  .cost.low{background:#e8f7ee;color:#1f8a54} .cost.mid{background:#fff3e0;color:#c47912} .cost.zero{background:#eef0f3;color:#8a94a0}
+  .none{color:var(--green);font-weight:700;font-size:18px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>AI伴读 · 15题作答漏斗诊断</h1>
+  <h1>AI伴读 · 15题作答诊断</h1>
+  <div class="modtitle">模块一 · 原始数据</div>
+  <div class="modnote">15 题四信号。沉默率为 questionid 级（同题号两小问共享）。数据源：lesson4 · 小鹿斑比第4课。</div>
   <div class="lead">
-    四个信号连起来看一次作答的全过程：<br>
-    <b>沉默率</b>（有作答动作但没出声）→ <b>慢答率</b>（开口但想得久）→ <b>长答率</b>（说得够不够）→ <b>无措率</b>（开口却说"不知道"）
+    <b>沉默率</b> 有作答动作但没识别出人声 ｜ <b>慢答率</b> 开口&gt;5秒占比 ｜ <b>长答率</b> 全体≥15字占比 ｜ <b>无措率</b> 开口却说"不知道"占比
   </div>
-  <div class="src">沉默率为 questionid 级（同题号两小问共享）。数据源：lesson4 · 小鹿斑比第4课。</div>
+  <table>
+    <thead><tr><th style="text-align:left">题目</th><th>沉默%</th><th>慢答%</th><th>长答%</th><th>无措%</th></tr></thead>
+    <tbody>
+      <tr><td class="q">466973 老鹿王出现后做了什么</td><td class="hi">6.9</td><td>27.6</td><td>54.4</td><td>6.4</td></tr>
+      <tr><td class="q">466172 把想说的悄悄话讲出来</td><td class="hi">6.8</td><td>43.7</td><td>61.9</td><td>6.9</td></tr>
+      <tr><td class="q">466974 带斑比做了哪些事</td><td>5.6</td><td>31.2</td><td>64.9</td><td>4.4</td></tr>
+      <tr><td class="q">466169-1 为什么竖起耳朵</td><td>5.4</td><td>17.8</td><td class="best">78.2</td><td>4.4</td></tr>
+      <tr><td class="q">466169-2 用一个词形容</td><td>5.4</td><td>10.2</td><td>26.0</td><td>1.2</td></tr>
+      <tr><td class="q">466171 如果一直不开口会发生什么</td><td>5.2</td><td>18.4</td><td>47.3</td><td class="hi">13.7</td></tr>
+      <tr><td class="q">466168-2 怎样的鹿</td><td>5.1</td><td>16.8</td><td>28.8</td><td>4.2</td></tr>
+      <tr><td class="q">466168-1 什么反应</td><td>5.1</td><td>20.7</td><td>32.9</td><td>2.6</td></tr>
+      <tr><td class="q">398696-2 下次再遇到怎么做</td><td>4.8</td><td>30.9</td><td>48.5</td><td class="hi">7.8</td></tr>
+      <tr><td class="q">398696-1 为什么没开口</td><td>4.8</td><td>25.7</td><td>67.6</td><td>7.2</td></tr>
+      <tr><td class="q">466170-1 回一段话</td><td>4.8</td><td class="hi">53.8</td><td class="best">91.2</td><td>2.7</td></tr>
+      <tr><td class="q">466170-2 下次见到会怎么做</td><td>4.8</td><td>22.8</td><td class="best">78.9</td><td>1.9</td></tr>
+      <tr><td class="q">398695-2 你会怎么做</td><td>3.8</td><td>14.9</td><td>42.5</td><td class="hi">8.4</td></tr>
+      <tr><td class="q">398695-1 心情怎样</td><td>3.8</td><td>26.8</td><td>28.1</td><td>4.5</td></tr>
+      <tr><td class="q">466975 还害怕吗</td><td class="best">3.6</td><td>16.6</td><td>52.5</td><td>1.7</td></tr>
+    </tbody>
+  </table>
 
-  <div class="sec">
-    <h2><span class="badge b-red">A</span> 双重卡壳 —— 沉默、无措双高，最该救</h2>
-    <p class="desc">两条流失通道同时开：一批孩子有录音动作却发不出声，开了口的又大量是"不知道"。不是时机问题，是<b>真的不知道从何说起</b>。光给缓冲没用，要给<b>内容脚手架</b>。</p>
-  </div>
+  <div class="modtitle">模块二 · 逐题诊断（问题 → 解法）</div>
+  <div class="modnote">一道题可能同时命中多个问题，就配多条解法。🔴 优先改 ｜ 🟠 留意/需决策 ｜ 🟢 健康或维持现状。</div>
 
-  <div class="card">
-    <h3>466171 · 如果一直不开口，可能会发生什么？</h3>
+  <div class="card act">
+    <h3>466171 · 如果一直不开口，可能会发生什么？<span class="tag t-red">🔴 优先改</span></h3>
     <div class="sigs">
-      <span class="sig">沉默 <b>5.2%</b></span>
-      <span class="sig">慢答 <b>18.4%</b></span>
-      <span class="sig">长答 <b>47.3%</b></span>
-      <span class="sig hi">无措 <b>13.7%</b> 全场最高</span>
+      <span class="sig">沉默 <b>5.2%</b></span><span class="sig">慢答 <b>18.4%</b></span>
+      <span class="sig">长答 <b>47.3%</b></span><span class="sig hi">无措 <b>13.7%</b> 全场最高</span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v">把 AI 的兜底追问（二选一降门槛，如"误会会消失还是变多？"）<b>前置</b>，别等孩子卡住才补。</span></div>
-    <div class="row"><span class="k">成本</span><span class="v"><span class="cost mid">中</span></span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">无措率全场最高：开口不慢，但一开口就是"不知道"，是内容真的困住了孩子。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt">把 AI 的兜底追问（二选一降门槛，如"误会会消失还是变多？"）<b>前置</b>，别等卡住才补。<span class="cost mid">中</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>466172 · 把想对老鹿王说的悄悄话讲出来</h3>
+  <div class="card act">
+    <h3>466172 · 把想对老鹿王说的悄悄话讲出来<span class="tag t-red">🔴 优先改</span></h3>
     <div class="sigs">
-      <span class="sig hi">沉默 <b>6.8%</b></span>
-      <span class="sig">慢答 <b>43.7%</b></span>
-      <span class="sig">长答 <b>61.9%</b></span>
-      <span class="sig">无措 <b>6.9%</b></span>
+      <span class="sig hi">沉默 <b>6.8%</b></span><span class="sig">慢答 <b>43.7%</b></span>
+      <span class="sig">长答 <b>61.9%</b></span><span class="sig">无措 <b>6.9%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v">亮灯前给降门槛句式（"我想说……"）＋举例，把"主动说心里话"的社交压力降下来。</span></div>
-    <div class="row"><span class="k">成本</span><span class="v"><span class="cost mid">中</span></span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">沉默率次高：近 7% 的孩子有录音动作却发不出声——"主动说心里话"的社交压力太大。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt">亮灯前给降门槛句式（"我想说……"）＋举例，把表达压力降下来。<span class="cost mid">中</span></span></div>
+      </div>
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题②</span><span class="txt">慢答 43.7% 属高投入的开放表达题，需要时间组织。</span></div>
+        <div class="a-line"><span class="lbl">解法②</span><span class="txt">该等：给足思考缓冲，别零缓冲催促。<span class="cost low">极低</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>398696-2 · 下次再遇到，斑比可以怎么做？</h3>
+  <div class="card act">
+    <h3>398696-2 · 下次再遇到，斑比可以怎么做？<span class="tag t-red">🔴 优先改</span></h3>
     <div class="sigs">
-      <span class="sig">沉默 <b>4.8%</b></span>
-      <span class="sig">慢答 <b>30.9%</b></span>
-      <span class="sig">长答 <b>48.5%</b></span>
-      <span class="sig hi">无措 <b>7.8%</b></span>
+      <span class="sig">沉默 <b>4.8%</b></span><span class="sig">慢答 <b>30.9%</b></span>
+      <span class="sig">长答 <b>48.5%</b></span><span class="sig hi">无措 <b>7.8%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v">给"可以……也可以……"的做法示例，降开放题门槛。</span></div>
-    <div class="row"><span class="k">成本</span><span class="v"><span class="cost mid">中</span></span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">无措偏高：开放题问"怎么做"，一批孩子想不出具体做法。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt">给"可以……也可以……"的做法示例，降开放题门槛。<span class="cost mid">中</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="sec">
-    <h2><span class="badge b-red">D</span> 秒答逃避 —— 想都没想就说"不知道"，白捡的改法</h2>
-    <p class="desc">开口不慢（没花时间想），但无措偏高——孩子没利用思考时间，被"零缓冲亮灯"的即时催促逼得直接秒答逃避。</p>
-  </div>
-
-  <div class="card">
-    <h3>398695-2 · 如果你是斑比，见到老鹿王你会怎么做？</h3>
+  <div class="card act">
+    <h3>398695-2 · 如果你是斑比，见到老鹿王你会怎么做？<span class="tag t-red">🔴 优先改</span></h3>
     <div class="sigs">
-      <span class="sig">沉默 <b>3.8%</b></span>
-      <span class="sig">慢答 <b>14.9%</b> 低</span>
-      <span class="sig">长答 <b>42.5%</b></span>
-      <span class="sig hi">无措 <b>8.4%</b></span>
+      <span class="sig">沉默 <b>3.8%</b></span><span class="sig">慢答 <b>14.9%</b> 低</span>
+      <span class="sig">长答 <b>42.5%</b></span><span class="sig hi">无措 <b>8.4%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v">亮灯前加一句"不着急，先想想再说"的心理许可，把"该你说了"的催促感换成"慢慢来"；话术与亮灯时序对齐。</span></div>
-    <div class="row"><span class="k">成本</span><span class="v"><span class="cost low">极低</span></span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">秒答逃避：慢答很低（没花时间想）但无措偏高，被零缓冲亮灯的即时催促逼得张口就逃。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt">亮灯前加"不着急，先想想再说"的心理许可，话术与亮灯时序对齐。<span class="cost low">极低</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="sec">
-    <h2><span class="badge b-orange">B</span> 提问方式劝退 —— 题目本身的问题，交互救不了</h2>
-    <p class="desc">纯提取题（答案在书里）本不该难，沉默率却最高，说明问法让孩子发懵。</p>
-  </div>
-
-  <div class="card">
-    <h3>466973 · 老鹿王出现后，做了什么？</h3>
+  <div class="card mild">
+    <h3>466973 · 老鹿王出现后，做了什么？<span class="tag t-orange">🟠 回查题目</span></h3>
     <div class="sigs">
-      <span class="sig hi">沉默 <b>6.9%</b> 全场最高</span>
-      <span class="sig">慢答 <b>27.6%</b></span>
-      <span class="sig">长答 <b>54.4%</b></span>
-      <span class="sig">无措 <b>6.4%</b></span>
+      <span class="sig hi">沉默 <b>6.9%</b> 全场最高</span><span class="sig">慢答 <b>27.6%</b></span>
+      <span class="sig">长答 <b>54.4%</b></span><span class="sig">无措 <b>6.4%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v"><b>回查题干</b>。把"做了什么"这种开放问法改聚焦（"先做什么、后做什么"），或配一句指向书里段落的提示。</span></div>
-    <div class="row"><span class="k">成本</span><span class="v"><span class="cost">低（改题）</span></span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">纯提取题（答案在书里）本不该难，沉默率却全场最高——问法让孩子发懵，是题目而非交互的问题。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt"><b>回查题干</b>：把"做了什么"改聚焦（"先做什么、后做什么"），或配一句指向书里段落的提示。<span class="cost">低（改题）</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="sec">
-    <h2><span class="badge b-orange">E</span> 耗时低产 —— 花了时间却只挤出短答</h2>
-    <p class="desc">孩子想了，却组织不出长答案。要么题目诱导短答，要么预期本就是短答。</p>
-  </div>
-
-  <div class="card">
-    <h3>398695-1 · 斑比这时心情怎样？老鹿王又做了什么？</h3>
+  <div class="card mild">
+    <h3>398695-1 · 斑比这时心情怎样？老鹿王又做了什么？<span class="tag t-orange">🟠 需决策</span></h3>
     <div class="sigs">
-      <span class="sig">沉默 <b>3.8%</b></span>
-      <span class="sig">慢答 <b>26.8%</b></span>
-      <span class="sig hi">长答 <b>28.1%</b> 投入产出最差</span>
-      <span class="sig">无措 <b>4.5%</b></span>
+      <span class="sig">沉默 <b>3.8%</b></span><span class="sig">慢答 <b>26.8%</b></span>
+      <span class="sig hi">长答 <b>28.1%</b> 投入产出最差</span><span class="sig">无措 <b>4.5%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v"><b>先由产品定预期</b>——要短答（一个情绪词）则现状合理不改；要展开则题干追加"你从哪里看出来的？"把短答题变半开放题。</span></div>
-    <div class="row"><span class="k">成本</span><span class="v"><span class="cost">低（需决策）</span></span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">耗时低产：慢答 26.8% 说明孩子花了时间，长答却只有 28.1%——想了却挤不出长答案。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt"><b>先由产品定预期</b>：要短答（一个情绪词）则现状合理不改；要展开则题干追加"你从哪里看出来的？"变半开放题。<span class="cost">低（需决策）</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="sec">
-    <h2><span class="badge b-green">C</span> 健康深度题 —— 别动，当正面样板</h2>
-    <p class="desc">想得久、说得多、几乎不沉默不无措，是理想状态。给足缓冲，但<b>绝不能加提示</b>——会干扰正在组织长答案的孩子。</p>
-  </div>
-
-  <div class="card">
-    <h3>466170-1 · 请你当斑比，给老鹿王回一段话</h3>
+  <div class="card ok">
+    <h3>466170-1 · 请你当斑比，给老鹿王回一段话<span class="tag t-green">🟢 健康·别动</span></h3>
     <div class="sigs">
-      <span class="sig">沉默 <b>4.8%</b></span>
-      <span class="sig">慢答 <b>53.8%</b></span>
-      <span class="sig best">长答 <b>91.2%</b> 最理想</span>
-      <span class="sig">无措 <b>2.7%</b></span>
+      <span class="sig">沉默 <b>4.8%</b></span><span class="sig">慢答 <b>53.8%</b></span>
+      <span class="sig best">长答 <b>91.2%</b> 最理想</span><span class="sig">无措 <b>2.7%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v">最该给足缓冲，绝不加提示打断长答。</span></div>
-    <div class="row"><span class="k">成本</span><span class="v"><span class="cost zero">0（别动）</span></span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">无。想得久、说得多、几乎不无措，是全场最理想的深度作答样板。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt">最该给足思考缓冲，但<b>绝不加提示</b>——会打断正在组织长答的孩子。<span class="cost zero">0（别动）</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>466170-2 · 斑比下次见到老鹿王，会怎么做？</h3>
+  <div class="card ok">
+    <h3>466170-2 · 斑比下次见到老鹿王，会怎么做？<span class="tag t-green">🟢 健康·别动</span></h3>
     <div class="sigs">
-      <span class="sig">沉默 <b>4.8%</b></span>
-      <span class="sig">慢答 <b>22.8%</b></span>
-      <span class="sig best">长答 <b>78.9%</b></span>
-      <span class="sig">无措 <b>1.9%</b></span>
+      <span class="sig">沉默 <b>4.8%</b></span><span class="sig">慢答 <b>22.8%</b></span>
+      <span class="sig best">长答 <b>78.9%</b></span><span class="sig">无措 <b>1.9%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v">给缓冲、禁提示。</span></div>
-    <div class="row"><span class="k">成本</span><span class="v"><span class="cost zero">0（别动）</span></span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">无。长答率高、无措极低，健康深度题。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt">给缓冲、禁提示。<span class="cost zero">0（别动）</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>466169-1 · 老鹿王为什么竖起耳朵一动不动？</h3>
+  <div class="card ok">
+    <h3>466169-1 · 老鹿王为什么竖起耳朵一动不动？<span class="tag t-green">🟢 健康·别动</span></h3>
     <div class="sigs">
-      <span class="sig">沉默 <b>5.4%</b></span>
-      <span class="sig">慢答 <b>17.8%</b></span>
-      <span class="sig best">长答 <b>78.2%</b></span>
-      <span class="sig">无措 <b>4.4%</b></span>
+      <span class="sig">沉默 <b>5.4%</b></span><span class="sig">慢答 <b>17.8%</b></span>
+      <span class="sig best">长答 <b>78.2%</b></span><span class="sig">无措 <b>4.4%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v">给缓冲、禁提示，当正面样板。</span></div>
-    <div class="row"><span class="k">成本</span><span class="v"><span class="cost zero">0（别动）</span></span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">无。解释类题，长答率高、信号健康，可当正面样板。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt">给缓冲、禁提示。<span class="cost zero">0（别动）</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="sec">
-    <h2><span class="badge b-gray">⚪</span> 其余题 —— 维持现状</h2>
-  </div>
-
-  <div class="card">
-    <h3>466169-2 · 用一个词形容老鹿王<span style="font-size:16px;color:var(--gray);font-weight:400">（用户已定"不给"）</span></h3>
+  <div class="card mild">
+    <h3>398696-1 · 斑比和老鹿王都有话想说，为什么最后谁都没开口？<span class="tag t-orange">🟠 留意</span></h3>
     <div class="sigs">
-      <span class="sig">沉默 <b>5.4%</b></span>
-      <span class="sig">慢答 <b>10.2%</b></span>
-      <span class="sig">长答 <b>26.0%</b></span>
-      <span class="sig">无措 <b>1.2%</b></span>
+      <span class="sig">沉默 <b>4.8%</b></span><span class="sig">慢答 <b>25.7%</b></span>
+      <span class="sig">长答 <b>67.6%</b></span><span class="sig hi">无措 <b>7.2%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v">秒答短答题，保持零缓冲；沉默 5.4% 可留意题意是否太窄。</span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">主体健康（长答 67.6% 高），但无措偏高，有一批孩子解释不出"为什么"。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt">以给缓冲为主，对答不出的可配轻提示兜底（解释类题）。<span class="cost">低-中</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>466168-2 · 你觉得老鹿王是只怎样的鹿？<span style="font-size:16px;color:var(--gray);font-weight:400">（用户已定"不给"）</span></h3>
+  <div class="card ok">
+    <h3>466974 · 老鹿王带着斑比做了哪些事？<span class="tag t-green">🟢 偏健康</span></h3>
     <div class="sigs">
-      <span class="sig">沉默 <b>5.1%</b></span>
-      <span class="sig">慢答 <b>16.8%</b></span>
-      <span class="sig">长答 <b>28.8%</b></span>
-      <span class="sig">无措 <b>4.2%</b></span>
+      <span class="sig">沉默 <b>5.6%</b></span><span class="sig">慢答 <b>31.2%</b></span>
+      <span class="sig">长答 <b>64.9%</b></span><span class="sig">无措 <b>4.4%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v">保持零缓冲。</span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">主体健康（长答 64.9%），沉默 5.6% 略高，可能题干指代不够清晰。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt">给足缓冲不加提示；顺带留意题干指代是否清楚。<span class="cost">低</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>466168-1 · 看到老鹿王，斑比是什么反应？</h3>
+  <div class="card ok">
+    <h3>466975 · 跟着老鹿王，斑比还害怕吗？<span class="tag t-green">🟢 最健康</span></h3>
     <div class="sigs">
-      <span class="sig">沉默 <b>5.1%</b></span>
-      <span class="sig">慢答 <b>20.7%</b></span>
-      <span class="sig">长答 <b>32.9%</b></span>
-      <span class="sig">无措 <b>2.6%</b></span>
+      <span class="sig best">沉默 <b>3.6%</b> 最低</span><span class="sig">慢答 <b>16.6%</b></span>
+      <span class="sig">长答 <b>52.5%</b></span><span class="sig">无措 <b>1.7%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v">提取题，信号平稳，维持现状。</span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">无。四项信号最均衡，沉默、无措都最低。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt">维持现状，轻缓冲即可。<span class="cost zero">0</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>466974 · 老鹿王带着斑比做了哪些事？</h3>
+  <div class="card ok">
+    <h3>466168-1 · 看到老鹿王，斑比是什么反应？<span class="tag t-green">🟢 平稳</span></h3>
     <div class="sigs">
-      <span class="sig">沉默 <b>5.6%</b></span>
-      <span class="sig">慢答 <b>31.2%</b></span>
-      <span class="sig">长答 <b>64.9%</b></span>
-      <span class="sig">无措 <b>4.4%</b></span>
+      <span class="sig">沉默 <b>5.1%</b></span><span class="sig">慢答 <b>20.7%</b></span>
+      <span class="sig">长答 <b>32.9%</b></span><span class="sig">无措 <b>2.6%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v">偏健康，给足缓冲不加提示；沉默略高可留意题干指代是否清晰。</span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">无。提取题，信号平稳。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt">维持现状，无需缓冲。<span class="cost zero">0</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>398696-1 · 斑比和老鹿王都有话想说，为什么最后谁都没开口？</h3>
+  <div class="card ok">
+    <h3>466169-2 · 用一个词形容老鹿王<span class="tag t-green">🟢 短答题（已定不给）</span></h3>
     <div class="sigs">
-      <span class="sig">沉默 <b>4.8%</b></span>
-      <span class="sig">慢答 <b>25.7%</b></span>
-      <span class="sig">长答 <b>67.6%</b></span>
-      <span class="sig hi">无措 <b>7.2%</b></span>
+      <span class="sig">沉默 <b>5.4%</b></span><span class="sig">慢答 <b>10.2%</b> 最低</span>
+      <span class="sig">长答 <b>26.0%</b></span><span class="sig">无措 <b>1.2%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v">偏健康但无措偏高，给缓冲为主，可配轻提示兜底（解释类题）。</span></div>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">秒答短答题，本就该快。沉默 5.4% 略高，或因题意太窄一时想不到词。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt">保持零缓冲；可留意题意是否太窄。<span class="cost zero">0</span></span></div>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>466975 · 跟着老鹿王，斑比还害怕吗？</h3>
+  <div class="card ok">
+    <h3>466168-2 · 你觉得老鹿王是只怎样的鹿？<span class="tag t-green">🟢 短答题（已定不给）</span></h3>
     <div class="sigs">
-      <span class="sig best">沉默 <b>3.6%</b> 最低</span>
-      <span class="sig">慢答 <b>16.6%</b></span>
-      <span class="sig">长答 <b>52.5%</b></span>
-      <span class="sig">无措 <b>1.7%</b></span>
+      <span class="sig">沉默 <b>5.1%</b></span><span class="sig">慢答 <b>16.8%</b></span>
+      <span class="sig">长答 <b>28.8%</b></span><span class="sig">无措 <b>4.2%</b></span>
     </div>
-    <div class="row"><span class="k">解法</span><span class="v">信号均衡最健康，维持现状，轻缓冲即可。</span></div>
-  </div>
-
-  <div class="recap">
-    <h2>病症速记</h2>
-    <ul>
-      <li><span class="tag">A 双重卡壳</span>（沉默＋无措双高）：466171、466172、398696-2 <span class="arrow">→</span> 给<b>内容脚手架</b>，中成本，最能回收流失</li>
-      <li><span class="tag">D 秒答逃避</span>（慢低无措高）：398695-2 <span class="arrow">→</span> 加<b>"先想想"许可</b>，极低成本，白捡</li>
-      <li><span class="tag">B 提问劝退</span>（纯提取却沉默最高）：466973 <span class="arrow">→</span> <b>回查题干</b>，题目问题非交互</li>
-      <li><span class="tag">E 耗时低产</span>（慢高长低）：398695-1 <span class="arrow">→</span> <b>产品先定预期</b>再决定改不改题</li>
-      <li><span class="tag">C 健康深度题</span>（慢＋长、沉默无措都低）：466170-1/2、466169-1 <span class="arrow">→</span> <b>别动，当样板</b></li>
-    </ul>
+    <div class="qa">
+      <div class="qa-pair">
+        <div class="q-line"><span class="lbl">问题①</span><span class="txt">评价类短答题，用户已定不给缓冲。</span></div>
+        <div class="a-line"><span class="lbl">解法①</span><span class="txt">保持零缓冲。<span class="cost zero">0</span></span></div>
+      </div>
+    </div>
   </div>
 
 </div>
