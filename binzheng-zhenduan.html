@@ -54,6 +54,14 @@
   .pri{font-size:11.5px;font-weight:800;color:#fff;padding:1px 8px;border-radius:20px;white-space:nowrap}
   .p-red{background:var(--red)} .p-orange{background:var(--orange)} .p-green{background:var(--green)}
   .t2 td.pcol{width:66px;text-align:center}
+
+  .legend{background:#fbfcfd;border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:13px}
+  .lg-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:5px 0;color:var(--ink)}
+  .lg-row:not(:last-child){border-bottom:1px dashed var(--line)}
+  .lg-t{flex:0 0 74px;font-weight:800;color:var(--sub)}
+  .lg-chip{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:3px 9px}
+  .legend .num{font-size:12px;padding:0 6px;border-radius:5px;font-weight:800}
+  .legend .cost{margin:0}
 </style>
 </head>
 <body>
@@ -85,7 +93,28 @@
   </table>
 
   <div class="modtitle">模块二 · 逐题诊断（问题 → 解法）</div>
-  <div class="modnote">一题命中多个问题就配多条解法。🔴优先改 ｜ 🟠留意/需决策 ｜ 🟢健康或维持现状。</div>
+  <div class="modnote">一题命中多个问题就配多条解法，问题①②与解法①②一一对应。</div>
+  <div class="legend">
+    <div class="lg-row"><span class="lg-t">优先级</span>
+      <span class="pri p-red">🔴优先</span> 该改，回收流失最多
+      <span class="pri p-orange">🟠</span> 需回查题目或产品决策
+      <span class="pri p-green">🟢</span> 健康或维持现状，别动
+    </div>
+    <div class="lg-row"><span class="lg-t">信号色</span>
+      <span class="lg-chip"><span class="s-hi">红字</span> 该项偏高（危险信号）</span>
+      <span class="lg-chip"><span class="s-best">绿字</span> 该项最优</span>
+      <span class="lg-chip">慢答写作 <b>5秒/6秒/7秒</b> 三档：掉得慢=真慢扎实，掉得快=慢是延迟灌的</span>
+    </div>
+    <div class="lg-row"><span class="lg-t">问题/解法</span>
+      <span class="lg-chip"><span class="num" style="background:#fdecec;color:#e14b4b">①</span> 红底=问题</span>
+      <span class="lg-chip"><span class="num" style="background:#e8f7ee;color:#1f8a54">①</span> 绿底=对应解法</span>
+      <span class="lg-chip"><span class="none">无。</span>=该题没问题</span>
+    </div>
+    <div class="lg-row"><span class="lg-t">成本</span>
+      <span class="cost low">极低</span><span class="cost mid">中</span><span class="cost">低</span><span class="cost zero">0</span>
+      <span style="color:var(--sub)">改动代价，0=不用动</span>
+    </div>
+  </div>
   <table class="t2">
     <thead><tr><th style="text-align:left">题目</th><th>优先级</th><th>信号</th><th style="text-align:left">存在的问题</th><th style="text-align:left">对应解法</th></tr></thead>
     <tbody>
