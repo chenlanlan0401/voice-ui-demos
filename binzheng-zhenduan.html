@@ -61,26 +61,26 @@
   <h1>AI伴读 · 15题作答诊断</h1>
 
   <div class="modtitle">模块一 · 原始数据</div>
-  <div class="modnote">15 题四信号，按沉默率排序。沉默率为 questionid 级（同题号两小问共享）。数据源：lesson4 · 小鹿斑比第4课。</div>
-  <div class="lead"><b>沉默率</b> 有作答动作但没识别出人声 ｜ <b>慢答率</b> 开口&gt;5秒占比 ｜ <b>长答率</b> 全体≥15字占比 ｜ <b>无措率</b> 开口却说"不知道"占比</div>
+  <div class="modnote">15 题信号，按沉默率排序。沉默率为 questionid 级（同题号两小问共享）。数据源：lesson4 · 小鹿斑比第4课。</div>
+  <div class="lead"><b>沉默率</b> 有作答动作但没识别出人声 ｜ <b>慢答率</b> 开口超过阈值占比（开口秒数含 1-2 秒链路延迟，故给 &gt;5/&gt;6/&gt;7 三档：从 5s 到 7s 掉得慢=真慢扎实，掉得快=慢是延迟灌的） ｜ <b>长答率</b> 全体≥15字占比 ｜ <b>无措率</b> 开口却说"不知道"占比</div>
   <table class="t1">
-    <thead><tr><th style="text-align:left">题目</th><th>沉默%</th><th>慢答%</th><th>长答%</th><th>无措%</th></tr></thead>
+    <thead><tr><th style="text-align:left">题目</th><th>沉默%</th><th>慢答<br>&gt;5s</th><th>慢答<br>&gt;6s</th><th>慢答<br>&gt;7s</th><th>长答%</th><th>无措%</th></tr></thead>
     <tbody>
-      <tr><td class="q">466973 老鹿王出现后做了什么</td><td class="hi">6.9</td><td>27.6</td><td>54.4</td><td>6.4</td></tr>
-      <tr><td class="q">466172 把想说的悄悄话讲出来</td><td class="hi">6.8</td><td>43.7</td><td>61.9</td><td>6.9</td></tr>
-      <tr><td class="q">466974 带斑比做了哪些事</td><td>5.6</td><td>31.2</td><td>64.9</td><td>4.4</td></tr>
-      <tr><td class="q">466169-1 为什么竖起耳朵</td><td>5.4</td><td>17.8</td><td class="best">78.2</td><td>4.4</td></tr>
-      <tr><td class="q">466169-2 用一个词形容</td><td>5.4</td><td>10.2</td><td>26.0</td><td>1.2</td></tr>
-      <tr><td class="q">466171 如果一直不开口会发生什么</td><td>5.2</td><td>18.4</td><td>47.3</td><td class="hi">13.7</td></tr>
-      <tr><td class="q">466168-2 怎样的鹿</td><td>5.1</td><td>16.8</td><td>28.8</td><td>4.2</td></tr>
-      <tr><td class="q">466168-1 什么反应</td><td>5.1</td><td>20.7</td><td>32.9</td><td>2.6</td></tr>
-      <tr><td class="q">398696-2 下次再遇到怎么做</td><td>4.8</td><td>30.9</td><td>48.5</td><td class="hi">7.8</td></tr>
-      <tr><td class="q">398696-1 为什么没开口</td><td>4.8</td><td>25.7</td><td>67.6</td><td>7.2</td></tr>
-      <tr><td class="q">466170-1 回一段话</td><td>4.8</td><td class="hi">53.8</td><td class="best">91.2</td><td>2.7</td></tr>
-      <tr><td class="q">466170-2 下次见到会怎么做</td><td>4.8</td><td>22.8</td><td class="best">78.9</td><td>1.9</td></tr>
-      <tr><td class="q">398695-2 你会怎么做</td><td>3.8</td><td>14.9</td><td>42.5</td><td class="hi">8.4</td></tr>
-      <tr><td class="q">398695-1 心情怎样</td><td>3.8</td><td>26.8</td><td>28.1</td><td>4.5</td></tr>
-      <tr><td class="q">466975 还害怕吗</td><td class="best">3.6</td><td>16.6</td><td>52.5</td><td>1.7</td></tr>
+      <tr><td class="q">466973 老鹿王出现后做了什么</td><td class="hi">6.9</td><td>27.6</td><td>20.2</td><td>16.3</td><td>54.4</td><td>6.4</td></tr>
+      <tr><td class="q">466172 把想说的悄悄话讲出来</td><td class="hi">6.8</td><td>43.7</td><td>33.5</td><td>27.6</td><td>61.9</td><td>6.9</td></tr>
+      <tr><td class="q">466974 带斑比做了哪些事</td><td>5.6</td><td>31.2</td><td>21.6</td><td>15.9</td><td>64.9</td><td>4.4</td></tr>
+      <tr><td class="q">466169-1 为什么竖起耳朵</td><td>5.4</td><td>17.8</td><td>11.9</td><td>9.1</td><td class="best">78.2</td><td>4.4</td></tr>
+      <tr><td class="q">466169-2 用一个词形容</td><td>5.4</td><td>10.2</td><td>6.0</td><td>4.8</td><td>26.0</td><td>1.2</td></tr>
+      <tr><td class="q">466171 如果一直不开口会发生什么</td><td>5.2</td><td>18.4</td><td>12.1</td><td>9.3</td><td>47.3</td><td class="hi">13.7</td></tr>
+      <tr><td class="q">466168-2 怎样的鹿</td><td>5.1</td><td>16.8</td><td>12.2</td><td>9.1</td><td>28.8</td><td>4.2</td></tr>
+      <tr><td class="q">466168-1 什么反应</td><td>5.1</td><td>20.7</td><td>15.3</td><td>11.2</td><td>32.9</td><td>2.6</td></tr>
+      <tr><td class="q">398696-2 下次再遇到怎么做</td><td>4.8</td><td>30.9</td><td>22.1</td><td>15.4</td><td>48.5</td><td class="hi">7.8</td></tr>
+      <tr><td class="q">398696-1 为什么没开口</td><td>4.8</td><td>25.7</td><td>19.2</td><td>13.7</td><td>67.6</td><td>7.2</td></tr>
+      <tr><td class="q">466170-1 回一段话</td><td>4.8</td><td class="hi">53.8</td><td>37.2</td><td>27.5</td><td class="best">91.2</td><td>2.7</td></tr>
+      <tr><td class="q">466170-2 下次见到会怎么做</td><td>4.8</td><td>22.8</td><td>14.4</td><td>10.4</td><td class="best">78.9</td><td>1.9</td></tr>
+      <tr><td class="q">398695-2 你会怎么做</td><td>3.8</td><td>14.9</td><td>10.8</td><td>8.0</td><td>42.5</td><td class="hi">8.4</td></tr>
+      <tr><td class="q">398695-1 心情怎样</td><td>3.8</td><td>26.8</td><td>20.7</td><td>15.8</td><td>28.1</td><td>4.5</td></tr>
+      <tr><td class="q">466975 还害怕吗</td><td class="best">3.6</td><td>16.6</td><td>10.4</td><td>6.9</td><td>52.5</td><td>1.7</td></tr>
     </tbody>
   </table>
 
