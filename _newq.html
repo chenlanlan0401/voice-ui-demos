@@ -1,0 +1,26 @@
+  <h2 id="newq">七、新题怎么办:冷启动预判</h2>
+  <div class="note">前六章的判定都依赖学生数据(慢答率)。全新题目上线时没有任何学生数据,只能靠<b>题目侧信息</b>预判。本章给出可用的预判依据和它的可靠性边界。</div>
+  <div class="box red"><h4>先说结论:纯题目信息不能"判定",只能"预判倾向"</h4>我们做了回测——假装没有学生数据,只用题目信息(出题人意图/题干文本)去预测"学生是否真的慢答"。结果:<b>要么漏过多(漏43%该等题),要么误伤高(误伤79%)</b>,没有平衡点。<b>根本原因:"题目看起来该深想"和"学生实际会花时间想"相关性弱</b>——同一道推断题,有的学生深想、有的秒答,取决于学生和课堂,不只是题目。所以新题预判只能做<b>冷启动倾向</b>,不能替代上线后的真实数据。</div>
+  <h3>7.1 最有用的信号:题目能力维度</h3>
+  <div class="box"><p>题库给每道题打了官方<b>能力维度</b>标签(题目天然自带,新题也有)。用114题回测,各能力维度的真实该等率(学生慢答过门槛)差异明显,可作新题预判倾向:</p></div>
+  <table><thead><tr><th style="text-align:left">能力维度</th><th>该等率</th><th>预判倾向</th></tr></thead><tbody>
+<tr><td>创意深度表达 <span style="color:#8a94a0">(3题)</span></td><td class=c><b>66%</b></td><td class=c><span class="pill p-deng">倾向该等</span></td></tr>
+<tr><td>联系自我拓展 <span style="color:#8a94a0">(9题)</span></td><td class=c><b>55%</b></td><td class=c><span class="pill p-deng">倾向该等</span></td></tr>
+<tr><td>推断分析 <span style="color:#8a94a0">(11题)</span></td><td class=c><b>45%</b></td><td class=c><span class="pill p-liuyi">看数据</span></td></tr>
+<tr><td>多层评价 <span style="color:#8a94a0">(7题)</span></td><td class=c><b>42%</b></td><td class=c><span class="pill p-liuyi">看数据</span></td></tr>
+<tr><td>信息提取理解 <span style="color:#8a94a0">(38题)</span></td><td class=c><b>34%</b></td><td class=c><span class="pill p-liuyi">看数据</span></td></tr>
+<tr><td>人物心理/形象 <span style="color:#8a94a0">(39题)</span></td><td class=c><b>20%</b></td><td class=c><span class="pill p-buyong">倾向不给</span></td></tr>
+<tr><td>概括梳理 <span style="color:#8a94a0">(7题)</span></td><td class=c><b>14%</b></td><td class=c><span class="pill p-buyong">倾向不给</span></td></tr>
+</tbody></table>
+  <div class="box green"><h4>可用的预判规则</h4><ul>
+<li><b>创意深度表达 / 联系自我拓展(55-66%)</b> → 新题冷启动<b>先给缓冲</b>(要调动个人经验、迁移创造,学生大概率想得久)</li>
+<li><b>概括梳理 / 人物心理形象(14-20%)</b> → 新题冷启动<b>先不给</b>(学生多凭直觉秒答)</li>
+<li><b>推断分析 / 多层评价 / 信息提取(34-45%)</b> → 区分度不够,<b>先按默认(轻缓冲)上线,等数据校准</b></li>
+</ul></div>
+  <div class="box orange"><h4>★ 一个关键反直觉发现</h4><b>"人物心理/形象"题该等率仅20%,却是占比最大的一类(39题,占1/3)</b>。"揣摩人物心理"听着最该深想,但学生实际慢答很低——因为这类题学生凭直觉就能秒答("什么心情?"→"害怕")。<b>这正是出题人最容易误判为"该等"、实际不需要缓冲的重灾区</b>。新题里遇到这类,别被题型迷惑,先不给缓冲。</div>
+  <h3>7.2 新题落地流程</h3>
+  <div class="box"><ol style="margin-left:20px">
+<li><b>上线前</b>:按能力维度定冷启动策略(创意/联系类给缓冲,概括/人物类不给,其余轻缓冲)</li>
+<li><b>上线后2-3周</b>:积累到足够学生作答,按本报告的慢答门槛正式判定,覆盖冷启动预判</li>
+<li><b>预判只是过渡</b>:能力维度给方向,真实该不该等仍由学生慢答数据定</li>
+</ol></div>
