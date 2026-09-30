@@ -26,7 +26,27 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 546,
-  "seg": "Q08-有板书记忆回调：鹿王回信"
+  "seg": "Q08-有板书记忆回调：鹿王回信",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   },
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物心理题；信息提取·信息提取题",
+  "label_qt": "人物心理题；信息提取题"
  },
  {
   "src": "lesson4",
@@ -55,7 +75,21 @@
   ],
   "abil_cn": "多层评价",
   "n": 540,
-  "seg": "Q10-有板书"
+  "seg": "Q10-有板书",
+  "tags": [
+   {
+    "ability": 5,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "思辨表达·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "lesson4",
@@ -84,7 +118,27 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 538,
-  "seg": "Q2-无板书：没开口原因+生活迁移"
+  "seg": "Q2-无板书：没开口原因+生活迁移",
+  "tags": [
+   {
+    "ability": 7,
+    "types": [
+     11
+    ]
+   },
+   {
+    "ability": 5,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "迁移运用·开放表达题；思辨表达·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "lesson4",
@@ -113,7 +167,27 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 552,
-  "seg": "Q01无板书：斑比心情+鹿王做法"
+  "seg": "Q01无板书：斑比心情+鹿王做法",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   },
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物心理题；信息提取·信息提取题",
+  "label_qt": "人物心理题；信息提取题"
  },
  {
   "src": "lesson4",
@@ -142,7 +216,28 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 556,
-  "seg": "Q2-无板书：没开口原因+生活迁移"
+  "seg": "Q2-无板书：没开口原因+生活迁移",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   },
+   {
+    "ability": 4,
+    "types": [
+     8,
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题；分析理解·人物心理题；分析理解·人物形象题",
+  "label_qt": "信息提取题；人物心理题；人物形象题"
  },
  {
   "src": "lesson4",
@@ -171,7 +266,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 540,
-  "seg": "Q08-有板书记忆回调：鹿王回信"
+  "seg": "Q08-有板书记忆回调：鹿王回信",
+  "tags": [
+   {
+    "ability": 5,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "思辨表达·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "lesson4",
@@ -200,7 +309,27 @@
   ],
   "abil_cn": "推断分析",
   "n": 539,
-  "seg": "Q09-无板书：不回信发生什么"
+  "seg": "Q09-无板书：不回信发生什么",
+  "tags": [
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   },
+   {
+    "ability": 5,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "语音对话",
+  "label_full": "分析推断·信息推断题；思辨表达·开放表达题",
+  "label_qt": "信息推断题；开放表达题"
  },
  {
   "src": "lesson4",
@@ -229,7 +358,27 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 528,
-  "seg": "Q06-无板书：逃跑原因+鹿王是只怎样的鹿"
+  "seg": "Q06-无板书：逃跑原因+鹿王是只怎样的鹿",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   },
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题；分析推断·信息推断题",
+  "label_qt": "信息提取题；信息推断题"
  },
  {
   "src": "lesson4",
@@ -258,7 +407,27 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 537,
-  "seg": "Q01无板书：斑比心情+鹿王做法"
+  "seg": "Q01无板书：斑比心情+鹿王做法",
+  "tags": [
+   {
+    "ability": 7,
+    "types": [
+     11
+    ]
+   },
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "迁移运用·开放表达题；分析理解·人物形象题",
+  "label_qt": "开放表达题；人物形象题"
  },
  {
   "src": "lesson4",
@@ -287,7 +456,27 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 542,
-  "seg": "Q5-轻互动：鹿王带斑比做了什么"
+  "seg": "Q5-轻互动：鹿王带斑比做了什么",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   },
+   {
+    "ability": 3,
+    "types": [
+     4
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题；归纳概括·概括梳理题",
+  "label_qt": "信息提取题；概括梳理题"
  },
  {
   "src": "lesson4",
@@ -316,7 +505,27 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 537,
-  "seg": "Q07-轻互动：郭波前后变化"
+  "seg": "Q07-轻互动：郭波前后变化",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   },
+   {
+    "ability": 3,
+    "types": [
+     4
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题；归纳概括·概括梳理题",
+  "label_qt": "信息提取题；概括梳理题"
  },
  {
   "src": "lesson4",
@@ -345,7 +554,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 529,
-  "seg": "q03-轻互动：鹿王出现后做了什么"
+  "seg": "q03-轻互动：鹿王出现后做了什么",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "lesson4",
@@ -374,7 +597,27 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 525,
-  "seg": "Q04-无板书：斑比反应+是只怎样的鹿"
+  "seg": "Q04-无板书：斑比反应+是只怎样的鹿",
+  "tags": [
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   },
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析推断·信息推断题；分析理解·人物形象题",
+  "label_qt": "信息推断题；人物形象题"
  },
  {
   "src": "lesson4",
@@ -403,7 +646,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 520,
-  "seg": "Q06-无板书：逃跑原因+鹿王是只怎样的鹿"
+  "seg": "Q06-无板书：逃跑原因+鹿王是只怎样的鹿",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "lesson4",
@@ -432,7 +689,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 535,
-  "seg": "Q04-无板书：斑比反应+是只怎样的鹿"
+  "seg": "Q04-无板书：斑比反应+是只怎样的鹿",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -461,7 +732,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2807,
-  "seg": "拇指姑娘什么反应"
+  "seg": "拇指姑娘什么反应",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -490,7 +775,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2807,
-  "seg": "拇指姑娘什么反应"
+  "seg": "拇指姑娘什么反应",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -519,7 +818,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2720,
-  "seg": "待嫁：说出心里话"
+  "seg": "待嫁：说出心里话",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -548,7 +861,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2720,
-  "seg": "待嫁：说出心里话"
+  "seg": "待嫁：说出心里话",
+  "tags": [
+   {
+    "ability": 8,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "创造创新·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -577,7 +904,22 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2695,
-  "seg": "“我们一起走”"
+  "seg": "“我们一起走”",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "light-interaction",
+  "stage_cn": "章节",
+  "act_cn": "轻互动",
+  "_note_stage": "分支/轻互动题,环节已验证,动作类型按同组题标注",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -606,7 +948,21 @@
   ],
   "abil_cn": "概括梳理",
   "n": 2721,
-  "seg": "感悟主旨"
+  "seg": "感悟主旨",
+  "tags": [
+   {
+    "ability": 3,
+    "types": [
+     4
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "归纳概括·概括梳理题",
+  "label_qt": "概括梳理题"
  },
  {
   "src": "99",
@@ -635,7 +991,21 @@
   ],
   "abil_cn": "概括梳理",
   "n": 2721,
-  "seg": "感悟主旨"
+  "seg": "感悟主旨",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -664,7 +1034,21 @@
   ],
   "abil_cn": "概括梳理",
   "n": 2721,
-  "seg": "感悟主旨"
+  "seg": "感悟主旨",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     10
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·主旨情感题",
+  "label_qt": "主旨情感题"
  },
  {
   "src": "99",
@@ -693,7 +1077,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 2618,
-  "seg": "丑小鸭"
+  "seg": "丑小鸭",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     10
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·主旨情感题",
+  "label_qt": "主旨情感题"
  },
  {
   "src": "99",
@@ -722,7 +1120,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 754,
-  "seg": "紫莓饮料的秘密"
+  "seg": "紫莓饮料的秘密",
+  "tags": [
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析推断·信息推断题",
+  "label_qt": "信息推断题"
  },
  {
   "src": "99",
@@ -751,7 +1163,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 754,
-  "seg": "紫莓饮料的秘密"
+  "seg": "紫莓饮料的秘密",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -780,7 +1206,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 759,
-  "seg": "分析安妮的人物特点"
+  "seg": "分析安妮的人物特点",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -809,7 +1249,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 759,
-  "seg": "分析安妮的人物特点"
+  "seg": "分析安妮的人物特点",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -838,7 +1292,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 739,
-  "seg": "安妮做了什么"
+  "seg": "安妮做了什么",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -867,7 +1335,21 @@
   ],
   "abil_cn": "概括梳理",
   "n": 739,
-  "seg": "最后的结果"
+  "seg": "最后的结果",
+  "tags": [
+   {
+    "ability": 3,
+    "types": [
+     4
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "归纳概括·概括梳理题",
+  "label_qt": "概括梳理题"
  },
  {
   "src": "99",
@@ -896,7 +1378,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 734,
-  "seg": "巴里太太改变的原因"
+  "seg": "巴里太太改变的原因",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物心理题",
+  "label_qt": "人物心理题"
  },
  {
   "src": "99",
@@ -925,7 +1421,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 747,
-  "seg": "感受安妮与戴安娜的友谊"
+  "seg": "感受安妮与戴安娜的友谊",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     10
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·主旨情感题",
+  "label_qt": "主旨情感题"
  },
  {
   "src": "99",
@@ -954,7 +1464,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 747,
-  "seg": "感受安妮与戴安娜的友谊"
+  "seg": "感受安妮与戴安娜的友谊",
+  "tags": [
+   {
+    "ability": 5,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "思辨表达·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -983,7 +1507,22 @@
   ],
   "abil_cn": "联系自我拓展",
   "n": 507,
-  "seg": "自己如何帮助朋友"
+  "seg": "自己如何帮助朋友",
+  "tags": [
+   {
+    "ability": 7,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "light-interaction",
+  "stage_cn": "思辨表达",
+  "act_cn": "轻互动",
+  "_note_stage": "分支/轻互动题,环节已验证,动作类型按同组题标注",
+  "label_full": "迁移运用·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -1012,7 +1551,22 @@
   ],
   "abil_cn": "联系自我拓展",
   "n": 244,
-  "seg": "朋友如何帮助自己"
+  "seg": "朋友如何帮助自己",
+  "tags": [
+   {
+    "ability": 7,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "light-interaction",
+  "stage_cn": "思辨表达",
+  "act_cn": "轻互动",
+  "_note_stage": "分支/轻互动题,环节已验证,动作类型按同组题标注",
+  "label_full": "迁移运用·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -1041,7 +1595,21 @@
   ],
   "abil_cn": "推断分析",
   "n": 2525,
-  "seg": "q01-画眉鸟为什么觉得拉车人可怜"
+  "seg": "q01-画眉鸟为什么觉得拉车人可怜",
+  "tags": [
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析推断·信息推断题",
+  "label_qt": "信息推断题"
  },
  {
   "src": "99",
@@ -1070,7 +1638,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2457,
-  "seg": "q02-画眉鸟看到厨子想到了什么"
+  "seg": "q02-画眉鸟看到厨子想到了什么",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -1099,7 +1681,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2418,
-  "seg": "q03-画眉鸟现在的心情怎么样了"
+  "seg": "q03-画眉鸟现在的心情怎么样了",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -1128,7 +1724,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 2355,
-  "seg": "q04-画眉鸟为什么反而觉得心里痛快"
+  "seg": "q04-画眉鸟为什么反而觉得心里痛快",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物心理题",
+  "label_qt": "人物心理题"
  },
  {
   "src": "99",
@@ -1157,7 +1767,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2366,
-  "seg": "q05-以前在金丝笼里唱歌是为了谁"
+  "seg": "q05-以前在金丝笼里唱歌是为了谁",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -1186,7 +1810,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2366,
-  "seg": "q05-以前在金丝笼里唱歌是为了谁"
+  "seg": "q05-以前在金丝笼里唱歌是为了谁",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -1215,7 +1853,22 @@
   ],
   "abil_cn": "联系自我拓展",
   "n": 941,
-  "seg": "q07-为什么把歌声送给他（难过小男孩）"
+  "seg": "q07-为什么把歌声送给他（难过小男孩）",
+  "tags": [
+   {
+    "ability": 7,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "light-interaction",
+  "stage_cn": "思辨表达",
+  "act_cn": "轻互动",
+  "_note_stage": "分支/轻互动题,环节已验证,动作类型按同组题标注",
+  "label_full": "迁移运用·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -1244,7 +1897,21 @@
   ],
   "abil_cn": "联系自我拓展",
   "n": 2345,
-  "seg": "q10-分享一首属于你的旷野之歌"
+  "seg": "q10-分享一首属于你的旷野之歌",
+  "tags": [
+   {
+    "ability": 7,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "语音对话",
+  "label_full": "迁移运用·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -1273,7 +1940,21 @@
   ],
   "abil_cn": "联系自我拓展",
   "n": 2313,
-  "seg": "q11-聚光灯下向观众宣布你的决定"
+  "seg": "q11-聚光灯下向观众宣布你的决定",
+  "tags": [
+   {
+    "ability": 7,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "迁移运用·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -1302,7 +1983,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2418,
-  "seg": "q03-画眉鸟现在的心情怎么样了"
+  "seg": "q03-画眉鸟现在的心情怎么样了",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     2
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·内容辨析题",
+  "label_qt": "内容辨析题"
  },
  {
   "src": "99",
@@ -1331,7 +2026,22 @@
   ],
   "abil_cn": "联系自我拓展",
   "n": 678,
-  "seg": "q09-为什么把歌声送给疲惫的快递员"
+  "seg": "q09-为什么把歌声送给疲惫的快递员",
+  "tags": [
+   {
+    "ability": 7,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "light-interaction",
+  "stage_cn": "思辨表达",
+  "act_cn": "轻互动",
+  "_note_stage": "分支/轻互动题,环节已验证,动作类型按同组题标注",
+  "label_full": "迁移运用·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -1360,7 +2070,22 @@
   ],
   "abil_cn": "联系自我拓展",
   "n": 690,
-  "seg": "q08-为什么把歌声送给孤单的老奶奶"
+  "seg": "q08-为什么把歌声送给孤单的老奶奶",
+  "tags": [
+   {
+    "ability": 7,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "light-interaction",
+  "stage_cn": "思辨表达",
+  "act_cn": "轻互动",
+  "_note_stage": "分支/轻互动题,环节已验证,动作类型按同组题标注",
+  "label_full": "迁移运用·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -1389,7 +2114,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 1366,
-  "seg": "q01_1.谁创造了人类？"
+  "seg": "q01_1.谁创造了人类？",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -1418,7 +2157,27 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 1287,
-  "seg": "q01_2.普罗米修斯教会了人类什么"
+  "seg": "q01_2.普罗米修斯教会了人类什么",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   },
+   {
+    "ability": 3,
+    "types": [
+     4
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题；归纳概括·概括梳理题",
+  "label_qt": "信息提取题；概括梳理题"
  },
  {
   "src": "99",
@@ -1447,7 +2206,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 1335,
-  "seg": "q02_1.普罗米修斯精神_盗火动机"
+  "seg": "q02_1.普罗米修斯精神_盗火动机",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物心理题",
+  "label_qt": "人物心理题"
  },
  {
   "src": "99",
@@ -1476,7 +2249,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 1323,
-  "seg": "q02_2.普罗米修斯精神_人物精神"
+  "seg": "q02_2.普罗米修斯精神_人物精神",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -1505,7 +2292,27 @@
   ],
   "abil_cn": "概括梳理",
   "n": 1328,
-  "seg": "q03_1.法厄同初印象_驾驶太阳马车的困难"
+  "seg": "q03_1.法厄同初印象_驾驶太阳马车的困难",
+  "tags": [
+   {
+    "ability": 3,
+    "types": [
+     4
+    ]
+   },
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "归纳概括·概括梳理题；信息提取·信息提取题",
+  "label_qt": "概括梳理题；信息提取题"
  },
  {
   "src": "99",
@@ -1534,7 +2341,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 1317,
-  "seg": "q03_2.法厄同初印象_人物性格"
+  "seg": "q03_2.法厄同初印象_人物性格",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -1563,7 +2384,27 @@
   ],
   "abil_cn": "推断分析",
   "n": 1316,
-  "seg": "q04.思辨-悲剧为何发生"
+  "seg": "q04.思辨-悲剧为何发生",
+  "tags": [
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   },
+   {
+    "ability": 3,
+    "types": [
+     4
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析推断·信息推断题；归纳概括·概括梳理题",
+  "label_qt": "信息推断题；概括梳理题"
  },
  {
   "src": "99",
@@ -1592,7 +2433,21 @@
   ],
   "abil_cn": "推断分析",
   "n": 1316,
-  "seg": "q04.思辨-悲剧为何发生"
+  "seg": "q04.思辨-悲剧为何发生",
+  "tags": [
+   {
+    "ability": 5,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "思辨表达·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -1621,7 +2476,21 @@
   ],
   "abil_cn": "联系自我拓展",
   "n": 1312,
-  "seg": "q05_1.敬佩的人/英雄"
+  "seg": "q05_1.敬佩的人/英雄",
+  "tags": [
+   {
+    "ability": 7,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "语音对话",
+  "label_full": "迁移运用·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -1650,7 +2519,21 @@
   ],
   "abil_cn": "联系自我拓展",
   "n": 1309,
-  "seg": "q05_2.我也可以"
+  "seg": "q05_2.我也可以",
+  "tags": [
+   {
+    "ability": 7,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "语音对话",
+  "label_full": "迁移运用·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -1679,7 +2562,28 @@
   ],
   "abil_cn": "概括梳理",
   "n": 1328,
-  "seg": "q03_1.法厄同初印象_驾驶太阳马车的困难"
+  "seg": "q03_1.法厄同初印象_驾驶太阳马车的困难",
+  "tags": [
+   {
+    "ability": 3,
+    "types": [
+     4
+    ]
+   },
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "_note_tag": "配置表中此qid仅1小问,标签继承自小问1",
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "归纳概括·概括梳理题；信息提取·信息提取题",
+  "label_qt": "概括梳理题；信息提取题"
  },
  {
   "src": "99",
@@ -1708,7 +2612,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2705,
-  "seg": "q01 烛龙有什么本领"
+  "seg": "q01 烛龙有什么本领",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -1737,7 +2655,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 2640,
-  "seg": "q02 你感受到了古人什么样的特点"
+  "seg": "q02 你感受到了古人什么样的特点",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     10
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·主旨情感题",
+  "label_qt": "主旨情感题"
  },
  {
   "src": "99",
@@ -1766,7 +2698,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2555,
-  "seg": "q03 哪一句体现了神话神奇的想象"
+  "seg": "q03 哪一句体现了神话神奇的想象",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -1795,7 +2741,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2490,
-  "seg": "q05 雷公和电母怎么分工"
+  "seg": "q05 雷公和电母怎么分工",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -1824,7 +2784,21 @@
   ],
   "abil_cn": "推断分析",
   "n": 2452,
-  "seg": "q06 这个故事在解释什么自然现象"
+  "seg": "q06 这个故事在解释什么自然现象",
+  "tags": [
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析推断·信息推断题",
+  "label_qt": "信息推断题"
  },
  {
   "src": "99",
@@ -1853,7 +2827,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2463,
-  "seg": "q12 你想给谁编一个神话故事"
+  "seg": "q12 你想给谁编一个神话故事",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -1882,7 +2870,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2439,
-  "seg": "q13 创造一个主角：神仙的名字和样子"
+  "seg": "q13 创造一个主角：神仙的名字和样子",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -1911,7 +2913,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2439,
-  "seg": "q13 创造一个主角：神仙的名字和样子"
+  "seg": "q13 创造一个主角：神仙的名字和样子",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -1940,7 +2956,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2507,
-  "seg": "q04 十个太阳的故事可能在解释什么自然现象"
+  "seg": "q04 十个太阳的故事可能在解释什么自然现象",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -1969,7 +2999,21 @@
   ],
   "abil_cn": "多层评价",
   "n": 4728,
-  "seg": "关键时刻贡献奖"
+  "seg": "关键时刻贡献奖",
+  "tags": [
+   {
+    "ability": 5,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "思辨表达·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -1998,7 +3042,22 @@
   ],
   "abil_cn": "多层评价",
   "n": 4728,
-  "seg": "关键时刻贡献奖"
+  "seg": "关键时刻贡献奖",
+  "tags": [
+   {
+    "ability": 8,
+    "types": [
+     11,
+     15
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "创造创新·开放表达题；创造创新·补写仿写题",
+  "label_qt": "开放表达题；补写仿写题"
  },
  {
   "src": "99",
@@ -2027,7 +3086,27 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 4447,
-  "seg": "危机对取经团队关系的影响"
+  "seg": "危机对取经团队关系的影响",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     10
+    ]
+   },
+   {
+    "ability": 5,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·主旨情感题；思辨表达·开放表达题",
+  "label_qt": "主旨情感题；开放表达题"
  },
  {
   "src": "99",
@@ -2056,7 +3135,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 4801,
-  "seg": "三人三种性格"
+  "seg": "三人三种性格",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -2085,7 +3178,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 4801,
-  "seg": "三人三种性格"
+  "seg": "三人三种性格",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -2114,7 +3221,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 4801,
-  "seg": "三人三种性格"
+  "seg": "三人三种性格",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -2143,7 +3264,27 @@
   ],
   "abil_cn": "推断分析",
   "n": 4639,
-  "seg": "悟空这次离队和第一次有什么不同？"
+  "seg": "悟空这次离队和第一次有什么不同？",
+  "tags": [
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   },
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析推断·信息推断题；分析理解·人物形象题",
+  "label_qt": "信息推断题；人物形象题"
  },
  {
   "src": "99",
@@ -2172,7 +3313,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 4523,
-  "seg": "怎么评价宝象国中八戒的表现"
+  "seg": "怎么评价宝象国中八戒的表现",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -2201,7 +3356,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 735,
-  "seg": "Q1-探险小队看到怎样的景色判断不在冰岛"
+  "seg": "Q1-探险小队看到怎样的景色判断不在冰岛",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -2230,7 +3399,21 @@
   ],
   "abil_cn": "创意深度表达",
   "n": 727,
-  "seg": "Q2-地心之旅成功还是失败？"
+  "seg": "Q2-地心之旅成功还是失败？",
+  "tags": [
+   {
+    "ability": 8,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "创造创新·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -2259,7 +3442,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 740,
-  "seg": "Q3-汉恩斯有没有发生变化"
+  "seg": "Q3-汉恩斯有没有发生变化",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -2288,7 +3485,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 728,
-  "seg": "Q4-叔叔到底有没有发生改变"
+  "seg": "Q4-叔叔到底有没有发生改变",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -2317,7 +3528,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 719,
-  "seg": "Q5-阿克赛最大的改变是什么"
+  "seg": "Q5-阿克赛最大的改变是什么",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物心理题",
+  "label_qt": "人物心理题"
  },
  {
   "src": "99",
@@ -2346,7 +3571,21 @@
   ],
   "abil_cn": "推断分析",
   "n": 497,
-  "seg": "q01周瑜的“病”是什么"
+  "seg": "q01周瑜的“病”是什么",
+  "tags": [
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析推断·信息推断题",
+  "label_qt": "信息推断题"
  },
  {
   "src": "99",
@@ -2375,7 +3614,21 @@
   ],
   "abil_cn": "推断分析",
   "n": 497,
-  "seg": "q01周瑜的“病”是什么"
+  "seg": "q01周瑜的“病”是什么",
+  "tags": [
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析推断·信息推断题",
+  "label_qt": "信息推断题"
  },
  {
   "src": "99",
@@ -2404,7 +3657,27 @@
   ],
   "abil_cn": "推断分析",
   "n": 487,
-  "seg": "q02赤壁之战曹操输在哪儿"
+  "seg": "q02赤壁之战曹操输在哪儿",
+  "tags": [
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   },
+   {
+    "ability": 3,
+    "types": [
+     4
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析推断·信息推断题；归纳概括·概括梳理题",
+  "label_qt": "信息推断题；概括梳理题"
  },
  {
   "src": "99",
@@ -2433,7 +3706,21 @@
   ],
   "abil_cn": "多层评价",
   "n": 500,
-  "seg": "q03你会不会放走曹操，为什么"
+  "seg": "q03你会不会放走曹操，为什么",
+  "tags": [
+   {
+    "ability": 5,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "思辨表达·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -2462,7 +3749,21 @@
   ],
   "abil_cn": "多层评价",
   "n": 500,
-  "seg": "q03你会不会放走曹操，为什么"
+  "seg": "q03你会不会放走曹操，为什么",
+  "tags": [
+   {
+    "ability": 5,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "思辨表达·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -2491,7 +3792,21 @@
   ],
   "abil_cn": "多层评价",
   "n": 481,
-  "seg": "q04华容道前关羽的两难处境难在哪"
+  "seg": "q04华容道前关羽的两难处境难在哪",
+  "tags": [
+   {
+    "ability": 5,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "思辨表达·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -2520,7 +3835,21 @@
   ],
   "abil_cn": "创意深度表达",
   "n": 422,
-  "seg": "描绘“被自己的聪明陶醉了”的人的表情动作"
+  "seg": "描绘“被自己的聪明陶醉了”的人的表情动作",
+  "tags": [
+   {
+    "ability": 8,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "创造创新·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -2549,7 +3878,27 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 401,
-  "seg": "从没写心情的句子里感受路路通的心情"
+  "seg": "从没写心情的句子里感受路路通的心情",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   },
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物心理题；分析推断·信息推断题",
+  "label_qt": "人物心理题；信息推断题"
  },
  {
   "src": "99",
@@ -2578,7 +3927,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 407,
-  "seg": "路路通认为费克斯是什么身份？"
+  "seg": "路路通认为费克斯是什么身份？",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物心理题",
+  "label_qt": "人物心理题"
  },
  {
   "src": "99",
@@ -2607,7 +3970,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 404,
-  "seg": "如果你是路路通，用一句话说出他的心理活动"
+  "seg": "如果你是路路通，用一句话说出他的心理活动",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物心理题",
+  "label_qt": "人物心理题"
  },
  {
   "src": "99",
@@ -2636,7 +4013,27 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 411,
-  "seg": "朗读后说说路路通的心情和态度"
+  "seg": "朗读后说说路路通的心情和态度",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   },
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物心理题；分析推断·信息推断题",
+  "label_qt": "人物心理题；信息推断题"
  },
  {
   "src": "99",
@@ -2665,7 +4062,27 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 405,
-  "seg": "是什么事让他变得坚定、愤怒？"
+  "seg": "是什么事让他变得坚定、愤怒？",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   },
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物心理题；分析推断·信息推断题",
+  "label_qt": "人物心理题；信息推断题"
  },
  {
   "src": "99",
@@ -2694,7 +4111,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 413,
-  "seg": "结合情节和描写推测路路通的心情"
+  "seg": "结合情节和描写推测路路通的心情",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物心理题",
+  "label_qt": "人物心理题"
  },
  {
   "src": "99",
@@ -2723,7 +4154,21 @@
   ],
   "abil_cn": "推断分析",
   "n": 406,
-  "seg": "路路通见过主人做过哪些事，觉得他不是坏人？"
+  "seg": "路路通见过主人做过哪些事，觉得他不是坏人？",
+  "tags": [
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "分析推断·信息推断题",
+  "label_qt": "信息推断题"
  },
  {
   "src": "99",
@@ -2753,7 +4198,22 @@
   ],
   "abil_cn": "创意深度表达",
   "n": 402,
-  "seg": "把路路通此刻纠结的内心独白说出来"
+  "seg": "把路路通此刻纠结的内心独白说出来",
+  "tags": [
+   {
+    "ability": 8,
+    "types": [
+     11,
+     15
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "创造创新·开放表达题；创造创新·补写仿写题",
+  "label_qt": "开放表达题；补写仿写题"
  },
  {
   "src": "99",
@@ -2782,7 +4242,22 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 11925,
-  "seg": "酒醒之后，孙悟空想起自己做的这些事，你觉得他心里会有点什么感觉？"
+  "seg": "酒醒之后，孙悟空想起自己做的这些事，你觉得他心里会有点什么感觉？",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "light-interaction",
+  "stage_cn": "章节",
+  "act_cn": "轻互动",
+  "_note_stage": "分支/轻互动题,环节已验证,动作类型按同组题标注",
+  "label_full": "分析理解·人物心理题",
+  "label_qt": "人物心理题"
  },
  {
   "src": "99",
@@ -2811,7 +4286,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 12193,
-  "seg": "刚刚这场精彩绝伦的变身斗法中，说说二郎神给你留下了怎样的印象，这样写的好处"
+  "seg": "刚刚这场精彩绝伦的变身斗法中，说说二郎神给你留下了怎样的印象，这样写的好处",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -2840,7 +4329,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 12193,
-  "seg": "刚刚这场精彩绝伦的变身斗法中，说说二郎神给你留下了怎样的印象，这样写的好处"
+  "seg": "刚刚这场精彩绝伦的变身斗法中，说说二郎神给你留下了怎样的印象，这样写的好处",
+  "tags": [
+   {
+    "ability": 6,
+    "types": [
+     12
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "评价鉴赏·赏析表达题",
+  "label_qt": "赏析表达题"
  },
  {
   "src": "99",
@@ -2869,7 +4372,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 11724,
-  "seg": "如果你是悟空，当你发现天庭无论如何都拿你没办法的时候，你心里会怎么想？"
+  "seg": "如果你是悟空，当你发现天庭无论如何都拿你没办法的时候，你心里会怎么想？",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     8
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物心理题",
+  "label_qt": "人物心理题"
  },
  {
   "src": "99",
@@ -2898,7 +4415,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 11804,
-  "seg": "这句话体现了悟空的什么精神？"
+  "seg": "这句话体现了悟空的什么精神？",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "章节",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -2927,7 +4458,21 @@
   ],
   "abil_cn": "概括梳理",
   "n": 11777,
-  "seg": "如来是如何取胜的？"
+  "seg": "如来是如何取胜的？",
+  "tags": [
+   {
+    "ability": 3,
+    "types": [
+     4
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "语音对话",
+  "label_full": "归纳概括·概括梳理题",
+  "label_qt": "概括梳理题"
  },
  {
   "src": "99",
@@ -2956,7 +4501,21 @@
   ],
   "abil_cn": "推断分析",
   "n": 11799,
-  "seg": "你来帮大圣找找原因，分析一下大圣为什么会输给如来？"
+  "seg": "你来帮大圣找找原因，分析一下大圣为什么会输给如来？",
+  "tags": [
+   {
+    "ability": 2,
+    "types": [
+     3
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "分析推断·信息推断题",
+  "label_qt": "信息推断题"
  },
  {
   "src": "99",
@@ -2985,7 +4544,21 @@
   ],
   "abil_cn": "多层评价",
   "n": 11749,
-  "seg": "五行山对于悟空意味着什么？"
+  "seg": "五行山对于悟空意味着什么？",
+  "tags": [
+   {
+    "ability": 5,
+    "types": [
+     11
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "思辨表达·开放表达题",
+  "label_qt": "开放表达题"
  },
  {
   "src": "99",
@@ -3014,7 +4587,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 3600,
-  "seg": "q1-什么描写？体现舅舅们怎样的特点"
+  "seg": "q1-什么描写？体现舅舅们怎样的特点",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -3043,7 +4630,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 3423,
-  "seg": "q2-什么描写？表现外公什么性格"
+  "seg": "q2-什么描写？表现外公什么性格",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -3072,7 +4673,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 3334,
-  "seg": "q3-母亲这句话让你感受到什么"
+  "seg": "q3-母亲这句话让你感受到什么",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -3101,7 +4716,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 3253,
-  "seg": "q4-阿廖沙做了什么惹祸的事"
+  "seg": "q4-阿廖沙做了什么惹祸的事",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -3130,7 +4759,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 3223,
-  "seg": "q5-毒打之后阿廖沙发生了怎样的变化"
+  "seg": "q5-毒打之后阿廖沙发生了怎样的变化",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     10
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·主旨情感题",
+  "label_qt": "主旨情感题"
  },
  {
   "src": "99",
@@ -3159,7 +4802,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 3178,
-  "seg": "q6-什么描写？外公此刻什么状态"
+  "seg": "q6-什么描写？外公此刻什么状态",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -3188,7 +4845,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 3022,
-  "seg": "q7-什么描写？体会外公拉纤的境况和性格"
+  "seg": "q7-什么描写？体会外公拉纤的境况和性格",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "chapter",
+  "actiontype": "chat",
+  "stage_cn": "章节",
+  "act_cn": "语音对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -3217,7 +4888,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 3111,
-  "seg": "q8-为什么说阿廖沙生活悲惨？找证据"
+  "seg": "q8-为什么说阿廖沙生活悲惨？找证据",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     2
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "语音对话",
+  "label_full": "信息提取·内容辨析题",
+  "label_qt": "内容辨析题"
  },
  {
   "src": "99",
@@ -3246,7 +4931,21 @@
   ],
   "abil_cn": "人物心理/形象",
   "n": 3015,
-  "seg": "q9-萨沙和阿廖沙面对挨打表现有何不同"
+  "seg": "q9-萨沙和阿廖沙面对挨打表现有何不同",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  },
  {
   "src": "99",
@@ -3275,7 +4974,21 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2908,
-  "seg": "q10-找描写支持外公粗暴/温情两种说法"
+  "seg": "q10-找描写支持外公粗暴/温情两种说法",
+  "tags": [
+   {
+    "ability": 1,
+    "types": [
+     1
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "信息提取·信息提取题",
+  "label_qt": "信息提取题"
  },
  {
   "src": "99",
@@ -3304,6 +5017,20 @@
   ],
   "abil_cn": "信息提取理解",
   "n": 2908,
-  "seg": "q10-找描写支持外公粗暴/温情两种说法"
+  "seg": "q10-找描写支持外公粗暴/温情两种说法",
+  "tags": [
+   {
+    "ability": 4,
+    "types": [
+     9
+    ]
+   }
+  ],
+  "stageType": "deep_expression",
+  "actiontype": "blackboard-chat",
+  "stage_cn": "思辨表达",
+  "act_cn": "板书对话",
+  "label_full": "分析理解·人物形象题",
+  "label_qt": "人物形象题"
  }
 ]

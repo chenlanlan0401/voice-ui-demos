@@ -27,9 +27,10 @@ thead th{background:var(--hd);position:sticky;top:0;z-index:2;font-weight:600;te
 th .sub{font-weight:400;color:var(--mut);font-size:11px}
 td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 td.g{text-align:center;font-weight:600}
-td.seg{min-width:150px;max-width:230px;color:#374151}
-td.q{min-width:220px;max-width:400px}
-td.qt{white-space:nowrap;color:#4b5563}
+td.seg{white-space:nowrap;color:#374151}
+td.act{white-space:nowrap;color:#4b5563}
+td.q{min-width:210px;max-width:380px}
+td.lab{min-width:130px;max-width:200px;color:#1d4ed8;font-size:12px;line-height:1.5}
 td.warn{background:#fff8e6}
 td.bad{background:#fdeceb;font-weight:600}
 tbody tr:hover td{background:#f0f7ff}
@@ -41,16 +42,18 @@ tbody tr:hover td.bad{background:#f8dcda}
 </head>
 <body>
 <h1>AI伴读 · 题目维度数据表</h1>
-<div class="meta">口径与《该不该等》分析报告一致 · 数据源:开麦埋点表 <code>dwd_tutor_frog_di</code>(开口秒数)+对话明细表 <code>ods_tutor_ai_reading_chat_detail_for_admin_da</code>(长答/无措/沉默)+题目配置表 <code>ori_tutor_ai_reading_question_da</code>(环节/题型)</div>
+<div class="meta">口径与《该不该等》分析报告一致 · 数据源:开麦埋点表 <code>dwd_tutor_frog_di</code>(开口秒数)+对话明细表 <code>ods_..._chat_detail</code>(长答/无措/沉默)+题库表 <code>ori_tutor_ai_reading_question_da</code>(题型标签)+剧本表 <code>ods_..._course_script_config</code>(环节/动作)</div>
 
 <div class="legend">
 <div style="margin-bottom:6px"><b>指标口径</b></div>
-<span class="k"><b>慢答率</b>:开口秒数(AI说完→学生开口第一个字,含1-2秒采集延迟)超过阈值的学生占比,分&gt;5/6/7秒三档</span>
-<span class="k"><b>长答率</b>:全体学生里回答≥15字的占比</span><br>
-<span class="k"><b>无措率</b>:开口后说放弃词(不知道/不会/忘了,≤15字)、纯语气填充、重复结巴的占比;有实义短答不算</span>
-<span class="k"><b>沉默率</b>:有作答动作/录音但没识别出人声的占比(标"用户未回答")</span>
+<span class="k"><b>所在环节/动作类型</b>:来自剧本配置,环节=题目所在教学阶段(章节/思辨表达等),动作=题目呈现形式(语音对话/板书对话/轻互动)</span><br>
+<span class="k"><b>题型标签</b>:题库官方"能力·题型"双层标签,一题多组用换行并列</span><br>
+<span class="k"><b>慢答率</b>:开口秒数(AI说完→学生开口,含1-2秒采集延迟)超阈值占比,分&gt;5/6/7秒三档</span>
+<span class="k"><b>长答率</b>:全体≥15字占比</span>
+<span class="k"><b>无措率</b>:说放弃词/纯语气/结巴占比(实义短答不算)</span>
+<span class="k"><b>沉默率</b>:有录音无人声占比</span>
 <div style="margin-top:8px">
-<span class="k"><span class="chip warn"></span>浅黄=偏高需留意</span>
+<span class="k"><span class="chip warn"></span>浅黄=偏高</span>
 <span class="k"><span class="chip bad"></span>红=显著偏高</span>
 <span class="k" style="color:var(--mut)">(慢答&gt;5s ≥25%黄/≥40%红;长答 ≥45%黄/≥70%红;无措 ≥6%黄/≥10%红;沉默 ≥6%黄/≥8%红)</span>
 </div>
@@ -64,21 +67,17 @@ tbody tr:hover td.bad{background:#f8dcda}
 
 <h2>① 小鹿斑比伴读4 · 15道题(二年级先行试点)</h2>
 <div class="tbl-wrap">
-<table id="t15">
-<thead><tr>
-<th>年级</th><th>题目所在环节</th><th>题目原文</th><th>题型标签</th><th>样本数</th>
-<th>慢答率<br><span class=sub>&gt;5秒</span></th>
-<th>慢答率<br><span class=sub>&gt;6秒</span></th>
-<th>慢答率<br><span class=sub>&gt;7秒</span></th>
-<th>长答率<br><span class=sub>&gt;15字</span></th>
-<th>无措率</th><th>沉默率</th>
-</tr></thead>
-<tbody>
+<table id="t15"><thead><tr>
+<th>年级</th><th>所在环节<br><span class=sub>stageType</span></th><th>动作类型<br><span class=sub>actiontype</span></th><th>题目原文</th><th>题型标签<br><span class=sub>能力·题型</span></th><th>样本数</th>
+<th>慢答率<br><span class=sub>&gt;5秒</span></th><th>慢答率<br><span class=sub>&gt;6秒</span></th><th>慢答率<br><span class=sub>&gt;7秒</span></th>
+<th>长答率<br><span class=sub>&gt;15字</span></th><th>无措率</th><th>沉默率</th>
+</tr></thead><tbody>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q01无板书：斑比心情+鹿王做法</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">斑比这时心情怎样？老鹿王又做了什么？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">分析理解·人物心理题<br>信息提取·信息提取题</td>
 <td class="num">552</td>
 <td class="num warn">26.8</td>
 <td class="num">20.7</td>
@@ -89,9 +88,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q01无板书：斑比心情+鹿王做法</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">如果你是斑比，见到老鹿王你会怎么做？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">迁移运用·开放表达题<br>分析理解·人物形象题</td>
 <td class="num">537</td>
 <td class="num ">14.9</td>
 <td class="num">10.8</td>
@@ -102,9 +102,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q2-无板书：没开口原因+生活迁移</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">斑比和老鹿王都有话想说，为什么最后谁都没开口？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">信息提取·信息提取题<br>分析理解·人物心理题<br>分析理解·人物形象题</td>
 <td class="num">556</td>
 <td class="num warn">25.7</td>
 <td class="num">19.2</td>
@@ -115,9 +116,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q2-无板书：没开口原因+生活迁移</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">下次再遇到，斑比可以怎么做？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">迁移运用·开放表达题<br>思辨表达·开放表达题</td>
 <td class="num">538</td>
 <td class="num warn">30.9</td>
 <td class="num">22.1</td>
@@ -128,9 +130,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q04-无板书：斑比反应+是只怎样的鹿</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">看到老鹿王，斑比是什么反应？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">535</td>
 <td class="num ">20.7</td>
 <td class="num">15.3</td>
@@ -141,9 +144,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q04-无板书：斑比反应+是只怎样的鹿</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">你觉得老鹿王是只怎样的鹿？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析推断·信息推断题<br>分析理解·人物形象题</td>
 <td class="num">525</td>
 <td class="num ">16.8</td>
 <td class="num">12.2</td>
@@ -154,9 +158,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q06-无板书：逃跑原因+鹿王是只怎样的鹿</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">老鹿王为什么竖起耳朵一动不动？</td>
-<td class="qt">人物形象题</td>
+<td class="lab">信息提取·信息提取题<br>分析推断·信息推断题</td>
 <td class="num">528</td>
 <td class="num ">17.8</td>
 <td class="num">11.9</td>
@@ -167,9 +172,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q06-无板书：逃跑原因+鹿王是只怎样的鹿</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">用一个词形容老鹿王。</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">520</td>
 <td class="num ">10.2</td>
 <td class="num">6.0</td>
@@ -180,9 +186,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q08-有板书记忆回调：鹿王回信</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">请你当斑比，给老鹿王回一段话，说说那天为什么没开口。</td>
-<td class="qt">开放表达题</td>
+<td class="lab">分析理解·人物心理题<br>信息提取·信息提取题</td>
 <td class="num">546</td>
 <td class="num bad">53.8</td>
 <td class="num">37.2</td>
@@ -193,9 +200,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q08-有板书记忆回调：鹿王回信</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">斑比下次见到老鹿王，会怎么做？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">思辨表达·开放表达题</td>
 <td class="num">540</td>
 <td class="num ">22.8</td>
 <td class="num">14.4</td>
@@ -206,9 +214,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q09-无板书：不回信发生什么</td>
+<td class="seg">思辨表达</td>
+<td class="act">语音对话</td>
 <td class="q">如果一直不开口，可能会发生什么？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析推断·信息推断题<br>思辨表达·开放表达题</td>
 <td class="num">539</td>
 <td class="num ">18.4</td>
 <td class="num">12.1</td>
@@ -219,9 +228,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q10-有板书</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">请你当斑比，把想对老鹿王说的悄悄话讲出来。</td>
-<td class="qt">开放表达题</td>
+<td class="lab">思辨表达·开放表达题</td>
 <td class="num">540</td>
 <td class="num bad">43.7</td>
 <td class="num">33.5</td>
@@ -232,9 +242,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">q03-轻互动：鹿王出现后做了什么</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">老鹿王出现后，做了什么？</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">529</td>
 <td class="num warn">27.6</td>
 <td class="num">20.2</td>
@@ -245,9 +256,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q5-轻互动：鹿王带斑比做了什么</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">老鹿王带着斑比做了哪些事？</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题<br>归纳概括·概括梳理题</td>
 <td class="num">542</td>
 <td class="num warn">31.2</td>
 <td class="num">21.6</td>
@@ -258,9 +270,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q07-轻互动：郭波前后变化</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">跟着老鹿王，斑比还害怕吗？</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题<br>归纳概括·概括梳理题</td>
 <td class="num">537</td>
 <td class="num ">16.6</td>
 <td class="num">10.4</td>
@@ -269,28 +282,23 @@ tbody tr:hover td.bad{background:#f8dcda}
 <td class="num ">1.7</td>
 <td class="num ">3.6</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 </div>
 
 <h2>② 全量 114 道题(2-6年级 15节课)</h2>
 <div class="meta" style="margin-top:4px">年级分布:二年级15(试点) / 三年级32 / 四年级20 / 五年级19 / 六年级28。二年级即上方斑比伴读4那15题。</div>
 <div class="tbl-wrap">
-<table id="t114">
-<thead><tr>
-<th>年级</th><th>题目所在环节</th><th>题目原文</th><th>题型标签</th><th>样本数</th>
-<th>慢答率<br><span class=sub>&gt;5秒</span></th>
-<th>慢答率<br><span class=sub>&gt;6秒</span></th>
-<th>慢答率<br><span class=sub>&gt;7秒</span></th>
-<th>长答率<br><span class=sub>&gt;15字</span></th>
-<th>无措率</th><th>沉默率</th>
-</tr></thead>
-<tbody>
+<table id="t114"><thead><tr>
+<th>年级</th><th>所在环节<br><span class=sub>stageType</span></th><th>动作类型<br><span class=sub>actiontype</span></th><th>题目原文</th><th>题型标签<br><span class=sub>能力·题型</span></th><th>样本数</th>
+<th>慢答率<br><span class=sub>&gt;5秒</span></th><th>慢答率<br><span class=sub>&gt;6秒</span></th><th>慢答率<br><span class=sub>&gt;7秒</span></th>
+<th>长答率<br><span class=sub>&gt;15字</span></th><th>无措率</th><th>沉默率</th>
+</tr></thead><tbody>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q01无板书：斑比心情+鹿王做法</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">斑比这时心情怎样？老鹿王又做了什么？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">分析理解·人物心理题<br>信息提取·信息提取题</td>
 <td class="num">552</td>
 <td class="num warn">26.8</td>
 <td class="num">20.7</td>
@@ -301,9 +309,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q01无板书：斑比心情+鹿王做法</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">如果你是斑比，见到老鹿王你会怎么做？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">迁移运用·开放表达题<br>分析理解·人物形象题</td>
 <td class="num">537</td>
 <td class="num ">14.9</td>
 <td class="num">10.8</td>
@@ -314,9 +323,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q2-无板书：没开口原因+生活迁移</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">斑比和老鹿王都有话想说，为什么最后谁都没开口？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">信息提取·信息提取题<br>分析理解·人物心理题<br>分析理解·人物形象题</td>
 <td class="num">556</td>
 <td class="num warn">25.7</td>
 <td class="num">19.2</td>
@@ -327,9 +337,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q2-无板书：没开口原因+生活迁移</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">下次再遇到，斑比可以怎么做？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">迁移运用·开放表达题<br>思辨表达·开放表达题</td>
 <td class="num">538</td>
 <td class="num warn">30.9</td>
 <td class="num">22.1</td>
@@ -340,9 +351,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q04-无板书：斑比反应+是只怎样的鹿</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">看到老鹿王，斑比是什么反应？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">535</td>
 <td class="num ">20.7</td>
 <td class="num">15.3</td>
@@ -353,9 +365,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q04-无板书：斑比反应+是只怎样的鹿</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">你觉得老鹿王是只怎样的鹿？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析推断·信息推断题<br>分析理解·人物形象题</td>
 <td class="num">525</td>
 <td class="num ">16.8</td>
 <td class="num">12.2</td>
@@ -366,9 +379,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q06-无板书：逃跑原因+鹿王是只怎样的鹿</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">老鹿王为什么竖起耳朵一动不动？</td>
-<td class="qt">人物形象题</td>
+<td class="lab">信息提取·信息提取题<br>分析推断·信息推断题</td>
 <td class="num">528</td>
 <td class="num ">17.8</td>
 <td class="num">11.9</td>
@@ -379,9 +393,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q06-无板书：逃跑原因+鹿王是只怎样的鹿</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">用一个词形容老鹿王。</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">520</td>
 <td class="num ">10.2</td>
 <td class="num">6.0</td>
@@ -392,9 +407,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q08-有板书记忆回调：鹿王回信</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">请你当斑比，给老鹿王回一段话，说说那天为什么没开口。</td>
-<td class="qt">开放表达题</td>
+<td class="lab">分析理解·人物心理题<br>信息提取·信息提取题</td>
 <td class="num">546</td>
 <td class="num bad">53.8</td>
 <td class="num">37.2</td>
@@ -405,9 +421,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q08-有板书记忆回调：鹿王回信</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">斑比下次见到老鹿王，会怎么做？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">思辨表达·开放表达题</td>
 <td class="num">540</td>
 <td class="num ">22.8</td>
 <td class="num">14.4</td>
@@ -418,9 +435,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q09-无板书：不回信发生什么</td>
+<td class="seg">思辨表达</td>
+<td class="act">语音对话</td>
 <td class="q">如果一直不开口，可能会发生什么？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析推断·信息推断题<br>思辨表达·开放表达题</td>
 <td class="num">539</td>
 <td class="num ">18.4</td>
 <td class="num">12.1</td>
@@ -431,9 +449,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q10-有板书</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">请你当斑比，把想对老鹿王说的悄悄话讲出来。</td>
-<td class="qt">开放表达题</td>
+<td class="lab">思辨表达·开放表达题</td>
 <td class="num">540</td>
 <td class="num bad">43.7</td>
 <td class="num">33.5</td>
@@ -444,9 +463,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">q03-轻互动：鹿王出现后做了什么</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">老鹿王出现后，做了什么？</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">529</td>
 <td class="num warn">27.6</td>
 <td class="num">20.2</td>
@@ -457,9 +477,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q5-轻互动：鹿王带斑比做了什么</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">老鹿王带着斑比做了哪些事？</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题<br>归纳概括·概括梳理题</td>
 <td class="num">542</td>
 <td class="num warn">31.2</td>
 <td class="num">21.6</td>
@@ -470,9 +491,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">2</td>
-<td class="seg">Q07-轻互动：郭波前后变化</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">跟着老鹿王，斑比还害怕吗？</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题<br>归纳概括·概括梳理题</td>
 <td class="num">537</td>
 <td class="num ">16.6</td>
 <td class="num">10.4</td>
@@ -483,9 +505,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">拇指姑娘什么反应</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">拇指姑娘什么反应</td>
-<td class="qt">人物心理题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">2807</td>
 <td class="num ">22.7</td>
 <td class="num">14.7</td>
@@ -496,9 +519,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">拇指姑娘什么反应</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">拇指姑娘什么反应</td>
-<td class="qt">人物心理题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">2807</td>
 <td class="num ">15.9</td>
 <td class="num">10.0</td>
@@ -509,9 +533,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">待嫁：说出心里话</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">待嫁：说出心里话</td>
-<td class="qt">人物心理题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">2720</td>
 <td class="num ">15.3</td>
 <td class="num">10.4</td>
@@ -522,9 +547,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">待嫁：说出心里话</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">待嫁：说出心里话</td>
-<td class="qt">人物心理题</td>
+<td class="lab">创造创新·开放表达题</td>
 <td class="num">2720</td>
 <td class="num ">11.0</td>
 <td class="num">6.8</td>
@@ -535,9 +561,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">“我们一起走”</td>
+<td class="seg">章节</td>
+<td class="act">轻互动</td>
 <td class="q">“我们一起走”</td>
-<td class="qt">其他</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">2695</td>
 <td class="num warn">28.0</td>
 <td class="num">20.0</td>
@@ -548,9 +575,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">感悟主旨</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">感悟主旨</td>
-<td class="qt">开放表达题</td>
+<td class="lab">归纳概括·概括梳理题</td>
 <td class="num">2721</td>
 <td class="num ">22.0</td>
 <td class="num">14.3</td>
@@ -561,9 +589,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">感悟主旨</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">感悟主旨</td>
-<td class="qt">开放表达题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">2721</td>
 <td class="num ">22.6</td>
 <td class="num">15.1</td>
@@ -574,9 +603,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">感悟主旨</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">感悟主旨</td>
-<td class="qt">开放表达题</td>
+<td class="lab">分析理解·主旨情感题</td>
 <td class="num">2721</td>
 <td class="num ">19.6</td>
 <td class="num">12.6</td>
@@ -587,9 +617,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">丑小鸭</td>
+<td class="seg">思辨表达</td>
+<td class="act">语音对话</td>
 <td class="q">丑小鸭</td>
-<td class="qt">其他</td>
+<td class="lab">分析理解·主旨情感题</td>
 <td class="num">2618</td>
 <td class="num ">21.5</td>
 <td class="num">14.6</td>
@@ -600,9 +631,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">紫莓饮料的秘密</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">紫莓饮料的秘密</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">754</td>
 <td class="num ">7.8</td>
 <td class="num">4.9</td>
@@ -613,9 +645,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">紫莓饮料的秘密</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">紫莓饮料的秘密</td>
-<td class="qt">信息提取题</td>
+<td class="lab">分析推断·信息推断题</td>
 <td class="num">754</td>
 <td class="num ">7.0</td>
 <td class="num">4.3</td>
@@ -626,9 +659,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">分析安妮的人物特点</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">分析安妮的人物特点</td>
-<td class="qt">人物形象题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">759</td>
 <td class="num warn">37.1</td>
 <td class="num">28.2</td>
@@ -639,9 +673,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">分析安妮的人物特点</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">分析安妮的人物特点</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">759</td>
 <td class="num ">16.1</td>
 <td class="num">10.8</td>
@@ -652,9 +687,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">安妮做了什么</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">安妮做了什么</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">739</td>
 <td class="num warn">25.7</td>
 <td class="num">18.0</td>
@@ -665,9 +701,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">最后的结果</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">最后的结果</td>
-<td class="qt">其他</td>
+<td class="lab">归纳概括·概括梳理题</td>
 <td class="num">739</td>
 <td class="num ">16.7</td>
 <td class="num">11.0</td>
@@ -678,9 +715,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">巴里太太改变的原因</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">巴里太太改变的原因</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析理解·人物心理题</td>
 <td class="num">734</td>
 <td class="num ">22.6</td>
 <td class="num">15.0</td>
@@ -691,9 +729,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">感受安妮与戴安娜的友谊</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">感受安妮与戴安娜的友谊</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析理解·主旨情感题</td>
 <td class="num">747</td>
 <td class="num ">16.7</td>
 <td class="num">12.6</td>
@@ -704,9 +743,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">感受安妮与戴安娜的友谊</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">感受安妮与戴安娜的友谊</td>
-<td class="qt">信息推断题</td>
+<td class="lab">思辨表达·开放表达题</td>
 <td class="num">747</td>
 <td class="num ">11.0</td>
 <td class="num">7.3</td>
@@ -717,9 +757,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">自己如何帮助朋友</td>
+<td class="seg">思辨表达</td>
+<td class="act">轻互动</td>
 <td class="q">自己如何帮助朋友</td>
-<td class="qt">开放表达题</td>
+<td class="lab">迁移运用·开放表达题</td>
 <td class="num">507</td>
 <td class="num warn">33.8</td>
 <td class="num">24.3</td>
@@ -730,9 +771,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">朋友如何帮助自己</td>
+<td class="seg">思辨表达</td>
+<td class="act">轻互动</td>
 <td class="q">朋友如何帮助自己</td>
-<td class="qt">开放表达题</td>
+<td class="lab">迁移运用·开放表达题</td>
 <td class="num">244</td>
 <td class="num warn">29.9</td>
 <td class="num">22.7</td>
@@ -743,9 +785,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">q01-画眉鸟为什么觉得拉车人可怜</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">画眉鸟为什么觉得拉车人可怜呢？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析推断·信息推断题</td>
 <td class="num">2525</td>
 <td class="num warn">29.6</td>
 <td class="num">21.2</td>
@@ -756,9 +799,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">q02-画眉鸟看到厨子想到了什么</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">画眉鸟看到忙碌的厨子，想到了什么？</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">2457</td>
 <td class="num bad">52.8</td>
 <td class="num">43.3</td>
@@ -769,9 +813,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">q03-画眉鸟现在的心情怎么样了</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">看到拉车人、厨子、哑嗓小女孩……你觉得这只原本满心欢喜的小鸟，现在心情怎么样了？</td>
-<td class="qt">人物心理题</td>
+<td class="lab">信息提取·内容辨析题</td>
 <td class="num">2418</td>
 <td class="num ">14.6</td>
 <td class="num">9.1</td>
@@ -782,9 +827,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">q03-画眉鸟现在的心情怎么样了</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">看到拉车人、厨子、哑嗓小女孩……你觉得这只原本满心欢喜的小鸟，现在心情怎么样了？</td>
-<td class="qt">人物心理题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">2418</td>
 <td class="num ">16.7</td>
 <td class="num">10.9</td>
@@ -795,9 +841,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">q04-画眉鸟为什么反而觉得心里痛快</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">画眉鸟风餐露宿条件更差，为什么反而觉得心里痛快？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析理解·人物心理题</td>
 <td class="num">2355</td>
 <td class="num ">15.5</td>
 <td class="num">10.3</td>
@@ -808,9 +855,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">q05-以前在金丝笼里唱歌是为了谁</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">以前在金丝笼里，它唱歌是为了谁呢？</td>
-<td class="qt">内容辨析题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">2366</td>
 <td class="num ">8.9</td>
 <td class="num">5.9</td>
@@ -821,9 +869,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">q05-以前在金丝笼里唱歌是为了谁</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">以前在金丝笼里，它唱歌是为了谁呢？</td>
-<td class="qt">内容辨析题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">2366</td>
 <td class="num ">7.4</td>
 <td class="num">4.3</td>
@@ -834,9 +883,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">q07-为什么把歌声送给他（难过小男孩）</td>
+<td class="seg">思辨表达</td>
+<td class="act">轻互动</td>
 <td class="q">你为什么要把画眉鸟的歌声送给他（难过小男孩）？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">迁移运用·开放表达题</td>
 <td class="num">941</td>
 <td class="num ">8.9</td>
 <td class="num">4.5</td>
@@ -847,9 +897,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">q08-为什么把歌声送给孤单的老奶奶</td>
+<td class="seg">思辨表达</td>
+<td class="act">轻互动</td>
 <td class="q">你为什么要把歌声送给孤单的老奶奶？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">迁移运用·开放表达题</td>
 <td class="num">690</td>
 <td class="num ">9.1</td>
 <td class="num">5.5</td>
@@ -860,9 +911,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">q09-为什么把歌声送给疲惫的快递员</td>
+<td class="seg">思辨表达</td>
+<td class="act">轻互动</td>
 <td class="q">你为什么要把歌声送给疲惫的快递员？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">迁移运用·开放表达题</td>
 <td class="num">678</td>
 <td class="num ">6.5</td>
 <td class="num">3.4</td>
@@ -873,9 +925,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">q10-分享一首属于你的旷野之歌</td>
+<td class="seg">思辨表达</td>
+<td class="act">语音对话</td>
 <td class="q">生活里有什么事，哪怕没大人夸奖奖励，你听从内心也觉得很有意义、很想做？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">迁移运用·开放表达题</td>
 <td class="num">2345</td>
 <td class="num warn">34.4</td>
 <td class="num">23.4</td>
@@ -886,9 +939,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">3</td>
-<td class="seg">q11-聚光灯下向观众宣布你的决定</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">聚光灯打在你身上，你会怎么向全场宣布你的决定？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">迁移运用·开放表达题</td>
 <td class="num">2313</td>
 <td class="num ">15.3</td>
 <td class="num">9.9</td>
@@ -899,9 +953,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q01_1.谁创造了人类？</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">谁创造了人类？</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">1366</td>
 <td class="num ">14.3</td>
 <td class="num">10.2</td>
@@ -912,9 +967,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q02_1.普罗米修斯精神_盗火动机</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">普罗米修斯盗火动机</td>
-<td class="qt">其他</td>
+<td class="lab">分析理解·人物心理题</td>
 <td class="num">1335</td>
 <td class="num ">11.2</td>
 <td class="num">8.8</td>
@@ -925,9 +981,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q02_2.普罗米修斯精神_人物精神</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">普罗米修斯精神_人物精神</td>
-<td class="qt">概括梳理题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">1323</td>
 <td class="num ">23.5</td>
 <td class="num">15.3</td>
@@ -938,9 +995,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q03_1.法厄同初印象_驾驶太阳马车的困难</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">法厄同初印象_驾驶太阳马车的困难</td>
-<td class="qt">概括梳理题</td>
+<td class="lab">归纳概括·概括梳理题<br>信息提取·信息提取题</td>
 <td class="num">1328</td>
 <td class="num warn">31.7</td>
 <td class="num">21.7</td>
@@ -951,9 +1009,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q03_1.法厄同初印象_驾驶太阳马车的困难</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">法厄同初印象_驾驶太阳马车的困难</td>
-<td class="qt">概括梳理题</td>
+<td class="lab">归纳概括·概括梳理题<br>信息提取·信息提取题</td>
 <td class="num">1328</td>
 <td class="num ">17.7</td>
 <td class="num">12.8</td>
@@ -964,9 +1023,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q03_2.法厄同初印象_人物性格</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">法厄同初印象_人物性格</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">1317</td>
 <td class="num ">19.1</td>
 <td class="num">13.6</td>
@@ -977,9 +1037,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q04.思辨-悲剧为何发生</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">思辨-悲剧为何发生</td>
-<td class="qt">其他</td>
+<td class="lab">分析推断·信息推断题<br>归纳概括·概括梳理题</td>
 <td class="num">1316</td>
 <td class="num ">11.9</td>
 <td class="num">7.6</td>
@@ -990,9 +1051,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q04.思辨-悲剧为何发生</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">思辨-悲剧为何发生</td>
-<td class="qt">其他</td>
+<td class="lab">思辨表达·开放表达题</td>
 <td class="num">1316</td>
 <td class="num ">12.7</td>
 <td class="num">8.3</td>
@@ -1003,9 +1065,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q05_1.敬佩的人/英雄</td>
+<td class="seg">思辨表达</td>
+<td class="act">语音对话</td>
 <td class="q">敬佩的人/英雄</td>
-<td class="qt">开放表达题</td>
+<td class="lab">迁移运用·开放表达题</td>
 <td class="num">1312</td>
 <td class="num ">21.7</td>
 <td class="num">14.5</td>
@@ -1016,9 +1079,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q05_2.我也可以</td>
+<td class="seg">思辨表达</td>
+<td class="act">语音对话</td>
 <td class="q">我也可以（把英雄精神迁移为一件可做的勇敢小事）</td>
-<td class="qt">其他</td>
+<td class="lab">迁移运用·开放表达题</td>
 <td class="num">1309</td>
 <td class="num warn">35.4</td>
 <td class="num">25.5</td>
@@ -1029,9 +1093,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q01_2.普罗米修斯教会了人类什么</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">普罗米修斯教会了人类什么</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题<br>归纳概括·概括梳理题</td>
 <td class="num">1287</td>
 <td class="num ">20.4</td>
 <td class="num">12.7</td>
@@ -1042,9 +1107,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q01 烛龙有什么本领</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">你能说说烛龙有什么本领吗？</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">2705</td>
 <td class="num ">20.9</td>
 <td class="num">14.2</td>
@@ -1055,9 +1121,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q03 哪一句体现了神话神奇的想象</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">哪一句体现了神话神奇的想象？说说它不可思议的地方。</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">2555</td>
 <td class="num warn">32.5</td>
 <td class="num">27.4</td>
@@ -1068,9 +1135,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q04 十个太阳的故事可能在解释什么自然现象</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">十个太阳烤焦大地的故事，可能在解释什么自然现象？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">2507</td>
 <td class="num ">19.7</td>
 <td class="num">14.0</td>
@@ -1081,9 +1149,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q05 雷公和电母怎么分工</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">雷公和电母这对搭档是怎么分工的？</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">2490</td>
 <td class="num warn">34.9</td>
 <td class="num">22.2</td>
@@ -1094,9 +1163,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q06 这个故事在解释什么自然现象</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">古人编这个故事，其实在解释什么自然现象？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">分析推断·信息推断题</td>
 <td class="num">2452</td>
 <td class="num ">11.0</td>
 <td class="num">5.9</td>
@@ -1107,9 +1177,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q12 你想给谁编一个神话故事</td>
+<td class="seg">思辨表达</td>
+<td class="act">语音对话</td>
 <td class="q">你想给谁编一个神话故事？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">2463</td>
 <td class="num ">12.0</td>
 <td class="num">9.1</td>
@@ -1120,9 +1191,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q13 创造一个主角：神仙的名字和样子</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">为所选自然现象创造一位神仙主角，叫什么名字、长什么样？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">2439</td>
 <td class="num ">19.4</td>
 <td class="num">14.6</td>
@@ -1133,9 +1205,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q13 创造一个主角：神仙的名字和样子</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">为所选自然现象创造一位神仙主角，叫什么名字、长什么样？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">2439</td>
 <td class="num ">17.4</td>
 <td class="num">12.1</td>
@@ -1146,9 +1219,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">4</td>
-<td class="seg">q02 你感受到了古人什么样的特点</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">你感受到了古人什么样的特点呢？</td>
-<td class="qt">人物心理题</td>
+<td class="lab">分析理解·主旨情感题</td>
 <td class="num">2640</td>
 <td class="num ">21.6</td>
 <td class="num">14.6</td>
@@ -1159,9 +1233,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">三人三种性格</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">三人三种性格</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">4801</td>
 <td class="num warn">26.7</td>
 <td class="num">19.1</td>
@@ -1172,9 +1247,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">三人三种性格</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">三人三种性格</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">4801</td>
 <td class="num ">23.8</td>
 <td class="num">17.1</td>
@@ -1185,9 +1261,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">三人三种性格</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">三人三种性格</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">4801</td>
 <td class="num ">15.9</td>
 <td class="num">11.3</td>
@@ -1198,9 +1275,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">怎么评价宝象国中八戒的表现</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">怎么评价宝象国中八戒的表现</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">4523</td>
 <td class="num warn">25.0</td>
 <td class="num">17.2</td>
@@ -1211,9 +1289,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">关键时刻贡献奖</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">关键时刻贡献奖</td>
-<td class="qt">其他</td>
+<td class="lab">思辨表达·开放表达题</td>
 <td class="num">4728</td>
 <td class="num ">15.2</td>
 <td class="num">9.7</td>
@@ -1224,9 +1303,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">关键时刻贡献奖</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">关键时刻贡献奖</td>
-<td class="qt">其他</td>
+<td class="lab">创造创新·开放表达题<br>创造创新·补写仿写题</td>
 <td class="num">4728</td>
 <td class="num ">15.5</td>
 <td class="num">9.2</td>
@@ -1237,9 +1317,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">危机对取经团队关系的影响</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">危机对取经团队关系的影响</td>
-<td class="qt">其他</td>
+<td class="lab">分析理解·主旨情感题<br>思辨表达·开放表达题</td>
 <td class="num">4447</td>
 <td class="num ">18.9</td>
 <td class="num">12.9</td>
@@ -1250,9 +1331,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">悟空这次离队和第一次有什么不同？</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">悟空这次离队和第一次有什么不同？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析推断·信息推断题<br>分析理解·人物形象题</td>
 <td class="num">4639</td>
 <td class="num warn">25.8</td>
 <td class="num">18.5</td>
@@ -1263,9 +1345,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">Q1-探险小队看到怎样的景色判断不在冰岛</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">探险小队看到怎样的景色，才判断此时不在冰岛？</td>
-<td class="qt">人物形象题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">735</td>
 <td class="num ">23.0</td>
 <td class="num">15.7</td>
@@ -1276,9 +1359,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">Q2-地心之旅成功还是失败？</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">地心之旅是成功了还是失败了？说说理由。</td>
-<td class="qt">人物形象题</td>
+<td class="lab">创造创新·开放表达题</td>
 <td class="num">727</td>
 <td class="num ">9.2</td>
 <td class="num">7.2</td>
@@ -1289,9 +1373,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">Q3-汉恩斯有没有发生变化</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">汉恩斯这个人有没有发生变化</td>
-<td class="qt">内容辨析题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">740</td>
 <td class="num ">13.2</td>
 <td class="num">8.2</td>
@@ -1302,9 +1387,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">Q4-叔叔到底有没有发生改变</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">叔叔这个人到底有没有改变</td>
-<td class="qt">内容辨析题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">728</td>
 <td class="num ">12.0</td>
 <td class="num">9.1</td>
@@ -1315,9 +1401,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">Q5-阿克赛最大的改变是什么</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">阿克赛身上最大的"改变"是什么</td>
-<td class="qt">概括梳理题</td>
+<td class="lab">分析理解·人物心理题</td>
 <td class="num">719</td>
 <td class="num ">8.9</td>
 <td class="num">6.2</td>
@@ -1328,9 +1415,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">q01周瑜的“病”是什么</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">周瑜的"病"是什么？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析推断·信息推断题</td>
 <td class="num">497</td>
 <td class="num warn">25.1</td>
 <td class="num">17.6</td>
@@ -1341,9 +1429,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">q01周瑜的“病”是什么</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">周瑜的"病"是什么？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析推断·信息推断题</td>
 <td class="num">497</td>
 <td class="num warn">25.3</td>
 <td class="num">15.4</td>
@@ -1354,9 +1443,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">q02赤壁之战曹操输在哪儿</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">赤壁之战曹操输在哪儿？从内部和外部原因两方面思考。</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析推断·信息推断题<br>归纳概括·概括梳理题</td>
 <td class="num">487</td>
 <td class="num warn">34.5</td>
 <td class="num">25.3</td>
@@ -1367,9 +1457,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">q03你会不会放走曹操，为什么</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">你会不会选择放走曹操，为什么？说说理由。</td>
-<td class="qt">信息推断题</td>
+<td class="lab">思辨表达·开放表达题</td>
 <td class="num">500</td>
 <td class="num ">14.1</td>
 <td class="num">9.5</td>
@@ -1380,9 +1471,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">q03你会不会放走曹操，为什么</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">你会不会选择放走曹操，为什么？说说理由。</td>
-<td class="qt">信息推断题</td>
+<td class="lab">思辨表达·开放表达题</td>
 <td class="num">500</td>
 <td class="num ">22.9</td>
 <td class="num">13.5</td>
@@ -1393,9 +1485,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">5</td>
-<td class="seg">q04华容道前关羽的两难处境难在哪</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">华容道前关羽的两难处境，难在哪里？总结一下。</td>
-<td class="qt">开放表达题</td>
+<td class="lab">思辨表达·开放表达题</td>
 <td class="num">481</td>
 <td class="num warn">26.1</td>
 <td class="num">17.8</td>
@@ -1406,9 +1499,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">酒醒之后，孙悟空想起自己做的这些事，你觉得他心里会有点什么感觉？</td>
+<td class="seg">章节</td>
+<td class="act">轻互动</td>
 <td class="q">酒醒之后，孙悟空想起自己做的这些事，你觉得他心里会有点什么感觉？</td>
-<td class="qt">人物心理题</td>
+<td class="lab">分析理解·人物心理题</td>
 <td class="num">11925</td>
 <td class="num warn">32.0</td>
 <td class="num">23.1</td>
@@ -1419,9 +1513,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">刚刚这场精彩绝伦的变身斗法中，说说二郎神给你留下了怎样的印象，这样写的好处</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">刚刚这场精彩绝伦的变身斗法中，说说二郎神给你留下了怎样的印象，这样写的好处</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">12193</td>
 <td class="num warn">27.9</td>
 <td class="num">20.6</td>
@@ -1432,9 +1527,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">刚刚这场精彩绝伦的变身斗法中，说说二郎神给你留下了怎样的印象，这样写的好处</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">刚刚这场精彩绝伦的变身斗法中，说说二郎神给你留下了怎样的印象，这样写的好处</td>
-<td class="qt">人物形象题</td>
+<td class="lab">评价鉴赏·赏析表达题</td>
 <td class="num">12193</td>
 <td class="num ">23.5</td>
 <td class="num">19.3</td>
@@ -1445,9 +1541,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">如果你是悟空，当你发现天庭无论如何都拿你没办法的时候，你心里会怎么想？</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">如果你是悟空，当你发现天庭无论如何都拿你没办法的时候，你心里会怎么想？</td>
-<td class="qt">人物心理题</td>
+<td class="lab">分析理解·人物心理题</td>
 <td class="num">11724</td>
 <td class="num ">23.3</td>
 <td class="num">17.6</td>
@@ -1458,9 +1555,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">这句话体现了悟空的什么精神？</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">大圣听了更不服气了，说："皇帝轮流做，明年到我家"，这句话体现了悟空的什么精神？</td>
-<td class="qt">其他</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">11804</td>
 <td class="num warn">32.0</td>
 <td class="num">24.6</td>
@@ -1471,9 +1569,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">如来是如何取胜的？</td>
+<td class="seg">思辨表达</td>
+<td class="act">语音对话</td>
 <td class="q">如来是如何取胜的？</td>
-<td class="qt">概括梳理题</td>
+<td class="lab">归纳概括·概括梳理题</td>
 <td class="num">11777</td>
 <td class="num warn">31.1</td>
 <td class="num">22.5</td>
@@ -1484,9 +1583,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">你来帮大圣找找原因，分析一下大圣为什么会输给如来？</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">分析一下大圣为什么会输给如来？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析推断·信息推断题</td>
 <td class="num">11799</td>
 <td class="num warn">25.3</td>
 <td class="num">18.2</td>
@@ -1497,9 +1597,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">五行山对于悟空意味着什么？</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">五行山对于悟空意味着什么？从"惩罚""磨炼""机遇"中任选一个，说出理由。</td>
-<td class="qt">开放表达题</td>
+<td class="lab">思辨表达·开放表达题</td>
 <td class="num">11749</td>
 <td class="num warn">36.4</td>
 <td class="num">27.0</td>
@@ -1510,9 +1611,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">描绘“被自己的聪明陶醉了”的人的表情动作</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">发挥想象描绘：一个"被自己的聪明陶醉了"的人，会是什么样的表情和动作？</td>
-<td class="qt">开放表达题</td>
+<td class="lab">创造创新·开放表达题</td>
 <td class="num">422</td>
 <td class="num warn">34.4</td>
 <td class="num">25.9</td>
@@ -1523,9 +1625,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">路路通认为费克斯是什么身份？</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">路路通心里认为费克斯是什么身份？</td>
-<td class="qt">人物心理题</td>
+<td class="lab">分析理解·人物心理题</td>
 <td class="num">407</td>
 <td class="num warn">26.4</td>
 <td class="num">19.8</td>
@@ -1536,9 +1639,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">如果你是路路通，用一句话说出他的心理活动</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">如果你是路路通，你心里会打什么算盘？用一句完整的话说出心理活动。</td>
-<td class="qt">人物心理题</td>
+<td class="lab">分析理解·人物心理题</td>
 <td class="num">404</td>
 <td class="num bad">56.2</td>
 <td class="num">41.5</td>
@@ -1549,9 +1653,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">朗读后说说路路通的心情和态度</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">有感情地朗读这段话，读完告诉我：路路通说这句话时是怎样的心情和态度？</td>
-<td class="qt">人物心理题</td>
+<td class="lab">分析理解·人物心理题<br>分析推断·信息推断题</td>
 <td class="num">411</td>
 <td class="num warn">39.4</td>
 <td class="num">28.9</td>
@@ -1562,9 +1667,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">是什么事让他变得坚定、愤怒？</td>
+<td class="seg">章节</td>
+<td class="act">板书对话</td>
 <td class="q">究竟发生了什么，让他变得这么坚定、愤怒？费克斯刚才干什么了？</td>
-<td class="qt">概括梳理题</td>
+<td class="lab">分析理解·人物心理题<br>分析推断·信息推断题</td>
 <td class="num">405</td>
 <td class="num ">24.3</td>
 <td class="num">18.0</td>
@@ -1575,9 +1681,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">结合情节和描写推测路路通的心情</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">结合情节和描写，你推测路路通现在是一种什么样的心情？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析理解·人物心理题</td>
 <td class="num">413</td>
 <td class="num warn">28.5</td>
 <td class="num">19.8</td>
@@ -1588,9 +1695,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">路路通见过主人做过哪些事，觉得他不是坏人？</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">路路通亲眼见过主人做过哪些事，让他觉得主人绝不可能是坏人？</td>
-<td class="qt">其他</td>
+<td class="lab">分析推断·信息推断题</td>
 <td class="num">406</td>
 <td class="num warn">27.6</td>
 <td class="num">19.3</td>
@@ -1601,9 +1709,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">把路路通此刻纠结的内心独白说出来</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">把自己当成路路通，用完整的话说出他此刻最纠结的内心独白。</td>
-<td class="qt">开放表达题</td>
+<td class="lab">创造创新·开放表达题<br>创造创新·补写仿写题</td>
 <td class="num">402</td>
 <td class="num bad">44.5</td>
 <td class="num">32.6</td>
@@ -1614,9 +1723,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">从没写心情的句子里感受路路通的心情</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">路路通这句话没直接写心情，你能从中感觉到他心情怎么样吗？</td>
-<td class="qt">信息推断题</td>
+<td class="lab">分析理解·人物心理题<br>分析推断·信息推断题</td>
 <td class="num">401</td>
 <td class="num warn">25.1</td>
 <td class="num">18.5</td>
@@ -1627,9 +1737,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">q1-什么描写？体现舅舅们怎样的特点</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">这个句子属于什么描写？体现了舅舅们怎样的特点？</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">3600</td>
 <td class="num ">20.9</td>
 <td class="num">14.0</td>
@@ -1640,9 +1751,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">q2-什么描写？表现外公什么性格</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">这两句是什么描写？表现外公什么性格？</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">3423</td>
 <td class="num ">18.5</td>
 <td class="num">12.2</td>
@@ -1653,9 +1765,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">q3-母亲这句话让你感受到什么</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">母亲这句话让你感受到什么？她是个什么样的人？</td>
-<td class="qt">人物心理题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">3334</td>
 <td class="num ">20.5</td>
 <td class="num">14.4</td>
@@ -1666,9 +1779,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">q4-阿廖沙做了什么惹祸的事</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">阿廖沙做了什么惹祸的事？从原文找答案。</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">3253</td>
 <td class="num warn">25.8</td>
 <td class="num">19.1</td>
@@ -1679,9 +1793,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">q5-毒打之后阿廖沙发生了怎样的变化</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">这场毒打之后，阿廖沙发生了怎样的变化？</td>
-<td class="qt">人物心理题</td>
+<td class="lab">分析理解·主旨情感题</td>
 <td class="num">3223</td>
 <td class="num warn">34.7</td>
 <td class="num">26.9</td>
@@ -1692,9 +1807,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">q6-什么描写？外公此刻什么状态</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">这句是什么描写？看出此刻外公什么样子、状态？</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">3178</td>
 <td class="num ">24.6</td>
 <td class="num">17.7</td>
@@ -1705,9 +1821,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">q7-什么描写？体会外公拉纤的境况和性格</td>
+<td class="seg">章节</td>
+<td class="act">语音对话</td>
 <td class="q">这句是什么描写？结合外公拉纤经历，体会他拉纤时怎样的境况和性格？</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">3022</td>
 <td class="num warn">26.9</td>
 <td class="num">18.8</td>
@@ -1718,9 +1835,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">q8-为什么说阿廖沙生活悲惨？找证据</td>
+<td class="seg">思辨表达</td>
+<td class="act">语音对话</td>
 <td class="q">阿廖沙觉得"悲惨生活开始了"，从原文找证据说明为什么"悲惨"？</td>
-<td class="qt">内容辨析题</td>
+<td class="lab">信息提取·内容辨析题</td>
 <td class="num">3111</td>
 <td class="num warn">39.4</td>
 <td class="num">30.6</td>
@@ -1731,9 +1849,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">q9-萨沙和阿廖沙面对挨打表现有何不同</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">萨沙和阿廖沙面对挨打表现有什么不同？这种对比说明什么？</td>
-<td class="qt">人物形象题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">3015</td>
 <td class="num bad">44.1</td>
 <td class="num">34.6</td>
@@ -1744,9 +1863,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">q10-找描写支持外公粗暴/温情两种说法</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">外公粗暴残忍还是对阿廖沙有温情？从原文找描写支持这两种说法。</td>
-<td class="qt">信息提取题</td>
+<td class="lab">信息提取·信息提取题</td>
 <td class="num">2908</td>
 <td class="num bad">40.2</td>
 <td class="num">30.9</td>
@@ -1757,9 +1877,10 @@ tbody tr:hover td.bad{background:#f8dcda}
 </tr>
 <tr>
 <td class="g">6</td>
-<td class="seg">q10-找描写支持外公粗暴/温情两种说法</td>
+<td class="seg">思辨表达</td>
+<td class="act">板书对话</td>
 <td class="q">外公粗暴残忍还是对阿廖沙有温情？从原文找描写支持这两种说法。</td>
-<td class="qt">信息提取题</td>
+<td class="lab">分析理解·人物形象题</td>
 <td class="num">2908</td>
 <td class="num ">22.0</td>
 <td class="num">15.8</td>
@@ -1768,21 +1889,20 @@ tbody tr:hover td.bad{background:#f8dcda}
 <td class="num ">0.4</td>
 <td class="num bad">12.5</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 </div>
 
 <div class="note">
 <b>说明:</b><br>
-· 环节名取自题目配置表 <code>contextV2.name</code>,是出题人自己填的字段;部分课程填的是简短环节标签(如"Q08-有板书记忆回调:鹿王回信"),部分课程直接填了完整题干,故长短不一,原样呈现。<br>
-· 慢答率数值含 1-2 秒链路采集延迟,故绝对值偏大,但同口径横向可比;&gt;5→&gt;6→&gt;7秒逐档衰减,掉得慢说明是真慢、掉得快说明"慢"多由延迟贡献。<br>
-· 一个题号(qid)可能含多个小问(如斑比398695含2小问),每行=一个小问。样本数=该小问实际作答学生数。
+· <b>题型标签</b>取自题库 <code>questionMetadata</code> 的官方"能力·题型"双层编号(能力8类/题型15类),一道小问的 assessments 可含多组,一题多标签用换行并列。仅"语音对话/板书对话"类题目带此标签。<br>
+· <b>所在环节/动作类型</b>取自剧本表 <code>progresses[].stageType</code> 与 <code>flows[].actions[].type</code>。少数分支/轻互动题动作类型按同组题标注。<br>
+· 慢答率含 1-2 秒链路采集延迟,绝对值偏大,同口径横向可比;&gt;5→6→7秒逐档衰减,掉得慢=真慢。<br>
+· 一个题号(qid)可能含多个小问,每行=一个小问;样本数=该小问实际作答学生数。
 </div>
 
 <script>
 function copyTable(id){
-  var t=document.getElementById(id);
-  var rows=[];
+  var t=document.getElementById(id);var rows=[];
   t.querySelectorAll('tr').forEach(function(tr){
     var cells=[];
     tr.querySelectorAll('th,td').forEach(function(c){
@@ -1791,17 +1911,10 @@ function copyTable(id){
     rows.push(cells.join('\t'));
   });
   var txt=rows.join('\n');
-  var done=function(){document.getElementById('copytip').innerText='已复制,可直接粘到表格 ('+ (t.querySelectorAll('tbody tr').length) +'行)';};
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(txt).then(done,function(){fallback(txt,done);});
-  }else{fallback(txt,done);}
+  var done=function(){document.getElementById('copytip').innerText='已复制 ('+(t.querySelectorAll('tbody tr').length)+'行)';};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,function(){fb(txt,done);});}else{fb(txt,done);}
 }
-function fallback(txt,done){
-  var ta=document.createElement('textarea');ta.value=txt;
-  ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);
-  ta.select();try{document.execCommand('copy');done();}catch(e){alert('复制失败,请手动选中');}
-  document.body.removeChild(ta);
-}
+function fb(txt,done){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){alert('复制失败');}document.body.removeChild(ta);}
 </script>
 
 <script>
