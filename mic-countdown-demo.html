@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI伴读开麦 · 倒计时方案交互演示</title>
+<style>
+:root{
+  --bg:#eef1f8; --card:#fff; --ink:#1f2733; --sub:#5b6676; --line:#e6ebf2;
+  --brand:#5b6ef5; --brand-soft:#eef1fe; --warm:#f5a623; --warm-soft:#fff6e6;
+  --good:#2fb37a; --good-soft:#e6f7f0; --bad:#e5573f; --bad-soft:#fdecea;
+  --shadow:0 2px 12px rgba(31,39,51,.07);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  line-height:1.6;font-size:15px;padding-bottom:90px}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 22px}
+h1{font-size:24px;margin:0 0 6px}
+.lead{color:var(--sub);font-size:14px;margin:0 0 6px}
+h2{font-size:18px;margin:30px 0 12px;padding-left:10px;border-left:4px solid var(--brand)}
+.mut{color:var(--sub);font-size:13px}
+
+/* ---------- 三种方案对比条 ---------- */
+.compare{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.cp{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+.cp.active{outline:2px solid var(--brand);background:var(--brand-soft)}
+.cp h3{font-size:13px;margin:0 0 6px;display:flex;align-items:center;gap:6px}
+.cp .flow{font-size:12px;color:var(--sub);line-height:2}
+.cp .flow b{color:var(--ink)}
+.chip{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:12px}
+.chip.now{background:#e9edf4;color:var(--sub)}
+.chip.buf{background:var(--warm-soft);color:#b9770f}
+.chip.cnt{background:var(--brand-soft);color:var(--brand)}
+
+/* ---------- 演示主舞台 ---------- */
+.stage{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.device{background:#1d2433;border-radius:28px;padding:14px;box-shadow:0 14px 40px rgba(20,28,50,.35);flex:0 0 auto}
+.screen{position:relative;width:360px;height:600px;border-radius:20px;overflow:hidden;
+  background:linear-gradient(180deg,#fdf8ee 0%,#f7efe0 60%,#efe6d3 100%);}
+.scr-top{position:absolute;top:0;left:0;right:0;padding:14px 18px 8px;display:flex;justify-content:space-between;align-items:center;z-index:5}
+.scr-title{font-size:12px;color:#8a7a5c;font-weight:700}
+.scr-qid{font-size:11px;color:#b3a685;background:rgba(255,255,255,.6);border-radius:10px;padding:2px 8px}
+.scr-verdict{font-size:11px;font-weight:700;border-radius:10px;padding:2px 8px}
+.v-green{background:#dff0e6;color:#1e7a4d}
+.v-warm{background:#fdeecd;color:#b9770f}
+.v-gray{background:#e8ecf3;color:#5b6676}
+.story{position:absolute;top:54px;left:0;right:0;bottom:170px;display:flex;align-items:center;justify-content:center}
+.story-inner{text-align:center}
+.story emoji{font-size:86px;display:block;filter:drop-shadow(0 6px 12px rgba(0,0,0,.15))}
+.story-book{font-size:12px;color:#a49474;margin-top:10px;font-weight:600}
+
+/* AI 问题气泡 */
+.q-bubble{position:absolute;top:170px;left:22px;right:22px;background:#fff;border-radius:16px;
+  box-shadow:0 4px 16px rgba(0,0,0,.08);padding:13px 15px;min-height:84px;z-index:6;
+  opacity:0;transform:translateY(8px);transition:all .35s ease}
+.q-bubble.show{opacity:1;transform:none}
+.qb-label{font-size:11px;color:var(--brand);font-weight:700;margin-bottom:4px;display:flex;gap:6px;align-items:center}
+.qb-label .dot{width:6px;height:6px;border-radius:50%;background:var(--brand);animation:blink 1s infinite}
+.qb-text{font-size:15px;font-weight:600;color:var(--ink);min-height:44px}
+@keyframes blink{50%{opacity:.2}}
+
+/* 思考提示 + 倒计时 */
+.think-box{position:absolute;top:296px;left:30px;right:30px;text-align:center;z-index:6;
+  opacity:0;transform:translateY(10px);transition:all .4s ease}
+.think-box.show{opacity:1;transform:none}
+.think-hint{font-size:17px;font-weight:700;color:#b9770f;background:var(--warm-soft);
+  border:1.5px solid #f5d99a;border-radius:14px;padding:9px 12px;display:inline-block;margin-bottom:12px}
+.count-wrap{display:flex;justify-content:center;align-items:center;gap:10px}
+.ring-box{position:relative;width:108px;height:108px}
+.ring-box svg{width:108px;height:108px;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:#e9dcf2;stroke-width:8}
+.ring-fg{fill:none;stroke:var(--brand);stroke-width:8;stroke-linecap:round;stroke-dasharray:339.3;
+  stroke-dashoffset:0;transition:stroke-dashoffset .2s linear}
+.ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:40px;font-weight:800;color:var(--brand);font-variant-numeric:tabular-nums}
+.ring-label{font-size:11px;color:var(--sub);margin-top:-2px;text-align:center}
+.bar-box{width:200px}
+.cd-bar{height:12px;border-radius:8px;background:#ece6f5;overflow:hidden;margin-bottom:6px}
+.cd-bar-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--brand),#8b7bf7);width:100%;transition:width .2s linear}
+.cd-bar-num{font-size:30px;font-weight:800;color:var(--brand);font-variant-numeric:tabular-nums}
+.pulse-dots{display:flex;gap:12px;align-items:center;justify-content:center;height:70px}
+.pulse-dots i{width:16px;height:16px;border-radius:50%;background:var(--brand);animation:pulse 1.2s ease-in-out infinite}
+.pulse-dots i:nth-child(2){animation-delay:.2s}
+.pulse-dots i:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,100%{transform:scale(.7);opacity:.4}50%{transform:scale(1.2);opacity:1}}
+.tail-warn .ring-num,.tail-warn .cd-bar-num{color:var(--warm)}
+.tail-warn .ring-fg{stroke:var(--warm)}
+.tail-warn .cd-bar-fill{background:var(--warm)}
+
+/* 呼吸灯区 */
+.mic-zone{position:absolute;left:0;right:0;bottom:52px;text-align:center;z-index:6}
+.light{position:relative;width:150px;height:26px;margin:0 auto;border-radius:20px;
+  background:linear-gradient(90deg,#c8d2f5,#aebdf2,#c8d2f5);
+  box-shadow:0 2px 10px rgba(91,110,245,.25);display:flex;align-items:center;justify-content:center;gap:5px}
+.light .ph{width:0;height:14px;border-radius:7px;background:#fff;opacity:0;transition:opacity .2s}
+.light.dim{animation:dimBreathe 2.6s ease-in-out infinite;background:linear-gradient(90deg,#cdd2de,#b9bfcd,#cdd2de);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.light.rec{animation:recBreathe 1.4s ease-in-out infinite}
+.light.voice .ph{opacity:.95;width:14px;background:#fff}
+@keyframes dimBreathe{50%{transform:scaleY(.92);box-shadow:0 1px 4px rgba(0,0,0,.05)}}
+@keyframes recBreathe{0%,100%{transform:scale(1);box-shadow:0 2px 14px rgba(91,110,245,.45)}50%{transform:scale(1.06);box-shadow:0 2px 22px rgba(91,110,245,.75)}}
+.status{font-size:13px;font-weight:700;margin-top:10px;color:#7a6b4e}
+.status.st-rec{color:var(--brand)}
+.status.st-think{color:#b9770f}
+.status.st-ans{color:var(--good)}
+
+/* 转写区 */
+.transcript{position:absolute;left:26px;right:26px;bottom:14px;background:rgba(255,255,255,.92);
+  border:1px solid #e9e2cf;border-radius:12px;padding:8px 12px;min-height:26px;z-index:6;
+  font-size:13px;color:#6b6048;text-align:center;transition:opacity .3s}
+.transcript.typing{border-color:var(--good);color:var(--ink)}
+
+/* 时间轴 */
+.timeline{margin-top:14px}
+.tl{display:flex;width:100%;height:34px;border-radius:9px;overflow:hidden;background:#e9edf4}
+.tl-seg{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;transition:opacity .3s;opacity:.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-seg.on{opacity:1;box-shadow:inset 0 0 0 2px #fff}
+.tl-seg.speak{background:#5b6ef5}
+.tl-seg.think{background:#f5a623}
+.tl-seg.rec{background:#2fb37a}
+.tl-seg.ans{background:#2fb37a}
+.tl-leg{display:flex;gap:14px;margin-top:6px;font-size:12px;color:var(--sub);flex-wrap:wrap}
+.tl-leg i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px;vertical-align:baseline}
+
+/* ---------- 控制台 ---------- */
+.controls{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow);margin-top:20px}
+.ctl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px 22px}
+.ctl h4{margin:0 0 8px;font-size:13px;color:var(--sub)}
+.ctl select,.ctl input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:9px;font-size:14px;background:#fafbfd;color:var(--ink);font-family:inherit}
+.ctl select:focus,.ctl input[type=text]:focus{outline:2px solid var(--brand);border-color:var(--brand)}
+.radio-row{display:flex;flex-direction:column;gap:7px}
+.radio-row label{font-size:14px;display:flex;align-items:center;gap:7px;cursor:pointer;padding:6px 9px;border:1px solid var(--line);border-radius:9px;background:#fafbfd}
+.radio-row label.on{background:var(--brand-soft);border-color:var(--brand)}
+.radio-row input{margin:0}
+.radio-row small{display:block;font-size:11px;color:var(--sub);font-weight:400}
+.range-row{display:flex;align-items:center;gap:10px}
+.range-row input[type=range]{flex:1;accent-color:var(--brand)}
+.sec-val{font-size:20px;font-weight:800;color:var(--brand);min-width:34px;text-align:right;font-variant-numeric:tabular-nums}
+.check-row{display:flex;flex-direction:column;gap:8px}
+.check-row label{font-size:14px;display:flex;align-items:center;gap:8px;cursor:pointer}
+
+/* 播放/开口按钮 */
+.btn-row{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;align-items:center}
+.btn{border:none;border-radius:13px;font-size:15px;font-weight:700;padding:12px 26px;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-play{background:var(--brand);color:#fff;box-shadow:0 4px 14px rgba(91,110,245,.35)}
+.btn-play:hover{background:#4a5ce0}
+.btn-speak{background:var(--good);color:#fff;box-shadow:0 4px 14px rgba(47,179,122,.35)}
+.btn-speak:hover{background:#269a64}
+.btn-speak:disabled{background:#c9d4cf;box-shadow:none;cursor:not-allowed}
+.btn-reset{background:#fafbfd;color:var(--ink);border:1px solid var(--line)}
+.auto-lab{font-size:13px;color:var(--sub);display:flex;align-items:center;gap:7px}
+
+/* 题目信息卡 */
+.qinfo{margin-top:14px;font-size:13px;color:var(--sub);display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.qinfo b{color:var(--ink)}
+.qinfo .sp{color:#b9770f;font-weight:600}
+
+/* 观察要点 */
+.notes{background:var(--good-soft);border:1px solid #b6e4d0;border-radius:14px;padding:14px 18px;margin-top:16px;font-size:13px}
+.notes b{color:#1e7a4d}
+
+.callout{border-radius:12px;padding:12px 16px;margin:12px 0;font-size:13px}
+.callout.key{background:var(--brand-soft);border:1px solid #c7cffb}
+.callout.warn{background:var(--warm-soft);border:1px solid #f5d99a}
+.callout.bad{background:var(--bad-soft);border:1px solid #f3b6ab}
+.callout b{display:block;margin-bottom:3px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line)}
+th{background:#fafbfd;color:var(--sub);font-weight:600;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap" id="doc">
+
+<h1 data-name="标题">AI伴读开麦 · 倒计时方案交互演示</h1>
+<p class="lead" data-name="副标题">模拟学习机屏幕与呼吸灯。该等的题 → 思考提示 + 倒计时感知;秒答题 → 维持现状零缓冲。可以随时点"学生开口",验证收音全程开着、开口即录。</p>
+
+<h2 data-name="三方案对比标题">一、三个方案先摆出来</h2>
+<div class="compare" data-name="三方案对比">
+  <div class="cp" id="cpNow">
+    <h3><span class="chip now">现状</span>维持现状</h3>
+    <div class="flow">AI问完 → <b>呼吸灯立刻亮</b> → 收音<br><span class="mut">零缓冲。秒答题走这个</span></div>
+  </div>
+  <div class="cp" id="cpBuf">
+    <h3><span class="chip buf">对比</span>纯缓冲(无倒计时)</h3>
+    <div class="flow">AI问完 → <b>"慢慢想"</b>静等 N 秒 → 灯亮<br><span class="mut">有缓冲,但没有时间感</span></div>
+  </div>
+  <div class="cp" id="cpCnt">
+    <h3><span class="chip cnt">方案</span>缓冲 + 倒计时</h3>
+    <div class="flow">AI问完 → <b>"慢慢想" + ⏱ N 秒倒计时</b> → 灯亮<br><span class="mut">缓冲 + 明确的时间感知</span></div>
+  </div>
+</div>
+
+<h2 data-name="演示舞台标题">二、交互演示</h2>
+<div class="stage">
+  <div class="device">
+    <div class="screen" id="screen">
+      <div class="scr-top">
+        <div class="scr-title" data-name="课程名">🦌 小鹿斑比 · 伴读4</div>
+        <div><span class="scr-verdict v-green" id="verdictTag">该等</span> <span class="scr-qid" id="qidTag">466170-1</span></div>
+      </div>
+      <div class="story"><div class="story-inner">
+        <span class="story emoji" id="storyEmoji">🦌</span>
+        <div class="story-book" id="storyBook">小鹿斑比 · 老鹿王的课堂</div>
+      </div></div>
+      <div class="q-bubble" id="qBubble">
+        <div class="qb-label"><span class="dot"></span>AI 正在说…</div>
+        <div class="qb-text" id="qText"></div>
+      </div>
+      <div class="think-box" id="thinkBox">
+        <div class="think-hint" id="hintText">慢慢想,不着急,想好了再告诉我。</div>
+        <div class="count-wrap" id="countWrap"></div>
+      </div>
+      <div class="mic-zone">
+        <div class="light dim" id="light">
+          <span class="ph"></span><span class="ph"></span><span class="ph"></span>
+        </div>
+        <div class="status" id="status">准备就绪</div>
+      </div>
+      <div class="transcript" id="transcript"></div>
+    </div>
+  </div>
+
+  <div style="flex:1;min-width:280px">
+    <div class="timeline">
+      <div class="tl" id="tl">
+        <div class="tl-seg speak" id="segSpeak">AI提问</div>
+        <div class="tl-seg think" id="segThink" style="width:26%">思考缓冲</div>
+        <div class="tl-seg rec" id="segRec" style="width:40%">收音中 · 请回答</div>
+        <div class="tl-seg ans" id="segAns" style="width:0">作答</div>
+      </div>
+      <div class="tl-leg">
+        <span><i style="background:#5b6ef5"></i>AI提问</span>
+        <span><i style="background:#f5a623"></i>思考缓冲(该等的题才有)</span>
+        <span><i style="background:#2fb37a"></i>收音中(全程开着,开口即录)</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="ctl-grid">
+        <div class="ctl" data-name="题目选择">
+          <h4>示例题(lesson4 真实题)</h4>
+          <select id="qSel"></select>
+        </div>
+        <div class="ctl" data-name="模式切换">
+          <h4>本次演示走哪个流程</h4>
+          <div class="radio-row" id="modeRow">
+            <label data-mode="current"><input type="radio" name="mode" value="current"> 维持现状<span class="chip now">零缓冲</span><small>AI说完灯立刻亮</small></label>
+            <label data-mode="buffer"><input type="radio" name="mode" value="buffer"> 纯缓冲(对比)<small>提示后静等,无时间数字</small></label>
+            <label data-mode="countdown"><input type="radio" name="mode" value="countdown"> 缓冲 + 倒计时<span class="chip cnt">方案</span><small>提示 + N 秒倒计时感知</small></label>
+          </div>
+        </div>
+        <div class="ctl" data-name="倒计时参数">
+          <h4>思考倒计时秒数</h4>
+          <div class="range-row">
+            <input type="range" id="secSlider" min="2" max="15" value="5">
+            <span class="sec-val" id="secVal">5s</span>
+          </div>
+          <div class="mut">二年级该等题建议 7–8 秒(标准档),演示默认 5 秒方便看效果</div>
+          <div class="check-row" style="margin-top:10px">
+            <label><input type="checkbox" id="warnTail"> 最后 2 秒变暖色提醒(测试"催不催"的开关)</label>
+          </div>
+        </div>
+        <div class="ctl" data-name="倒计时样式">
+          <h4>倒计时样式</h4>
+          <select id="cdStyle">
+            <option value="ring">圆环 + 大数字</option>
+            <option value="bar">进度条 + 数字</option>
+            <option value="pulse">呼吸圆点(无数字)</option>
+          </select>
+          <div class="mut">三种视觉强度,看哪种"时间感知"最合适</div>
+        </div>
+        <div class="ctl" data-name="提示话术">
+          <h4>思考提示话术</h4>
+          <select id="hintSel"></select>
+          <div class="mut">出题人 TEACHING_PLAN 里写的引导,和节奏对齐</div>
+        </div>
+      </div>
+      <div class="qinfo" id="qInfo"></div>
+      <div class="btn-row">
+        <button class="btn btn-play" id="btnPlay">▶ 播放流程</button>
+        <button class="btn btn-speak" id="btnSpeak">🎤 学生开口(随时可点)</button>
+        <button class="btn btn-reset" id="btnReset">↺ 重置</button>
+        <label class="auto-lab"><input type="checkbox" id="autoLoop" checked> 自动循环</label>
+      </div>
+    </div>
+
+    <div class="notes" data-name="观察要点">
+      <b>这个演示想让你看什么:</b>
+      ①倒计时数字出现时,是"有靠山"的安心感,还是"在催你"的压迫感?②最后 2 秒变暖色会不会反而制造紧张?③对比"纯缓冲"和"倒计时",时间感知到底是加安心还是加压力?④不管在哪一阶段点"学生开口",回答都立刻被接收——这就是"收音全程开、开口即录"的红线,倒计时绝不拖慢想好就说的孩子。
+    </div>
+    <div class="callout warn" data-name="当前认知">
+      <b>和之前结论的关系</b>
+      现状真正的问题不是"被打断",是呼吸灯零缓冲的即时催促感 → 该等的题要在"AI说完→灯亮"之间插入思考缓冲。倒计时是这个缓冲的其中一种填法:比纯缓冲多了一个"时间边界"。它是否合适,正是这个演示要你判断的。
+    </div>
+  </div>
+</div>
+
+<h2 data-name="对照表标题">三、lesson4 题号对照(哪些题该走倒计时)</h2>
+<table data-name="对照表">
+<tr><th>题号</th><th>题目</th><th>判定</th><th>慢答率</th><th>长答率</th><th>演示走</th></tr>
+<tr><td>466170-1</td><td>请你当斑比,给老鹿王回一段话,说说那天为什么没开口。</td><td class="sp">🟢 该等</td><td>53.8%</td><td>91.2%</td><td>倒计时</td></tr>
+<tr><td>398696-2</td><td>下次再遇到,斑比可以怎么做?</td><td class="sp">🟢 该等·卡壳型</td><td>30.9%</td><td>48.5%</td><td>倒计时</td></tr>
+<tr><td>398695-1</td><td>斑比这时心情怎样?老鹿王又做了什么?</td><td class="sp">🟢 该等·答偏短</td><td>26.8%</td><td>28.1%</td><td>倒计时</td></tr>
+<tr><td>466168-2</td><td>你觉得老鹿王是只怎样的鹿?</td><td class="sp">⚪ 不给(短答)</td><td>16.8%</td><td>28.8%</td><td>现状零缓冲</td></tr>
+<tr><td>466169-2</td><td>用一个词形容老鹿王。</td><td class="sp">⚪ 不给(短答)</td><td>10.2%</td><td>26.0%</td><td>现状零缓冲</td></tr>
+<tr><td>466973-1</td><td>老鹿王出现后,做了什么?</td><td class="sp">🟠 留意</td><td>27.6%</td><td>54.4%</td><td>倒计时(可回查)</td></tr>
+</table>
+<p class="mut" data-name="表格脚注">判定来自 lesson4 定稿(final_v4.json)。卡壳型(该等+提示)重点看 398696-2:既给时间又要配提示。</p>
+
+</div>
+
+<!-- 版本条 -->
+<div id="verBadge" onclick="toggleVer()" style="position:fixed;top:14px;right:16px;z-index:9000;background:var(--brand);color:#fff;font-size:12px;font-weight:600;padding:5px 12px;border-radius:20px;cursor:pointer;box-shadow:0 2px 8px rgba(91,110,245,.4);font-family:-apple-system,sans-serif">版本 v1</div>
+<div id="verPanel" style="display:none;position:fixed;top:48px;right:16px;z-index:9000;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 8px 28px rgba(31,39,51,.16);max-width:320px;font-family:-apple-system,sans-serif"></div>
+
+<!-- 批注层 -->
+<div id="annToggle" onclick="toggleAnn()" style="position:fixed;bottom:20px;right:16px;z-index:9000;background:#fff;border:1px solid var(--line);color:var(--ink);font-size:13px;font-weight:600;padding:8px 14px;border-radius:22px;cursor:pointer;box-shadow:0 2px 10px rgba(31,39,51,.12);font-family:-apple-system,sans-serif">✏️ 批注模式</div>
+<div id="annExport" onclick="exportAnn()" style="display:none;position:fixed;bottom:20px;right:150px;z-index:9000;background:var(--brand);color:#fff;font-size:13px;font-weight:600;padding:8px 14px;border-radius:22px;cursor:pointer;box-shadow:0 2px 10px rgba(91,110,245,.35);font-family:-apple-system,sans-serif">导出给 Claude</div>
+<div id="annPanel" style="display:none;position:fixed;top:70px;right:16px;width:230px;max-height:70vh;overflow:auto;z-index:8500;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:0 8px 28px rgba(31,39,51,.16);font-family:-apple-system,sans-serif"></div>
+<div id="annEditor" style="display:none;position:fixed;z-index:9500;width:260px;background:#fff;border:1px solid var(--brand);border-radius:10px;padding:10px;box-shadow:0 8px 28px rgba(31,39,51,.2);font-family:-apple-system,sans-serif">
+  <div id="annTarget" style="font-size:12px;color:var(--brand);font-weight:600;margin-bottom:6px"></div>
+  <textarea id="annText" rows="3" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:6px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box"></textarea>
+  <div style="font-size:11px;color:var(--sub);margin-top:5px">回车保存 · Shift+回车换行 · Esc 取消(打字选字的回车不会误提交)</div>
+</div>
+<div id="toast" style="display:none;position:fixed;bottom:70px;left:50%;transform:translateX(-50%);z-index:9999;background:var(--ink);color:#fff;font-size:13px;padding:9px 18px;border-radius:22px;font-family:-apple-system,sans-serif"></div>
+
+<style>
+#doc.ann-on [data-name]:hover{outline:2px dashed var(--brand);outline-offset:2px;cursor:pointer}
+.ann-mark{position:absolute;z-index:8000;width:20px;height:20px;background:var(--bad);color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.3);font-family:-apple-system,sans-serif}
+@keyframes annFlash{0%{background:var(--warm-soft)}100%{background:transparent}}
+.ann-flash{animation:annFlash 1.2s ease-out}
+.ann-item.active{outline:2px solid var(--brand);outline-offset:1px}
+</style>
+
+<script>
+/* ==================== 批注层(定稿形态) ==================== */
+const VERSIONS=[
+{v:1,date:"2026-10-08",desc:"倒计时方案交互演示 v1:模拟学习机屏幕+呼吸灯,三种模式(现状/纯缓冲/缓冲+倒计时)对比,用 lesson4 真实题跑流程;可随时模拟'学生开口'打断验证开口即录;倒计时秒数/样式/话术/末尾提醒可调。"}
+];
+(function(){document.getElementById('verBadge').textContent='版本 v'+VERSIONS[VERSIONS.length-1].v;})();
+function toggleVer(){const p=document.getElementById('verPanel');if(p.style.display==='none'){let h='<div style="font-weight:700;font-size:13px;margin-bottom:8px">版本历史</div>';[...VERSIONS].reverse().forEach(x=>{h+='<div style="border-left:3px solid var(--brand);padding:0 0 10px 10px;margin-bottom:2px"><div style="font-size:12px;font-weight:600">v'+x.v+' <span style="color:var(--sub);font-weight:400">· '+x.date+'</span></div><div style="font-size:12px;color:var(--sub);line-height:1.5;margin-top:2px">'+x.desc+'</div></div>';});p.innerHTML=h;p.style.display='block';}else p.style.display='none';}
+
+let annOn=false, anns=[], editingTarget=null;
+const doc=document.getElementById('doc');
+function toggleAnn(){annOn=!annOn;doc.classList.toggle('ann-on',annOn);document.getElementById('annToggle').textContent=annOn?'✏️ 批注中':'✏️ 批注模式';document.getElementById('annPanel').style.display=annOn?'block':'none';document.getElementById('annExport').style.display=annOn?'block':'none';renderAll();}
+document.addEventListener('click',function(e){
+  if(!annOn)return;
+  const t=e.target;
+  const ed=document.getElementById('annEditor'),pn=document.getElementById('annPanel');
+  if(ed.contains(t)||pn.contains(t)||t===document.getElementById('annToggle')||t===document.getElementById('annExport')||t.closest('.ann-mark')||t===document.getElementById('verBadge')||document.getElementById('verPanel').contains(t)||t===document.getElementById('btnPlay')||t===document.getElementById('btnSpeak')||t===document.getElementById('btnReset')||t.closest('.controls'))return;
+  const el=t.closest('[data-name]');
+  if(!el)return;
+  openEditor(el);
+});
+function openEditor(el){
+  editingTarget=el;
+  const ed=document.getElementById('annEditor');
+  document.getElementById('annTarget').textContent='📍 '+el.getAttribute('data-name');
+  const existing=anns.find(a=>a.target===el);
+  document.getElementById('annText').value=existing?existing.txt:'';
+  ed.style.display='block';
+  const r=el.getBoundingClientRect();
+  ed.style.left=Math.max(10,Math.min(r.left,window.innerWidth-270))+'px';
+  ed.style.top=Math.max(10,Math.min(r.bottom+6,window.innerHeight-180))+'px';
+  document.getElementById('annText').focus();
+}
+document.getElementById('annText').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();saveAnn();}
+  else if(e.key==='Escape'){document.getElementById('annEditor').style.display='none';editingTarget=null;}
+});
+function saveAnn(){
+  const txt=document.getElementById('annText').value.trim();
+  const existing=anns.find(a=>a.target===editingTarget);
+  if(txt){if(existing)existing.txt=txt;else anns.push({name:editingTarget.getAttribute('data-name'),txt:txt,target:editingTarget});}
+  else if(existing)anns=anns.filter(a=>a!==existing);
+  document.getElementById('annEditor').style.display='none';editingTarget=null;renderAll();
+}
+function renderAll(){
+  document.querySelectorAll('.ann-mark').forEach(m=>m.remove());
+  const pn=document.getElementById('annPanel');
+  if(!anns.length){pn.innerHTML='<div style="font-size:12px;color:var(--sub)">点选页面元素添加批注</div>';return;}
+  let h='<div style="font-weight:700;font-size:13px;margin-bottom:8px">批注 ('+anns.length+')</div>';
+  anns.forEach((a,i)=>{
+    h+='<div class="ann-item" onclick="focusAnn('+i+')" style="font-size:12px;padding:6px 8px;border-radius:6px;background:#fafbfd;margin-bottom:5px;cursor:pointer"><div style="font-weight:600;color:var(--bad)">'+(i+1)+'. '+a.name+' <span onclick="event.stopPropagation();delAnn('+i+')" style="float:right;color:var(--sub);cursor:pointer">✕</span></div><div style="color:var(--sub);margin-top:2px;line-height:1.4">'+a.txt+'</div></div>';
+    const mk=document.createElement('div');mk.className='ann-mark';mk.textContent=i+1;mk.onclick=()=>focusAnn(i);
+    document.body.appendChild(mk);
+  });
+  pn.innerHTML=h;repositionMarks();
+}
+function repositionMarks(){
+  const marks=document.querySelectorAll('.ann-mark');
+  anns.forEach((a,i)=>{if(!marks[i])return;const r=a.target.getBoundingClientRect();marks[i].style.left=(window.scrollX+r.left-10)+'px';marks[i].style.top=(window.scrollY+r.top-10)+'px';});
+}
+function focusAnn(i){
+  const a=anns[i];if(!a)return;
+  a.target.scrollIntoView({block:'center',behavior:'smooth'});
+  a.target.classList.remove('ann-flash');void a.target.offsetWidth;a.target.classList.add('ann-flash');
+  document.querySelectorAll('.ann-item').forEach((el,j)=>el.classList.toggle('active',j===i));
+}
+function delAnn(i){anns.splice(i,1);renderAll();}
+window.addEventListener('scroll',repositionMarks,{passive:true});
+window.addEventListener('resize',repositionMarks);
+function showToast(msg,bad){const t=document.getElementById('toast');t.textContent=msg;t.style.background=bad?'var(--bad)':'var(--ink)';t.style.display='block';setTimeout(()=>t.style.display='none',2600);}
+function exportAnn(){
+  if(!anns.length){showToast('还没有批注',true);return;}
+  let out='# 批注反馈\n\n';anns.forEach((a,i)=>{out+=(i+1)+'. 【'+a.name+'】'+a.txt+'\n';});
+  const done=()=>showToast('✅ 已复制,回对话框 Cmd/Ctrl+V 粘贴');
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(out).then(done).catch(()=>fallback(out,done));}
+  else fallback(out,done);
+}
+function fallback(text,done){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){showToast('复制失败,请重试',true);}document.body.removeChild(ta);}
+
+/* ==================== 演示数据 ==================== */
+const QUESTIONS=[
+ {id:'466170-1', q:'请你当斑比,给老鹿王回一段话,说说那天为什么没开口。',
+  verdict:'该等', vcls:'v-green', slow:53.8, long:91.2, kind:'deep', auto:'countdown',
+  answer:'因为那天我太害怕了,怕说出来老鹿王会觉得我胆小,所以话到嘴边又咽回去了。'},
+ {id:'398696-2', q:'下次再遇到,斑比可以怎么做?',
+  verdict:'该等·卡壳型', vcls:'v-warm', slow:30.9, long:48.5, kind:'stuck', auto:'countdown',
+  answer:'我会先把想法在心里想一遍,然后鼓起勇气,请好朋友帮我一起把话说出来。'},
+ {id:'398695-1', q:'斑比这时心情怎样?老鹿王又做了什么?',
+  verdict:'该等·答偏短', vcls:'v-warm', slow:26.8, long:28.1, kind:'deep', auto:'countdown',
+  answer:'斑比又紧张又高兴,老鹿王轻轻地走过去,用头碰了碰他。'},
+ {id:'466973-1', q:'老鹿王出现后,做了什么?',
+  verdict:'留意', vcls:'v-gray', slow:27.6, long:54.4, kind:'mid', auto:'countdown',
+  answer:'老鹿王先竖起耳朵听动静,然后悄悄绕路,走到斑比身边。'},
+ {id:'466168-2', q:'你觉得老鹿王是只怎样的鹿?',
+  verdict:'不给·短答', vcls:'v-gray', slow:16.8, long:28.8, kind:'quick', auto:'current',
+  answer:'很威风,也很温柔。'},
+ {id:'466169-2', q:'用一个词形容老鹿王。',
+  verdict:'不给·短答', vcls:'v-gray', slow:10.2, long:26.0, kind:'quick', auto:'current',
+  answer:'威严。'},
+];
+const HINTS=[
+ '慢慢想,不着急,想好了再告诉我。',
+ '先在脑子里过一遍,再开口说给老师听。',
+ '你可以把自己想成故事里的斑比,再来说说看。',
+ '不用急着答,老师会一直等你。',
+ '先想想这件事为什么会这样,再说给老师听。',
+];
+const MODE_NAME={current:'维持现状·零缓冲', buffer:'纯缓冲·无倒计时', countdown:'缓冲 + 倒计时'};
+
+/* ==================== 状态与 DOM ==================== */
+let S={q:QUESTIONS[0], mode:QUESTIONS[0].auto, secs:5, style:'ring', hint:0, warnTail:false};
+const $=id=>document.getElementById(id);
+let run=0, interrupt=false, answering=false;
+
+function setModeUI(){
+  document.querySelectorAll('#modeRow label').forEach(l=>{
+    const on=l.dataset.mode===S.mode;
+    l.classList.toggle('on',on);
+    l.querySelector('input').checked=on;
+  });
+  document.querySelectorAll('.cp').forEach(c=>c.classList.remove('active'));
+  $('cp'+(S.mode==='current'?'Now':S.mode==='buffer'?'Buf':'Cnt')).classList.add('active');
+}
+function renderCountWrap(){
+  const w=$('countWrap');
+  /* 纯缓冲模式刻意不显示时间数字,只保留"慢慢想"的等待感 */
+  const style = S.mode==='buffer' ? 'pulse' : S.style;
+  if(style==='ring'){
+    w.innerHTML='<div><div class="ring-box"><svg viewBox="0 0 108 108"><circle class="ring-bg" cx="54" cy="54" r="54"/><circle class="ring-fg" id="ringFg" cx="54" cy="54" r="54"/></svg><div class="ring-num" id="cdNum">'+S.secs+'</div></div><div class="ring-label">思考时间</div></div>';
+  }else if(S.style==='bar'){
+    w.innerHTML='<div class="bar-box"><div class="cd-bar"><div class="cd-bar-fill" id="cdFill" style="width:100%"></div></div><div class="cd-bar-num" id="cdNum">'+S.secs+'</div></div>';
+  }else{
+    w.innerHTML='<div class="pulse-dots"><i></i><i></i><i></i></div>';
+  }
+}
+function fillQSel(){
+  const sel=$('qSel');
+  sel.innerHTML=QUESTIONS.map(q=>'<option value="'+q.id+'">'+q.id+' — '+q.q.slice(0,18)+'… ('+q.verdict+')</option>').join('');
+  sel.value=S.q.id;
+}
+function fillHintSel(){
+  const sel=$('hintSel');
+  sel.innerHTML=HINTS.map((h,i)=>'<option value="'+i+'">'+(i+1)+'. '+h+'</option>').join('');
+  sel.value=S.hint;
+}
+function updateQInfo(){
+  const q=S.q;
+  $('qInfo').innerHTML='<span><b>'+q.id+'</b> '+q.q+'</span>'+
+    '<span class="sp">判定:'+q.verdict+'</span>'+
+    '<span>慢答率 <b>'+q.slow+'%</b></span>'+
+    '<span>长答率 <b>'+q.long+'%</b></span>'+
+    '<span>演示走:<b>'+MODE_NAME[S.mode]+'</b></span>';
+  $('verdictTag').textContent=q.verdict.split('·')[0];
+  $('verdictTag').className='scr-verdict '+q.vcls;
+  $('qidTag').textContent=q.id;
+  $('storyBook').textContent='小鹿斑比 · '+q.q.slice(0,12);
+}
+
+/* ==================== 流程引擎 ==================== */
+function resetScreen(){
+  interrupt=false; answering=false;
+  $('qBubble').classList.remove('show');
+  $('thinkBox').classList.remove('show');
+  $('transcript').textContent='';
+  $('transcript').classList.remove('typing');
+  const lt=$('light');lt.className='light dim';
+  $('status').textContent='准备就绪';$('status').className='status';
+  setSegs('none');renderCountWrap();
+}
+function setSegs(on){
+  const map={speak:'segSpeak',think:'segThink',rec:'segRec',ans:'segAns'};
+  Object.keys(map).forEach(k=>$('seg'+k[0].toUpperCase()+k.slice(1)).classList.remove('on'));
+  if(on&&map[on])$(map[on]).classList.add('on');
+  if(on==='speak'){$('segSpeak').style.width='34%';$('segThink').style.width=S.mode==='current'?'0':'26%';$('segRec').style.width='40%';$('segAns').style.width='0';}
+  if(on==='think'){$('segSpeak').style.width='26%';$('segThink').style.width='34%';$('segRec').style.width='40%';}
+  if(on==='rec'){$('segSpeak').style.width='22%';$('segThink').style.width='26%';$('segRec').style.width='52%';}
+  if(on==='ans'){$('segSpeak').style.width='16%';$('segThink').style.width='20%';$('segRec').style.width='32%';$('segAns').style.width='32%';}
+}
+function setStatus(txt,cls){const s=$('status');s.textContent=txt;s.className='status'+(cls?' '+cls:'');}
+const wait=(ms,token)=>new Promise(r=>{const end=Date.now()+ms;(function t(){if(interrupt||run!==token){return r();}if(Date.now()>=end)return r();setTimeout(t,40);})();});
+
+async function playFlow(){
+  const myRun=++run; interrupt=false; answering=false;
+  const isCancel=()=>run!==myRun;
+  resetScreen();
+  const q=S.q;
+  const mode=S.mode;
+  $('btnPlay').disabled=true;
+
+  /* ① AI 提问 */
+  $('qBubble').classList.add('show');
+  $('qText').textContent=q.q;
+  setStatus('AI 提问中…');
+  setSegs('speak');
+  await wait(1900,myRun);
+  if(isCancel())return;
+
+  /* ② 思考缓冲(该等的题才走) */
+  if(mode!=='current'){
+    $('thinkBox').classList.add('show');
+    $('hintText').textContent=HINTS[S.hint];
+    renderCountWrap();
+    setStatus(mode==='countdown'?'思考时间 · 慢慢想':'想一想,不着急…','st-think');
+    setSegs('think');
+    $('light').className='light dim';
+    const total=1000*S.secs;
+    if(mode==='countdown'){
+      const circ=2*Math.PI*54;
+      let remaining=S.secs;
+      let started=Date.now();
+      const fg=$('ringFg'),num=$('cdNum');
+      const barFill=$('cdFill');
+      while(remaining>0){
+        if(isCancel())return;
+        const left=Math.max(0,Date.now()-started);
+        const leftSec=total-left;
+        remaining=Math.max(0,Math.ceil(leftSec/1000));
+        if(S.style==='ring'&&fg){
+          fg.style.strokeDashoffset=String(circ*(left/total));
+          num.textContent=remaining;
+        }
+        if(S.style==='bar'&&barFill){
+          barFill.style.width=Math.max(0,(1-left/total)*100)+'%';
+          num.textContent=remaining;
+        }
+        const box=$('countWrap').parentElement;
+        if(S.warnTail&&remaining<=2){box.classList.add('tail-warn');}else{box.classList.remove('tail-warn');}
+        if(interrupt)break;
+        await wait(110,myRun);
+      }
+    }else{
+      await wait(total,myRun);
+    }
+    if(isCancel())return;
+    if(interrupt){interrupt=false;return goAnswer(myRun);}
+  }
+
+  /* ③ 收音中 */
+  if(isCancel())return;
+  if(interrupt){interrupt=false;return goAnswer(myRun);}
+  $('thinkBox').classList.remove('show');
+  $('light').className='light rec';
+  setStatus('收音中 · 请回答','st-rec');
+  setSegs('rec');
+  await wait(3200,myRun);
+  if(isCancel())return;
+  if(interrupt){interrupt=false;return goAnswer(myRun);}
+
+  /* ④ 自动作答 */
+  return goAnswer(myRun);
+}
+async function goAnswer(myRun){
+  const isCancel=()=>run!==myRun;
+  if(interrupt){interrupt=false;}
+  answering=true;
+  $('light').className='light voice';
+  setStatus('正在识别你的回答…','st-ans');
+  setSegs('ans');
+  const tr=$('transcript');
+  tr.classList.add('typing');
+  const ans=S.q.answer;
+  tr.textContent='';
+  for(let i=0;i<ans.length;i++){
+    if(isCancel())return;
+    tr.textContent=ans.slice(0,i+1);
+    await wait(38,myRun);
+  }
+  await wait(150,myRun);
+  if(isCancel())return;
+  answering=false;
+  $('light').className='light dim';
+  setStatus('已记录 ✓');
+  $('btnPlay').disabled=false;
+  if($('autoLoop').checked){
+    await wait(2200,myRun);
+    if(isCancel())return;
+    playFlow();
+  }
+}
+
+/* ==================== 事件 ==================== */
+$('btnPlay').addEventListener('click',()=>{if(!$('btnPlay').disabled)playFlow();});
+$('btnReset').addEventListener('click',()=>{run++;resetScreen();$('btnPlay').disabled=false;});
+$('btnSpeak').addEventListener('click',()=>{
+  if(answering||run===0){return;}
+  interrupt=true;
+  const st=$('status').textContent;
+  if(st.includes('AI')||st.includes('思考')||st.includes('收音')){
+    showToast('🎤 学生提前开口,立即进入作答 —— 收音一直开着');
+  }
+});
+$('qSel').addEventListener('change',e=>{
+  run++; /* 终止任何正在跑的流程 */
+  S.q=QUESTIONS.find(q=>q.id===e.target.value);
+  S.mode=S.q.auto;
+  setModeUI();updateQInfo();resetScreen();
+  $('btnPlay').disabled=false;
+});
+document.querySelectorAll('#modeRow input').forEach(r=>{
+  r.addEventListener('change',()=>{S.mode=r.value;setModeUI();});
+});
+$('secSlider').addEventListener('input',e=>{S.secs=+e.target.value;$('secVal').textContent=S.secs+'s';renderCountWrap();});
+$('cdStyle').addEventListener('change',e=>{S.style=e.target.value;renderCountWrap();});
+$('hintSel').addEventListener('change',e=>{S.hint=+e.target.value;});
+$('warnTail').addEventListener('change',e=>{S.warnTail=e.target.checked;});
+
+/* ==================== 初始化 ==================== */
+fillQSel();fillHintSel();setModeUI();updateQInfo();resetScreen();
+setModeUI();
+</script>
+</body>
+</html>
