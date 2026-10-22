@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实习生招聘链路流程图</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #2563EB;
+            --student: #3B82F6;
+            --employer: #1D4ED8;
+            --connection: #F59E0B;
+            --bg: #F8FAFC;
+            --text: #1E293B;
+            --muted: #64748B;
+            --card-bg: #FFFFFF;
+            --success: #10B981;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 标题区域 */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        /* 核心公式卡片 */
+        .formula-card {
+            background: linear-gradient(135deg, var(--primary), var(--employer));
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.25);
+        }
+
+        .formula-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .formula {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .formula span {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(255,255,255,0.15);
+            border-radius: 0.5rem;
+            margin: 0 0.25rem;
+        }
+
+        /* 流程图主体 */
+        .flow-wrapper {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .lane {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .lane-header {
+            text-align: center;
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 1.125rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 0.5rem;
+        }
+
+        .lane-header.student {
+            border-bottom: 3px solid var(--student);
+        }
+
+        .lane-header.employer {
+            border-bottom: 3px solid var(--employer);
+        }
+
+        /* 流程节点 */
+        .node {
+            background: var(--card-bg);
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .node:hover {
+            transform: translateX(4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .node.student {
+            border-left-color: var(--student);
+        }
+
+        .node.employer {
+            border-left-color: var(--employer);
+        }
+
+        .node-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 50%;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .node.student .node-number {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--student);
+        }
+
+        .node.employer .node-number {
+            background: rgba(29, 78, 216, 0.15);
+            color: var(--employer);
+        }
+
+        .node-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .node-desc {
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        /* 连接线 */
+        .connections {
+            position: relative;
+            padding-top: 4.5rem;
+        }
+
+        .connection-line {
+            position: relative;
+            height: 6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .connection-line::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--student), var(--connection), var(--employer));
+            opacity: 0.3;
+        }
+
+        .connection-line.has-arrow::after {
+            content: '↔';
+            position: relative;
+            color: var(--connection);
+            font-size: 1.25rem;
+            font-weight: bold;
+            z-index: 1;
+            background: var(--bg);
+            padding: 0.25rem;
+        }
+
+        /* 问题标记 */
+        .issue-badge {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: #FEF3C7;
+            color: #D97706;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* 批注层 */
+        .annotation-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .annotation-layer.active {
+            display: flex;
+        }
+
+        .annotation-panel {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .annotation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .annotation-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--muted);
+        }
+
+        .annotation-input {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 0.5rem;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        .annotation-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .annotation-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary {
+            background: #F1F5F9;
+            color: var(--text);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .annotations-list {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #E2E8F0;
+        }
+
+        .annotation-item {
+            background: #F8FAFC;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .annotation-item-text {
+            font-size: 0.875rem;
+        }
+
+        /* 响应式 */
+        @media (max-width: 900px) {
+            .flow-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .connections {
+                display: none;
+            }
+
+            .lane.employer {
+                margin-top: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>实习生招聘全链路流程图</h1>
+            <p class="subtitle">双视角展示学生投递与招聘方协作的完整流程</p>
+        </header>
+
+        <div class="formula-card">
+            <div class="formula-label">核心原则</div>
+            <div class="formula">
+                <span>成功数</span> = <span>投递数</span> × <span>约面率</span> × <span>面试成功率</span>
+            </div>
+        </div>
+
+        <div class="flow-wrapper">
+            <!-- 学生视角 -->
+            <div class="lane">
+                <div class="lane-header student">👨‍🎓 学生投递流程</div>
+
+                <div class="node student" data-node="student-1">
+                    <div class="node-number">1</div>
+                    <div class="node-title">写好简历</div>
+                    <div class="node-desc">梳理实习经历、项目经验，准备有针对性的简历</div>
+                </div>
+
+                <div class="node student" data-node="student-2">
+                    <div class="node-number">2</div>
+                    <div class="node-title">看到招聘岗位</div>
+                    <div class="node-desc">通过招聘网站、内推等渠道发现合适的岗位</div>
+                </div>
+
+                <div class="node student" data-node="student-3">
+                    <div class="node-number">3</div>
+                    <div class="node-title">投递简历</div>
+                    <div class="node-desc">在线申请或发送邮件投递个人简历</div>
+                    <div class="issue-badge">可拆解</div>
+                </div>
+
+                <div class="node student" data-node="student-4">
+                    <div class="node-number">4</div>
+                    <div class="node-title">等待约面</div>
+                    <div class="node-desc">等待 HR 联系，保持电话畅通</div>
+                </div>
+
+                <div class="node student" data-node="student-5">
+                    <div class="node-number">5</div>
+                    <div class="node-title">面试（1-多轮）</div>
+                    <div class="node-desc">参加业务面试，展现能力与匹配度</div>
+                    <div class="issue-badge">可拆解</div>
+                </div>
+
+                <div class="node student" data-node="student-6">
+                    <div class="node-number">6</div>
+                    <div class="node-title">入职</div>
+                    <div class="node-desc">确认offer，办理入职，开始实习</div>
+                    <div class="issue-badge" style="background: #D1FAE5; color: #047857;">成功</div>
+                </div>
+            </div>
+
+            <!-- 连接线 -->
+            <div class="connections">
+                <div class="connection-line"></div>
+                <div class="connection-line has-arrow"></div>
+                <div class="connection-line"></div>
+                <div class="connection-line has-arrow"></div>
+                <div class="connection-line"></div>
+                <div class="connection-line has-arrow"></div>
+                <div class="connection-line"></div>
+                <div class="connection-line has-arrow"></div>
+                <div class="connection-line"></div>
+            </div>
+
+            <!-- 招聘方视角 -->
+            <div class="lane">
+                <div class="lane-header employer">🏢 招聘方流程</div>
+
+                <div class="node employer" data-node="employer-1">
+                    <div class="node-number">1</div>
+                    <div class="node-title">业务有招聘需求</div>
+                    <div class="node-desc">业务团队提出实习生招聘需求</div>
+                </div>
+
+                <div class="node employer" data-node="employer-2">
+                    <div class="node-number">2</div>
+                    <div class="node-title">HR 发布岗位</div>
+                    <div class="node-desc">HR 接收任务，在各渠道发布招聘信息</div>
+                </div>
+
+                <div class="node employer" data-node="employer-3">
+                    <div class="node-number">3</div>
+                    <div class="node-title">转发简历给业务</div>
+                    <div class="node-desc">收到简历后筛选并转发给业务邮箱</div>
+                    <div class="issue-badge">可拆解</div>
+                </div>
+
+                <div class="node employer" data-node="employer-4">
+                    <div class="node-number">4</div>
+                    <div class="node-title">业务筛选简历</div>
+                    <div class="node-desc">业务团队评估简历匹配度</div>
+                    <div class="issue-badge">可拆解</div>
+                </div>
+
+                <div class="node employer" data-node="employer-5">
+                    <div class="node-number">5</div>
+                    <div class="node-title">HR 约面</div>
+                    <div class="node-desc">HR 联系候选人预约面试时间</div>
+                </div>
+
+                <div class="node employer" data-node="employer-6">
+                    <div class="node-number">6</div>
+                    <div class="node-title">业务面试（1-多轮）</div>
+                    <div class="node-desc">业务团队进行面试评估</div>
+                    <div class="issue-badge">可拆解</div>
+                </div>
+
+                <div class="node employer" data-node="employer-7">
+                    <div class="node-number">7</div>
+                    <div class="node-title">确定候选人</div>
+                    <div class="node-desc">综合评估后确定录用人选</div>
+                </div>
+
+                <div class="node employer" data-node="employer-8">
+                    <div class="node-number">8</div>
+                    <div class="node-title">HR 电联确认入职</div>
+                    <div class="node-desc">HR 联系候选人确认入职时间</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批注层 -->
+    <div class="annotation-layer" id="annotationLayer">
+        <div class="annotation-panel">
+            <div class="annotation-header">
+                <div class="annotation-title" id="annotationTitle">添加批注</div>
+                <button class="close-btn" onclick="closeAnnotation()">×</button>
+            </div>
+            <textarea class="annotation-input" id="annotationInput" placeholder="记录这个环节可能存在的问题..."></textarea>
+            <div class="annotation-actions">
+                <button class="btn btn-secondary" onclick="closeAnnotation()">取消</button>
+                <button class="btn btn-primary" onclick="saveAnnotation()">保存批注</button>
+            </div>
+            <div class="annotations-list" id="annotationsList"></div>
+        </div>
+    </div>
+
+    <script>
+        const annotations = {};
+        let currentNode = null;
+
+        document.querySelectorAll('.node').forEach(node => {
+            node.addEventListener('click', () => {
+                openAnnotation(node);
+            });
+        });
+
+        function openAnnotation(node) {
+            currentNode = node;
+            const nodeId = node.dataset.node;
+            const title = node.querySelector('.node-title').textContent;
+
+            document.getElementById('annotationTitle').textContent = `批注：${title}`;
+            document.getElementById('annotationInput').value = '';
+
+            renderAnnotations(nodeId);
+
+            document.getElementById('annotationLayer').classList.add('active');
+            document.getElementById('annotationInput').focus();
+        }
+
+        function closeAnnotation() {
+            document.getElementById('annotationLayer').classList.remove('active');
+            currentNode = null;
+        }
+
+        function saveAnnotation() {
+            const input = document.getElementById('annotationInput');
+            const text = input.value.trim();
+
+            if (!text || !currentNode) return;
+
+            const nodeId = currentNode.dataset.node;
+            if (!annotations[nodeId]) {
+                annotations[nodeId] = [];
+            }
+
+            annotations[nodeId].push({
+                text,
+                time: new Date().toLocaleString('zh-CN')
+            });
+
+            input.value = '';
+            renderAnnotations(nodeId);
+            updateNodeBadge(currentNode, annotations[nodeId].length);
+        }
+
+        function renderAnnotations(nodeId) {
+            const list = document.getElementById('annotationsList');
+            const nodeAnnotations = annotations[nodeId] || [];
+
+            if (nodeAnnotations.length === 0) {
+                list.innerHTML = '';
+                return;
+            }
+
+            list.innerHTML = '<div style="font-size:0.875rem;color:var(--muted);margin-bottom:0.75rem;">已保存的批注：</div>' +
+                nodeAnnotations.map(a => `
+                    <div class="annotation-item">
+                        <div class="annotation-item-text">${escapeHtml(a.text)}</div>
+                        <div style="font-size:0.75rem;color:var(--muted);margin-top:0.5rem;">${a.time}</div>
+                    </div>
+                `).join('');
+        }
+
+        function updateNodeBadge(node, count) {
+            let badge = node.querySelector('.annotation-count');
+            if (!badge && count > 0) {
+                badge = document.createElement('div');
+                badge.className = 'annotation-count';
+                badge.style.cssText = 'position:absolute;top:0.75rem;right:0.75rem;background:var(--primary);color:white;width:1.5rem;height:1.5rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;';
+                node.appendChild(badge);
+            }
+
+            if (badge) {
+                badge.textContent = count;
+                badge.style.display = count > 0 ? 'flex' : 'none';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.getElementById('annotationLayer').addEventListener('click', (e) => {
+            if (e.target.id === 'annotationLayer') {
+                closeAnnotation();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeAnnotation();
+            }
+        });
+    </script>
+</body>
+</html>
