@@ -13,7 +13,8 @@
         :root {
             --primary: #2563EB;
             --student: #3B82F6;
-            --employer: #1D4ED8;
+            --hr: #1D4ED8;
+            --business: #7C3AED;
             --connection: #F59E0B;
             --bg: #F8FAFC;
             --text: #1E293B;
@@ -31,14 +32,14 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
         /* 标题区域 */
         header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
         }
 
         h1 {
@@ -55,12 +56,12 @@
 
         /* 核心公式卡片 */
         .formula-card {
-            background: linear-gradient(135deg, var(--primary), var(--employer));
+            background: linear-gradient(135deg, var(--primary), var(--business));
             color: white;
             padding: 2rem;
             border-radius: 1rem;
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
             box-shadow: 0 10px 30px rgba(37, 99, 235, 0.25);
         }
 
@@ -86,22 +87,19 @@
             margin: 0 0.25rem;
         }
 
-        /* 流程图主体 */
-        .flow-wrapper {
+        /* 泳道图 */
+        .swimlane-wrapper {
             position: relative;
+        }
+
+        .swimlane-header {
             display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 2rem;
-            align-items: start;
-        }
-
-        .lane {
-            display: flex;
-            flex-direction: column;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 1.5rem;
+            margin-bottom: 1rem;
         }
 
-        .lane-header {
+        .lane-title {
             text-align: center;
             padding: 1rem;
             background: var(--card-bg);
@@ -109,15 +107,23 @@
             font-weight: 600;
             font-size: 1.125rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-bottom: 0.5rem;
+            border-bottom: 3px solid;
         }
 
-        .lane-header.student {
-            border-bottom: 3px solid var(--student);
+        .lane-title.student { border-color: var(--student); }
+        .lane-title.hr { border-color: var(--hr); }
+        .lane-title.business { border-color: var(--business); }
+
+        .swimlane-content {
+            position: relative;
         }
 
-        .lane-header.employer {
-            border-bottom: 3px solid var(--employer);
+        .step-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
         }
 
         /* 流程节点 */
@@ -133,83 +139,150 @@
         }
 
         .node:hover {
-            transform: translateX(4px);
+            transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(0,0,0,0.1);
         }
 
-        .node.student {
-            border-left-color: var(--student);
-        }
+        .node.student { border-left-color: var(--student); }
+        .node.hr { border-left-color: var(--hr); }
+        .node.business { border-left-color: var(--business); }
+        .node.empty { opacity: 0; pointer-events: none; }
 
-        .node.employer {
-            border-left-color: var(--employer);
+        .node-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
         }
 
         .node-number {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 1.75rem;
-            height: 1.75rem;
+            width: 2rem;
+            height: 2rem;
             border-radius: 50%;
             font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+            font-weight: 700;
         }
 
-        .node.student .node-number {
-            background: rgba(59, 130, 246, 0.15);
-            color: var(--student);
-        }
-
-        .node.employer .node-number {
-            background: rgba(29, 78, 216, 0.15);
-            color: var(--employer);
-        }
+        .node.student .node-number { background: rgba(59, 130, 246, 0.15); color: var(--student); }
+        .node.hr .node-number { background: rgba(29, 78, 216, 0.15); color: var(--hr); }
+        .node.business .node-number { background: rgba(124, 58, 237, 0.15); color: var(--business); }
 
         .node-title {
             font-weight: 600;
             font-size: 1rem;
-            margin-bottom: 0.25rem;
         }
 
         .node-desc {
             font-size: 0.875rem;
             color: var(--muted);
+            margin-left: 2.75rem;
         }
 
-        /* 连接线 */
-        .connections {
-            position: relative;
-            padding-top: 4.5rem;
-        }
-
-        .connection-line {
-            position: relative;
-            height: 6rem;
+        /* 连接线和箭头 */
+        .flow-arrow {
+            position: absolute;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.5rem;
+            color: var(--connection);
+            pointer-events: none;
+            z-index: 10;
         }
 
-        .connection-line::before {
+        .flow-arrow.down {
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -0.75rem;
+        }
+
+        .flow-arrow.cross {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .step-row::after {
             content: '';
             position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
             width: 2px;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--student), var(--connection), var(--employer));
-            opacity: 0.3;
+            height: 0.5rem;
+            background: var(--connection);
+            opacity: 0.4;
         }
 
-        .connection-line.has-arrow::after {
-            content: '↔';
+        .step-row:last-child::after {
+            display: none;
+        }
+
+        /* 跨泳道箭头 */
+        .cross-arrow {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(to right, var(--student), var(--hr));
+            top: 50%;
+            z-index: 5;
+        }
+
+        .cross-arrow::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid var(--hr);
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
+
+        .cross-arrow.left::after {
+            left: -6px;
+            right: auto;
+            border-left: none;
+            border-right: 8px solid var(--student);
+        }
+
+        .cross-arrow.business {
+            background: linear-gradient(to right, var(--hr), var(--business));
+        }
+
+        .cross-arrow.business::after {
+            border-left-color: var(--business);
+        }
+
+        /* 阶段分隔 */
+        .phase-divider {
+            text-align: center;
+            margin: 1.5rem 0;
             position: relative;
-            color: var(--connection);
-            font-size: 1.25rem;
-            font-weight: bold;
-            z-index: 1;
+        }
+
+        .phase-divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--muted), transparent);
+            opacity: 0.2;
+        }
+
+        .phase-label {
+            display: inline-block;
             background: var(--bg);
-            padding: 0.25rem;
+            padding: 0.25rem 1.5rem;
+            color: var(--muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
         }
 
         /* 问题标记 */
@@ -337,18 +410,35 @@
             font-size: 0.875rem;
         }
 
+        .annotation-count {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: var(--primary);
+            color: white;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
         /* 响应式 */
         @media (max-width: 900px) {
-            .flow-wrapper {
+            .swimlane-header,
+            .step-row {
                 grid-template-columns: 1fr;
             }
 
-            .connections {
+            .node.empty {
                 display: none;
             }
 
-            .lane.employer {
-                margin-top: 2rem;
+            .cross-arrow {
+                display: none;
             }
         }
     </style>
@@ -357,127 +447,190 @@
     <div class="container">
         <header>
             <h1>实习生招聘全链路流程图</h1>
-            <p class="subtitle">双视角展示学生投递与招聘方协作的完整流程</p>
+            <p class="subtitle">泳道图展示学生、HR、业务三方的完整交互链路</p>
         </header>
 
         <div class="formula-card">
-            <div class="formula-label">核心原则</div>
+            <div class="formula-label">核心漏斗公式</div>
             <div class="formula">
                 <span>成功数</span> = <span>投递数</span> × <span>约面率</span> × <span>面试成功率</span>
             </div>
         </div>
 
-        <div class="flow-wrapper">
-            <!-- 学生视角 -->
-            <div class="lane">
-                <div class="lane-header student">👨‍🎓 学生投递流程</div>
-
-                <div class="node student" data-node="student-1">
-                    <div class="node-number">1</div>
-                    <div class="node-title">写好简历</div>
-                    <div class="node-desc">梳理实习经历、项目经验，准备有针对性的简历</div>
-                </div>
-
-                <div class="node student" data-node="student-2">
-                    <div class="node-number">2</div>
-                    <div class="node-title">看到招聘岗位</div>
-                    <div class="node-desc">通过招聘网站、内推等渠道发现合适的岗位</div>
-                </div>
-
-                <div class="node student" data-node="student-3">
-                    <div class="node-number">3</div>
-                    <div class="node-title">投递简历</div>
-                    <div class="node-desc">在线申请或发送邮件投递个人简历</div>
-                    <div class="issue-badge">可拆解</div>
-                </div>
-
-                <div class="node student" data-node="student-4">
-                    <div class="node-number">4</div>
-                    <div class="node-title">等待约面</div>
-                    <div class="node-desc">等待 HR 联系，保持电话畅通</div>
-                </div>
-
-                <div class="node student" data-node="student-5">
-                    <div class="node-number">5</div>
-                    <div class="node-title">面试（1-多轮）</div>
-                    <div class="node-desc">参加业务面试，展现能力与匹配度</div>
-                    <div class="issue-badge">可拆解</div>
-                </div>
-
-                <div class="node student" data-node="student-6">
-                    <div class="node-number">6</div>
-                    <div class="node-title">入职</div>
-                    <div class="node-desc">确认offer，办理入职，开始实习</div>
-                    <div class="issue-badge" style="background: #D1FAE5; color: #047857;">成功</div>
-                </div>
+        <div class="swimlane-wrapper">
+            <div class="swimlane-header">
+                <div class="lane-title student">👨‍🎓 学生</div>
+                <div class="lane-title hr">🧑‍💼 HR</div>
+                <div class="lane-title business">👨‍💻 业务团队</div>
             </div>
 
-            <!-- 连接线 -->
-            <div class="connections">
-                <div class="connection-line"></div>
-                <div class="connection-line has-arrow"></div>
-                <div class="connection-line"></div>
-                <div class="connection-line has-arrow"></div>
-                <div class="connection-line"></div>
-                <div class="connection-line has-arrow"></div>
-                <div class="connection-line"></div>
-                <div class="connection-line has-arrow"></div>
-                <div class="connection-line"></div>
-            </div>
+            <div class="swimlane-content" id="swimlaneContent">
+                <!-- 阶段1：准备 -->
+                <div class="phase-divider"><span class="phase-label">准备阶段</span></div>
 
-            <!-- 招聘方视角 -->
-            <div class="lane">
-                <div class="lane-header employer">🏢 招聘方流程</div>
-
-                <div class="node employer" data-node="employer-1">
-                    <div class="node-number">1</div>
-                    <div class="node-title">业务有招聘需求</div>
-                    <div class="node-desc">业务团队提出实习生招聘需求</div>
+                <div class="step-row" data-step="1">
+                    <div class="node empty"></div>
+                    <div class="node empty"></div>
+                    <div class="node business" data-node="b-1">
+                        <div class="node-header">
+                            <div class="node-number">1</div>
+                            <div class="node-title">提出招聘需求</div>
+                        </div>
+                        <div class="node-desc">业务团队有实习生招聘需求</div>
+                    </div>
                 </div>
 
-                <div class="node employer" data-node="employer-2">
-                    <div class="node-number">2</div>
-                    <div class="node-title">HR 发布岗位</div>
-                    <div class="node-desc">HR 接收任务，在各渠道发布招聘信息</div>
+                <div class="step-row" data-step="2">
+                    <div class="node empty"></div>
+                    <div class="node hr" data-node="h-1">
+                        <div class="node-header">
+                            <div class="node-number">2</div>
+                            <div class="node-title">发布招聘岗位</div>
+                        </div>
+                        <div class="node-desc">HR接收任务，在各渠道发布</div>
+                    </div>
+                    <div class="node empty"></div>
                 </div>
 
-                <div class="node employer" data-node="employer-3">
-                    <div class="node-number">3</div>
-                    <div class="node-title">转发简历给业务</div>
-                    <div class="node-desc">收到简历后筛选并转发给业务邮箱</div>
-                    <div class="issue-badge">可拆解</div>
+                <div class="step-row" data-step="3">
+                    <div class="node student" data-node="s-1">
+                        <div class="node-header">
+                            <div class="node-number">3</div>
+                            <div class="node-title">写好简历</div>
+                        </div>
+                        <div class="node-desc">梳理经历，准备有针对性的简历</div>
+                    </div>
+                    <div class="node empty"></div>
+                    <div class="node empty"></div>
                 </div>
 
-                <div class="node employer" data-node="employer-4">
-                    <div class="node-number">4</div>
-                    <div class="node-title">业务筛选简历</div>
-                    <div class="node-desc">业务团队评估简历匹配度</div>
-                    <div class="issue-badge">可拆解</div>
+                <!-- 阶段2：投递 -->
+                <div class="phase-divider"><span class="phase-label">投递阶段</span></div>
+
+                <div class="step-row" data-step="4">
+                    <div class="node student" data-node="s-2">
+                        <div class="node-header">
+                            <div class="node-number">4</div>
+                            <div class="node-title">看到岗位并投递</div>
+                        </div>
+                        <div class="node-desc">通过招聘网站/内推发现并投递简历</div>
+                        <div class="issue-badge">可拆解</div>
+                    </div>
+                    <div class="node empty"></div>
+                    <div class="node empty"></div>
                 </div>
 
-                <div class="node employer" data-node="employer-5">
-                    <div class="node-number">5</div>
-                    <div class="node-title">HR 约面</div>
-                    <div class="node-desc">HR 联系候选人预约面试时间</div>
+                <div class="step-row" data-step="5">
+                    <div class="node empty"></div>
+                    <div class="node hr" data-node="h-2">
+                        <div class="node-header">
+                            <div class="node-number">5</div>
+                            <div class="node-title">收到简历并初筛</div>
+                        </div>
+                        <div class="node-desc">HR初筛后转发给业务邮箱</div>
+                        <div class="issue-badge">可拆解</div>
+                    </div>
+                    <div class="node empty"></div>
                 </div>
 
-                <div class="node employer" data-node="employer-6">
-                    <div class="node-number">6</div>
-                    <div class="node-title">业务面试（1-多轮）</div>
-                    <div class="node-desc">业务团队进行面试评估</div>
-                    <div class="issue-badge">可拆解</div>
+                <div class="step-row" data-step="6">
+                    <div class="node empty"></div>
+                    <div class="node empty"></div>
+                    <div class="node business" data-node="b-2">
+                        <div class="node-header">
+                            <div class="node-number">6</div>
+                            <div class="node-title">业务筛选简历</div>
+                        </div>
+                        <div class="node-desc">业务评估简历匹配度</div>
+                        <div class="issue-badge">可拆解</div>
+                    </div>
                 </div>
 
-                <div class="node employer" data-node="employer-7">
-                    <div class="node-number">7</div>
-                    <div class="node-title">确定候选人</div>
-                    <div class="node-desc">综合评估后确定录用人选</div>
+                <!-- 阶段3：面试 -->
+                <div class="phase-divider"><span class="phase-label">面试阶段</span></div>
+
+                <div class="step-row" data-step="7">
+                    <div class="node empty"></div>
+                    <div class="node hr" data-node="h-3">
+                        <div class="node-header">
+                            <div class="node-number">7</div>
+                            <div class="node-title">HR联系约面</div>
+                        </div>
+                        <div class="node-desc">联系候选人确认面试时间</div>
+                    </div>
+                    <div class="node empty"></div>
                 </div>
 
-                <div class="node employer" data-node="employer-8">
-                    <div class="node-number">8</div>
-                    <div class="node-title">HR 电联确认入职</div>
-                    <div class="node-desc">HR 联系候选人确认入职时间</div>
+                <div class="step-row" data-step="8">
+                    <div class="node student" data-node="s-3">
+                        <div class="node-header">
+                            <div class="node-number">8</div>
+                            <div class="node-title">等待面试</div>
+                        </div>
+                        <div class="node-desc">确认时间，准备面试</div>
+                    </div>
+                    <div class="node empty"></div>
+                    <div class="node empty"></div>
+                </div>
+
+                <div class="step-row" data-step="9">
+                    <div class="node student" data-node="s-4">
+                        <div class="node-header">
+                            <div class="node-number">9</div>
+                            <div class="node-title">参加面试</div>
+                        </div>
+                        <div class="node-desc">1-多轮业务面试</div>
+                        <div class="issue-badge">可拆解</div>
+                    </div>
+                    <div class="node empty"></div>
+                    <div class="node business" data-node="b-3">
+                        <div class="node-header">
+                            <div class="node-number">9</div>
+                            <div class="node-title">进行面试</div>
+                        </div>
+                        <div class="node-desc">业务团队评估候选人</div>
+                        <div class="issue-badge">可拆解</div>
+                    </div>
+                </div>
+
+                <!-- 阶段4：入职 -->
+                <div class="phase-divider"><span class="phase-label">入职阶段</span></div>
+
+                <div class="step-row" data-step="10">
+                    <div class="node empty"></div>
+                    <div class="node empty"></div>
+                    <div class="node business" data-node="b-4">
+                        <div class="node-header">
+                            <div class="node-number">10</div>
+                            <div class="node-title">确定候选人</div>
+                        </div>
+                        <div class="node-desc">综合评估后决定录用</div>
+                    </div>
+                </div>
+
+                <div class="step-row" data-step="11">
+                    <div class="node empty"></div>
+                    <div class="node hr" data-node="h-4">
+                        <div class="node-header">
+                            <div class="node-number">11</div>
+                            <div class="node-title">发offer确认入职</div>
+                        </div>
+                        <div class="node-desc">HR电联确认入职时间</div>
+                    </div>
+                    <div class="node empty"></div>
+                </div>
+
+                <div class="step-row" data-step="12">
+                    <div class="node student" data-node="s-5">
+                        <div class="node-header">
+                            <div class="node-number">12</div>
+                            <div class="node-title">正式入职</div>
+                        </div>
+                        <div class="node-desc">确认offer，开始实习</div>
+                        <div class="issue-badge" style="background: #D1FAE5; color: #047857;">成功</div>
+                    </div>
+                    <div class="node empty"></div>
+                    <div class="node empty"></div>
                 </div>
             </div>
         </div>
@@ -503,7 +656,7 @@
         const annotations = {};
         let currentNode = null;
 
-        document.querySelectorAll('.node').forEach(node => {
+        document.querySelectorAll('.node:not(.empty)').forEach(node => {
             node.addEventListener('click', () => {
                 openAnnotation(node);
             });
@@ -572,7 +725,10 @@
             if (!badge && count > 0) {
                 badge = document.createElement('div');
                 badge.className = 'annotation-count';
-                badge.style.cssText = 'position:absolute;top:0.75rem;right:0.75rem;background:var(--primary);color:white;width:1.5rem;height:1.5rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;';
+                const existingIssue = node.querySelector('.issue-badge');
+                if (existingIssue) {
+                    existingIssue.style.right = '3.5rem';
+                }
                 node.appendChild(badge);
             }
 
