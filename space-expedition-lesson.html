@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>星际远征 · 个性化练习课高保真原型</title>
+<style>
+/* ========== base ========== */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --space1:#070b26;--space2:#0d1540;--space3:#182a6e;
+  --cyan:#5ee7ff;--cyan2:#22d3ee;--gold:#ffd54a;--gold2:#ffb300;
+  --ink:#f4f7ff;--muted:#a7b1de;--good:#34d399;--bad:#f87171;
+  --purple:#a78bfa;--pink:#f472b6;--blue:#60a5fa;--teal:#22d3ee;--orange:#fb923c;
+  --card:rgba(16,26,66,.55);--line:rgba(120,160,255,.28);
+}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  color:var(--ink);overflow-x:hidden;
+  background:
+    radial-gradient(1200px 700px at 75% -10%, rgba(94,231,255,.16), transparent 60%),
+    radial-gradient(900px 600px at 0% 100%, rgba(124,58,237,.30), transparent 55%),
+    radial-gradient(700px 500px at 100% 90%, rgba(34,211,238,.16), transparent 60%),
+    linear-gradient(180deg,var(--space1),var(--space2) 55%,var(--space3));
+  background-attachment:fixed;
+}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#stars{position:absolute;inset:0}
+#stars i{position:absolute;border-radius:50%;background:#fff;opacity:.9;animation:tw 3s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.25;transform:scale(.8)}50%{opacity:.95;transform:scale(1.15)}}
+#dust{position:absolute;inset:0}
+#dust i{position:absolute;width:5px;height:5px;border-radius:50%;
+  background:radial-gradient(circle,rgba(94,231,255,.9),transparent 70%);
+  filter:blur(1px);animation:drift linear infinite}
+@keyframes drift{0%{transform:translateY(30vh) translateX(0) scale(.7);opacity:0}
+  20%{opacity:.85}100%{transform:translateY(-110vh) translateX(40px) scale(1.2);opacity:0}}
+.hint{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:7000;
+  background:rgba(10,18,48,.72);border:1px solid var(--line);color:var(--cyan);
+  font-size:12px;padding:6px 14px;border-radius:20px;backdrop-filter:blur(6px);
+  white-space:nowrap;letter-spacing:.3px;box-shadow:0 4px 16px rgba(0,0,0,.35)}
+.hint b{color:var(--gold)}
+
+/* ========== app 容器(竖屏) ========== */
+.app{position:relative;z-index:2;max-width:440px;margin:0 auto;min-height:100dvh;overflow:hidden}
+@media(min-width:520px){
+  .app{min-height:calc(100dvh - 40px);margin:20px auto;border-radius:28px;
+    border:1px solid var(--line);box-shadow:0 0 60px rgba(40,90,255,.18),0 30px 80px rgba(0,0,0,.5);
+    overflow:hidden;outline:1px solid rgba(255,255,255,.06)}
+}
+.layer{position:absolute;inset:0;display:none;flex-direction:column;padding:20px 20px 24px}
+.layer.on{display:flex}
+.btn{appearance:none;border:none;cursor:pointer;font-family:inherit;
+  background:linear-gradient(135deg,var(--cyan2),#0ea5e9);color:#041a2b;
+  font-size:17px;font-weight:800;letter-spacing:1px;padding:14px 34px;border-radius:999px;
+  box-shadow:0 0 22px rgba(34,211,238,.55),0 8px 22px rgba(0,0,0,.3);
+  transition:transform .15s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 0 34px rgba(34,211,238,.8),0 12px 26px rgba(0,0,0,.35)}
+.btn:active{transform:scale(.96)}
+.btn.gold{background:linear-gradient(135deg,#ffe08a,#ffb300);box-shadow:0 0 26px rgba(255,179,0,.55),0 8px 22px rgba(0,0,0,.3)}
+.btn.ghost{background:rgba(255,255,255,.08);color:var(--ink);border:1px solid var(--line);
+  box-shadow:none;backdrop-filter:blur(6px)}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;
+  padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid var(--line);
+  color:var(--cyan);letter-spacing:.5px}
+
+/* ========== intro 开场 ========== */
+.intro-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center}
+.intro-top{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.intro-planet{position:relative;width:130px;height:130px;margin-top:6px}
+.intro-planet .core{position:absolute;inset:14px;border-radius:50%;
+  background:radial-gradient(circle at 32% 28%,#dbeafe,#3b82f6 40%,#1e3a8a 100%);
+  box-shadow:0 0 40px rgba(59,130,246,.8),0 0 90px rgba(59,130,246,.35),inset -8px -10px 24px rgba(0,0,0,.35)}
+.intro-planet .ring{position:absolute;inset:-8px;border-radius:50%;border:3px solid rgba(94,231,255,.4);
+  border-top-color:rgba(94,231,255,.9);animation:spin 9s linear infinite}
+.intro-planet .ring2{inset:-22px;border-width:2px;border-color:rgba(255,213,74,.18);
+  border-bottom-color:rgba(255,213,74,.8);animation:spin 14s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.course-name{font-size:34px;font-weight:900;letter-spacing:4px;line-height:1.2;
+  background:linear-gradient(100deg,#fff,#5ee7ff 45%,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 30px rgba(94,231,255,.35)}
+.course-sub{font-size:14px;color:var(--muted);letter-spacing:3px;margin-top:4px}
+.teacher-card{width:100%;max-width:380px;display:flex;gap:12px;align-items:flex-start;
+  background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;
+  backdrop-filter:blur(8px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.avatar{flex:0 0 auto;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:28px;background:radial-gradient(circle at 30% 25%,#5ee7ff,#1e40af 70%);
+  box-shadow:0 0 18px rgba(94,231,255,.5);border:2px solid rgba(255,255,255,.35)}
+.avatar.lg{width:76px;height:76px;font-size:40px;box-shadow:0 0 30px rgba(94,231,255,.6)}
+.bubble{position:relative;background:rgba(255,255,255,.12);border:1px solid var(--line);
+  border-radius:16px;border-top-left-radius:4px;padding:10px 14px;font-size:14px;line-height:1.7;color:#eef2ff}
+.bubble::before{content:"";position:absolute;left:-6px;top:10px;border:7px solid transparent;
+  border-right-color:rgba(255,255,255,.12)}
+.team-chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.chip{font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;color:#dfe7ff;
+  background:rgba(255,255,255,.08);border:1px solid var(--line)}
+.chip b{color:var(--cyan)}
+
+/* ========== quiz 正式闯关 ========== */
+.topbar{display:flex;align-items:center;gap:8px;padding:2px 0 10px}
+.tb-course{font-size:14px;font-weight:800;letter-spacing:.5px;flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tb-course i{font-style:normal;color:var(--cyan);margin-right:4px}
+.combo-badge{font-size:13px;font-weight:800;color:#fff;padding:5px 12px;border-radius:999px;
+  background:linear-gradient(135deg,#fb7185,#f43f5e);box-shadow:0 0 16px rgba(244,63,94,.6);
+  display:none;animation:pop .3s ease}
+.combo-badge.show{display:inline-flex;align-items:center;gap:4px}
+@keyframes pop{0%{transform:scale(.4)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.coin-slot{display:flex;align-items:center;gap:5px;font-size:14px;font-weight:800;color:var(--gold);
+  padding:5px 12px;border-radius:999px;background:rgba(255,213,74,.12);border:1px solid rgba(255,213,74,.4);
+  text-shadow:0 0 10px rgba(255,213,74,.6)}
+.coin-slot b{font-size:15px;min-width:20px;text-align:center}
+
+/* 星际航线 */
+.route{position:relative;height:72px;margin:2px 6px 12px}
+.route-line{position:absolute;left:4%;right:4%;top:20px;height:3px;border-radius:3px;
+  background:linear-gradient(90deg,rgba(94,231,255,.18),rgba(94,231,255,.5),rgba(255,213,74,.6))}
+.planets{position:absolute;inset:0;display:flex;justify-content:space-between;padding:0 2px}
+.planet{display:flex;flex-direction:column;align-items:center;gap:6px;width:52px;transition:opacity .4s}
+.p-dot{width:26px;height:26px;border-radius:50%;position:relative;
+  background:radial-gradient(circle at 32% 26%,#fff,var(--c) 42%,#081033 100%);
+  box-shadow:0 0 10px rgba(255,255,255,.15);transition:filter .4s,box-shadow .4s}
+.p-name{font-size:11px;color:var(--muted);font-weight:600;white-space:nowrap}
+.planet.todo{filter:saturate(.15) brightness(.5);opacity:.6}
+.planet.done .p-dot{box-shadow:0 0 16px var(--c),0 0 34px color-mix(in srgb,var(--c) 55%,transparent)}
+.planet.done .p-name{color:#fff}
+.planet.current .p-dot{box-shadow:0 0 18px var(--c),0 0 40px color-mix(in srgb,var(--c) 60%,transparent);
+  animation:plp 1.6s ease-in-out infinite}
+.planet.current .p-name{color:#fff}
+.planet.half .p-dot{filter:saturate(.9) brightness(.62);box-shadow:0 0 10px color-mix(in srgb,var(--c) 40%,transparent)}
+@keyframes plp{0%,100%{transform:scale(1)}50%{transform:scale(1.16)}}
+.ship{position:absolute;top:-4px;font-size:22px;transform:translateX(-50%);z-index:3;
+  transition:left 1.1s cubic-bezier(.6,-0.1,.3,1.15);filter:drop-shadow(0 2px 6px rgba(94,231,255,.7));
+  animation:hop 1.8s ease-in-out infinite}
+@keyframes hop{0%,100%{margin-top:0}50%{margin-top:-4px}}
+
+/* 题目卡 */
+.quiz-main{flex:1;display:flex;flex-direction:column;gap:10px;min-height:0}
+.teacher-mini{display:none;align-items:flex-start;gap:10px;animation:slideDown .35s ease}
+.teacher-mini .avatar{width:38px;height:38px;font-size:20px}
+.teacher-mini .bubble{font-size:13px;max-width:330px;background:rgba(255,255,255,.1)}
+@keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+.q-card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px 18px 16px;
+  backdrop-filter:blur(10px);box-shadow:0 16px 40px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.08);
+  animation:rise .4s ease}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.q-subject{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;
+  padding:4px 12px;border-radius:999px;margin-bottom:12px;letter-spacing:1px}
+.q-subject.math{background:rgba(34,211,238,.15);color:var(--cyan);border:1px solid rgba(34,211,238,.4)}
+.q-subject.lang{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.4)}
+.q-subject.gold{background:rgba(255,213,74,.15);color:var(--gold);border:1px solid rgba(255,213,74,.5)}
+.q-text{font-size:22px;font-weight:800;line-height:1.55;margin-bottom:16px;letter-spacing:.5px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.q-opt{display:flex;align-items:center;gap:12px;text-align:left;width:100%;appearance:none;border:none;cursor:pointer;
+  font-family:inherit;font-size:16px;font-weight:700;color:var(--ink);letter-spacing:.5px;
+  background:rgba(255,255,255,.07);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;
+  transition:transform .12s,background .2s,border-color .2s}
+.q-opt:hover{transform:translateX(4px);background:rgba(255,255,255,.12)}
+.q-opt .lk{flex:0 0 auto;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;background:rgba(94,231,255,.15);color:var(--cyan);border:1px solid rgba(94,231,255,.35)}
+.q-opt.sel-ok{border-color:var(--good);background:rgba(52,211,153,.16);animation:okflash .45s ease}
+.q-opt.sel-ok .lk{background:var(--good);color:#03180f;border-color:var(--good)}
+.q-opt.sel-bad{border-color:var(--bad);background:rgba(248,113,113,.13);animation:shake .45s ease}
+.q-opt.sel-bad .lk{background:var(--bad);color:#2a0505;border-color:var(--bad)}
+.q-opt.dim{opacity:.45;filter:saturate(.3)}
+@keyframes okflash{0%{transform:scale(1)}40%{transform:scale(1.04);background:rgba(52,211,153,.35)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}55%{transform:translateX(5px)}80%{transform:translateX(-3px)}}
+
+/* 反馈区 */
+.feedback{display:none;flex-direction:column;gap:10px;animation:rise .35s ease}
+.feedback.on{display:flex}
+.fb-msg{font-size:15px;line-height:1.7;color:#e8eeff}
+.fb-msg .tag{display:inline-block;font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;margin-right:6px}
+.tag.ok{background:rgba(52,211,153,.16);color:var(--good);border:1px solid rgba(52,211,153,.4)}
+.tag.fix{background:rgba(251,191,36,.16);color:#fbbf24;border:1px solid rgba(251,191,36,.4)}
+.feedback .btn{align-self:center;margin-top:4px}
+
+/* ========== bonus 宝藏 ========== */
+.bonus{background:radial-gradient(90% 70% at 50% 30%,rgba(255,179,0,.16),transparent 60%),
+  radial-gradient(120% 90% at 50% 110%,rgba(120,53,15,.5),transparent 65%),
+  rgba(4,6,20,.6)}
+.bonus .dim{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .6s}
+.bonus.dimming .dim{opacity:.7}
+.bonus .bonus-body{opacity:0;transform:translateY(20px) scale(.96);transition:opacity .6s .35s,transform .6s .35s}
+.bonus.reveal .bonus-body{opacity:1;transform:none}
+.bonus-head{text-align:center;margin:30px 0 22px}
+.bonus-eyebrow{font-size:12px;letter-spacing:6px;color:rgba(255,213,74,.85);font-weight:700}
+.bonus-title{font-size:30px;font-weight:900;letter-spacing:5px;margin-top:6px;
+  background:linear-gradient(100deg,#fff8e1,#ffd54a 55%,#ffb300);-webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 40px rgba(255,213,74,.5)}
+.bonus-coin{font-size:15px;font-weight:800;color:var(--gold);margin-top:10px;
+  background:rgba(255,213,74,.12);border:1px solid rgba(255,213,74,.4);display:inline-block;
+  padding:6px 14px;border-radius:999px;letter-spacing:.5px}
+.bonus-card{background:linear-gradient(160deg,rgba(255,213,74,.10),rgba(255,255,255,.04));
+  border:1.5px solid rgba(255,213,74,.4);border-radius:22px;padding:20px;backdrop-filter:blur(8px);
+  box-shadow:0 0 50px rgba(255,179,0,.25)}
+.bonus-glow{position:absolute;width:300px;height:300px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,213,74,.18),transparent 70%);animation:bglow 3.2s ease-in-out infinite}
+@keyframes bglow{0%,100%{opacity:.5;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
+.b-bigcoin{font-size:54px;font-weight:900;color:var(--gold);text-align:center;margin:14px 0;
+  text-shadow:0 0 30px rgba(255,213,74,.8);animation:pop .4s ease}
+
+/* ========== end 战绩 ========== */
+.end-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;
+  justify-content:center;animation:rise .5s ease}
+.end-title{font-size:30px;font-weight:900;letter-spacing:6px;
+  background:linear-gradient(100deg,#fff,#ffd54a 60%,#ffb300);-webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 0 30px rgba(255,213,74,.4)}
+.end-sub{font-size:14px;color:var(--muted);letter-spacing:2px;margin-bottom:4px}
+.trophy{font-size:60px;animation:floaty 2.6s ease-in-out infinite;filter:drop-shadow(0 8px 18px rgba(255,213,74,.5))}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.title-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 26px;
+  backdrop-filter:blur(8px);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.title-name{font-size:22px;font-weight:900;letter-spacing:2px;color:var(--gold);text-shadow:0 0 16px rgba(255,213,74,.5)}
+.title-sub{font-size:12px;color:var(--muted);margin-top:4px;letter-spacing:1px}
+.starmap{width:100%;max-width:340px;margin:6px 0}
+.starmap svg{width:100%;height:auto}
+.star-line{stroke:rgba(255,213,74,.7);stroke-width:2;stroke-dasharray:6 5;animation:dashmove 1.2s linear infinite}
+@keyframes dashmove{to{stroke-dashoffset:-11}}
+.star-dot{transition:fill .5s,opacity .5s}
+.star-dot.off{fill:#2a335e!important;opacity:.4}
+.star-name{fill:#cfd8ff;font-size:10px;font-weight:600}
+.coin-sum{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:2px}
+.cs-label{font-size:12px;color:var(--muted);letter-spacing:2px}
+.cs-num{font-size:32px;font-weight:900;color:var(--gold);text-shadow:0 0 20px rgba(255,213,74,.6)}
+.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.mbadge{font-size:12px;font-weight:700;padding:6px 14px;border-radius:999px;display:none;align-items:center;gap:5px}
+.mbadge.show{display:inline-flex;animation:pop .4s ease}
+.mbadge.b1{background:rgba(255,213,74,.14);color:var(--gold);border:1px solid rgba(255,213,74,.45)}
+.mbadge.b2{background:rgba(52,211,153,.14);color:var(--good);border:1px solid rgba(52,211,153,.45)}
+.mbadge.b3{background:rgba(94,231,255,.14);color:var(--cyan);border:1px solid rgba(94,231,255,.45)}
+
+/* ========== 粒子(答题反馈) ========== */
+.spark,.coin-fly{position:fixed;z-index:9800;pointer-events:none;border-radius:50%}
+.spark{width:8px;height:8px;animation:sparkfly .7s ease-out forwards}
+@keyframes sparkfly{0%{transform:translate(0,0) scale(1);opacity:1}
+  100%{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+.coin-fly{width:12px;height:12px;z-index:9810;
+  background:radial-gradient(circle at 32% 28%,#fff3c4,#ffd54a 55%,#b8860b);
+  box-shadow:0 0 10px rgba(255,213,74,.9);animation:coinfly .85s cubic-bezier(.3,.6,.4,1) forwards}
+@keyframes coinfly{0%{transform:translate(0,0) scale(.7);opacity:1}
+  70%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.5);opacity:0}}
+.bigflash{position:fixed;inset:0;z-index:9600;pointer-events:none;background:radial-gradient(circle,rgba(255,213,74,.5),transparent 55%);
+  opacity:0;animation:flash .8s ease-out forwards}
+@keyframes flash{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+
+/* ========== 批注层 ========== */
+#annToggle{position:fixed;bottom:20px;right:14px;z-index:9000;background:rgba(14,20,48,.9);
+  border:1px solid var(--line);color:var(--cyan);font-size:13px;font-weight:600;padding:8px 14px;
+  border-radius:22px;cursor:pointer;box-shadow:0 2px 14px rgba(0,0,0,.4);backdrop-filter:blur(6px);
+  font-family:-apple-system,sans-serif}
+#annToggle.on{background:linear-gradient(135deg,var(--cyan2),#0ea5e9);color:#041a2b;border-color:transparent}
+#annPanel{position:fixed;top:64px;right:14px;width:230px;max-height:72vh;overflow:auto;z-index:8500;
+  background:rgba(14,20,48,.94);border:1px solid var(--line);border-radius:12px;padding:10px;
+  box-shadow:0 8px 30px rgba(0,0,0,.45);backdrop-filter:blur(8px);font-family:-apple-system,sans-serif}
+#annExport{width:100%;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;
+  background:rgba(94,231,255,.14);color:var(--cyan);border:1px solid rgba(94,231,255,.35);
+  border-radius:8px;padding:7px;margin-bottom:8px}
+.annrow{display:flex;gap:8px;align-items:flex-start;padding:7px 6px;border-radius:8px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05)}
+.annrow:hover{background:rgba(255,255,255,.06)}
+.annrow .no{flex:0 0 auto;width:18px;height:18px;border-radius:50%;background:var(--bad);color:#fff;
+  font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.annrow .tx{flex:1;font-size:12px;color:#e6ebff;line-height:1.5}
+.annrow .nm{font-size:10px;color:#8b93c4;margin-top:2px}
+.annrow .del{flex:0 0 auto;color:#7b84b5;font-size:11px;padding:2px 4px}
+.annrow.active{background:rgba(94,231,255,.1)}
+#annList p{color:#7b84b5;font-size:12px;font-family:inherit}
+.ann-mark{position:fixed;z-index:8000;width:20px;height:20px;background:var(--bad);color:#fff;border-radius:50%;
+  font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:0 1px 4px rgba(0,0,0,.4),0 0 8px rgba(248,113,113,.6);font-family:-apple-system,sans-serif}
+#annEditor{position:fixed;z-index:9500;width:260px;background:rgba(14,20,48,.97);border:1px solid var(--cyan2);
+  border-radius:10px;padding:10px;box-shadow:0 8px 30px rgba(0,0,0,.5);backdrop-filter:blur(8px)}
+#annText{width:100%;background:transparent;border:none;outline:none;color:#eef2ff;font-size:13px;line-height:1.6;
+  font-family:inherit;resize:none;min-height:60px}
+#annText::placeholder{color:#7b84b5}
+#annToast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);z-index:9600;display:none;
+  background:rgba(10,18,48,.95);color:#fff;font-size:13px;padding:9px 16px;border-radius:10px;
+  box-shadow:0 4px 16px rgba(0,0,0,.4);font-family:-apple-system,sans-serif}
+.annflash{animation:annflash 1s ease}
+@keyframes annflash{0%,60%{box-shadow:0 0 0 3px rgba(248,113,113,.8);border-radius:12px}}
+/* 版本条 */
+#verBadge{position:fixed;top:10px;right:14px;z-index:9001;background:rgba(14,20,48,.85);color:var(--cyan);
+  border:1px solid var(--line);font-size:11px;font-weight:700;padding:5px 10px;border-radius:14px;cursor:pointer;
+  font-family:-apple-system,sans-serif;backdrop-filter:blur(6px)}
+#verPanel{position:fixed;top:42px;right:14px;width:210px;z-index:9002;background:rgba(14,20,48,.95);
+  border:1px solid var(--line);border-radius:10px;padding:10px;box-shadow:0 8px 30px rgba(0,0,0,.45);
+  font-family:-apple-system,sans-serif}
+#verPanel h4{color:var(--cyan);font-size:12px;margin-bottom:6px}
+.vitem{padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.vitem b{color:#fff;font-size:12px;margin-right:6px}
+.vitem .d{color:#7b84b5;font-size:10px}
+.vitem p{color:#c6cdef;font-size:11px;line-height:1.5;margin-top:2px}
+</style>
+</head>
+<body>
+
+<div class="hint">🎮 <b>星际远征</b> 高保真原型 · 皮肤+闯关包装 · 点选答案可体验对/错分支 · ✏️ 右下角开启批注</div>
+
+<div class="bg"><div id="stars"></div><div id="dust"></div></div>
+
+<div class="app">
+
+  <!-- ============ 开场环节 ============ -->
+  <section class="layer on" id="introLayer" data-name="开场环节">
+    <div class="intro-top">
+      <span class="badge">猿辅导 · 个性化练习课</span>
+      <span class="badge">星际远征系列</span>
+    </div>
+    <div class="intro-wrap">
+      <div class="intro-planet"><div class="core"></div><div class="ring"></div><div class="ring2"></div></div>
+      <div>
+        <div class="course-name">星际远征</div>
+        <div class="course-sub">探秘 · 数字星域 · 乘法的奥秘</div>
+      </div>
+      <div class="teacher-card" data-name="开场·老师介绍">
+        <div class="avatar lg">🧑‍🚀</div>
+        <div class="bubble">欢迎登舰,小小宇航员!我是<b>星语老师</b>。今天我们要远征「数字星」,揭开藏在乘法里的奥秘。途中会依次穿越 <b>数字星 · 几何星 · 汉字星 · 诗词星</b>,答对一路前进,连对还会触发隐藏的 <b>未知星域宝藏</b>!准备好了吗?</div>
+      </div>
+      <div class="team-chips" data-name="本次航线">
+        <span class="chip">🪐 <b>数字星</b></span><span class="chip">📐 <b>几何星</b></span>
+        <span class="chip">🀄 <b>汉字星</b></span><span class="chip">🖋 <b>诗词星</b></span>
+        <span class="chip">⭐ <b>奥秘星</b></span>
+      </div>
+      <button class="btn" id="btnStart" data-name="准备好了按钮">准备好了 🚀 出发</button>
+    </div>
+  </section>
+
+  <!-- ============ 正式闯关环节 ============ -->
+  <section class="layer" id="quizLayer" data-name="正式闯关">
+    <div class="topbar">
+      <div class="tb-course"><i>🚀</i>星际远征 · 数字星域</div>
+      <div class="combo-badge" id="comboBadge"></div>
+      <div class="coin-slot" data-name="星尘钱包">✦ <b id="coinCount">0</b></div>
+    </div>
+    <div class="route" data-name="星际航线·闯关进度">
+      <div class="route-line"></div>
+      <div class="ship" id="ship">🚀</div>
+      <div class="planets" id="planets"></div>
+    </div>
+    <div class="quiz-main">
+      <div class="teacher-mini" id="teacherMini" data-name="老师小窗">
+        <div class="avatar">🧑‍🚀</div>
+        <div class="bubble" id="miniBubble"></div>
+      </div>
+      <div class="q-card" data-name="题目卡">
+        <span class="q-subject" id="qSubject">✦</span>
+        <div class="q-text" id="qText"></div>
+        <div class="opts" id="opts"></div>
+      </div>
+      <div class="feedback" id="feedback" data-name="反馈·讲解">
+        <div class="teacher-mini" style="display:flex">
+          <div class="avatar">🧑‍🚀</div>
+          <div class="bubble" style="max-width:330px" id="fbMsg"></div>
+        </div>
+        <button class="btn" id="fbBtn"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 宝藏题·未知星域 ============ -->
+  <section class="layer bonus" id="bonusLayer" data-name="未知星域·宝藏题">
+    <div class="dim"></div>
+    <div class="bonus-glow" id="bglow" style="top:-60px;right:-80px"></div>
+    <div class="bonus-body" style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px">
+      <div class="bonus-head">
+        <div class="bonus-eyebrow">✨ HIDDEN 未知星域 ✨</div>
+        <div class="bonus-title">宝藏题</div>
+        <div class="bonus-coin" id="bonusCoinLabel">答对 +15 星尘</div>
+      </div>
+      <div class="bonus-card" data-name="宝藏题卡">
+        <span class="q-subject gold">🏆 连对触发的隐藏考验</span>
+        <div class="q-text" id="bqText"></div>
+        <div class="opts" id="bopts"></div>
+      </div>
+      <div class="feedback" id="bfeedback" data-name="宝藏题反馈">
+        <div class="teacher-mini" style="display:flex">
+          <div class="avatar">🧑‍🚀</div>
+          <div class="bubble" style="max-width:330px" id="bfbMsg"></div>
+        </div>
+        <button class="btn gold" id="bfbBtn"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 战绩·奥秘星 ============ -->
+  <section class="layer" id="endLayer" data-name="战绩·奥秘星">
+    <div class="end-wrap">
+      <div class="end-title">远征完成</div>
+      <div class="end-sub">已抵达「奥秘星」</div>
+      <div class="trophy">🏆</div>
+      <div class="title-card" data-name="通关称号">
+        <div class="title-name" id="endTitle">星域探险家</div>
+        <div class="title-sub" id="endSub"></div>
+      </div>
+      <div class="starmap" data-name="成就星图">
+        <svg viewBox="0 0 280 190">
+          <polyline class="star-line" points="52,128 108,72 168,120 222,64 150,158"/>
+          <circle class="star-dot off" id="sd0" cx="52" cy="128" r="10" fill="#60a5fa"/>
+          <circle class="star-dot off" id="sd1" cx="108" cy="72" r="10" fill="#22d3ee"/>
+          <circle class="star-dot off" id="sd2" cx="168" cy="120" r="10" fill="#a78bfa"/>
+          <circle class="star-dot off" id="sd3" cx="222" cy="64" r="10" fill="#fb923c"/>
+          <circle class="star-dot off" id="sd4" cx="150" cy="158" r="12" fill="#ffd54a"/>
+          <text class="star-name" x="42" y="150">数字星</text>
+          <text class="star-name" x="96" y="60">几何星</text>
+          <text class="star-name" x="156" y="142">汉字星</text>
+          <text class="star-name" x="210" y="52">诗词星</text>
+          <text class="star-name" x="136" y="184">奥秘星</text>
+        </svg>
+      </div>
+      <div class="coin-sum" data-name="星尘结算">
+        <div class="cs-label">星尘结算</div>
+        <div class="cs-num">✦ <span id="csNum">0</span></div>
+      </div>
+      <div class="badges">
+        <span class="mbadge b1" id="mb1">🏅 首次远征</span>
+        <span class="mbadge b2" id="mb2">🌟 完美通关</span>
+        <span class="mbadge b3" id="mb3">💪 不屈探险家</span>
+      </div>
+      <button class="btn gold" id="endBtn">完成远征</button>
+    </div>
+  </section>
+
+</div>
+
+<div id="verBadge">版本</div>
+<div id="verPanel" style="display:none"></div>
+<div id="annToggle">✏️ 批注模式</div>
+<div id="annPanel" style="display:none"><button id="annExport">📋 复制批注</button><div id="annList"></div></div>
+<div id="annEditor" style="display:none"><textarea id="annText" placeholder="写批注,Enter 保存 / Esc 取消"></textarea></div>
+<div id="annToast"></div>
+
+<script>
+/* ============ 数据 ============ */
+const PLANETS=[
+  {name:'数字星',color:'#60a5fa',icon:'🪐',
+   q:{subject:'数学',subj:'math',text:'7 × 8 = ?',opts:['54','56','48'],ans:1,explain:'七八五十六!在数字星上,乘法口诀就是它的能量密码。'},
+   vq:{subject:'数学 · 轨道修正',subj:'math',text:'换一种方式:7 × 8 等于几个 7 相加?',opts:['6 个','7 个','8 个'],ans:2,explain:'8 个 7 相加 = 56。8×7 和 7×8 结果一样,乘法可交换,这是数字星的规律!'}},
+  {name:'几何星',color:'#22d3ee',icon:'📐',
+   q:{subject:'数学',subj:'math',text:'一个三角形有几条边?',opts:['3 条','4 条','5 条'],ans:0,explain:'三角形 3 条边,三条线围成一个稳定的形状——像飞船的支架一样稳固!'},
+   vq:{subject:'数学 · 轨道修正',subj:'math',text:'那一个三角形有几个角呢?',opts:['2 个','3 个','6 个'],ans:1,explain:'3 条边、3 个角,三角形就是"稳定"的代名词!'}},
+  {name:'汉字星',color:'#a78bfa',icon:'🀄',
+   q:{subject:'语文',subj:'lang',text:'「星」字一共有几画?',opts:['7 画','9 画','11 画'],ans:1,explain:'「星」9 画:字里有"日"有"生",书写时就像在夜空一笔一笔画出星座。'},
+   vq:{subject:'语文 · 轨道修正',subj:'lang',text:'「星」字下面是什么部件?',opts:['生','王','牛'],ans:0,explain:'"日"在上、"生"在下,太阳升起就是星!汉字星的每颗字都在讲故事。'}},
+  {name:'诗词星',color:'#fb923c',icon:'🖋',
+   q:{subject:'语文',subj:'lang',text:'「床前明月光」的作者是谁?',opts:['李白','杜甫','白居易'],ans:0,explain:'是诗仙李白!他写"举头望明月,低头思故乡",把月亮写进了每个人的心里。'},
+   vq:{subject:'语文 · 轨道修正',subj:'lang',text:'李白又被称为什么?',opts:['诗圣','诗仙','诗鬼'],ans:1,explain:'李白被称为"诗仙"——他的诗天马行空,就像在星空中遨游!'}}
+];
+const BONUS={subject:'天文',subj:'gold',text:'北斗七星由多少颗星组成?',opts:['5 颗','7 颗','9 颗'],ans:1,explain:'北斗七星 7 颗星,连起来像一把大勺子挂在天上,为迷路的航行者指明方向——这也是"星"字的由来!'};
+const COIN_MAIN=10, COIN_BONUS=15;
+
+/* ============ 状态 ============ */
+const $=id=>document.getElementById(id);
+let phase='intro', qi=0, variant=false, locked=false;
+let combo=0, coins=0, perfect=true, bonusOk=false;
+
+/* ============ 背景星星 ============ */
+(function(){
+  const st=$('stars'),du=$('dust');
+  for(let i=0;i<70;i++){const s=document.createElement('i');
+    s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+    s.style.width=s.style.height=(Math.random()*1.6+.6)+'px';
+    s.style.animationDelay=(Math.random()*3)+'s';st.appendChild(s);}
+  for(let i=0;i<14;i++){const d=document.createElement('i');
+    d.style.left=Math.random()*100+'%';d.style.top=Math.random()*100+'%';
+    d.style.animationDuration=(12+Math.random()*14)+'s';
+    d.style.animationDelay=(Math.random()*12)+'s';du.appendChild(d);}
+})();
+
+/* ============ 音效 ============ */
+let AC=null;
+function tone(f,d=.12,t='sine',v=.05,when=0,slide){
+  AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.type=t;o.frequency.value=f;if(slide)o.frequency.exponentialRampToValueAtTime(slide,AC.currentTime+d);
+  g.gain.value=v;g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+d);
+  o.connect(g);g.connect(AC.destination);
+  o.start(AC.currentTime+when);o.stop(AC.currentTime+d+when);
+}
+const sOk=()=>{tone(523,.09,'sine',.05);tone(659,.09,'sine',.05,.09);tone(784,.16,'sine',.05,.18);};
+const sNo=()=>{tone(330,.13,'sine',.05);tone(247,.2,'sine',.04,.1);};
+const sGold=()=>{tone(880,.08,'triangle',.05);tone(1175,.08,'triangle',.05,.07);tone(1568,.22,'triangle',.05,.14);};
+const sCoin=()=>{tone(1568,.05,'square',.025);};
+const sWhoosh=()=>{tone(220,.3,'sine',.04,0,440);};
+
+/* ============ 粒子动画 ============ */
+function spark(x,y,color,count){
+  for(let i=0;i<count;i++){
+    const s=document.createElement('i');s.className='spark';
+    const a=Math.random()*Math.PI*2,d=50+Math.random()*90;
+    s.style.left=x+'px';s.style.top=y+'px';
+    s.style.background=color;
+    s.style.setProperty('--dx',Math.cos(a)*d+'px');
+    s.style.setProperty('--dy',Math.sin(a)*d+'px');
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),750);
+  }
+}
+function flyCoins(n,fromEl,toEl,delay){
+  const fr=fromEl.getBoundingClientRect(),to=toEl.getBoundingClientRect();
+  for(let i=0;i<n;i++){
+    setTimeout(()=>{
+      const c=document.createElement('i');c.className='coin-fly';
+      c.style.left=(fr.left+Math.random()*fr.width)+'px';
+      c.style.top=(fr.top+Math.random()*fr.height)+'px';
+      const dx=(to.left-fr.left)+(to.width-fr.width)/2+(Math.random()*26-13);
+      const dy=(to.top-fr.top)+(to.height-fr.height)/2+(Math.random()*18-9);
+      c.style.setProperty('--dx',dx+'px');c.style.setProperty('--dy',dy+'px');
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),900);
+    },delay+i*45);
+  }
+}
+function bigFlash(){const f=document.createElement('div');f.className='bigflash';document.body.appendChild(f);setTimeout(()=>f.remove(),900);}
+
+/* ============ 层切换 ============ */
+function showLayer(id){document.querySelectorAll('.layer').forEach(l=>l.classList.remove('on'));
+  $(id).classList.add('on');}
+function refreshCoin(){const n=$('coinCount');n.textContent=coins;
+  n.style.transform='scale(1.25)';setTimeout(()=>n.style.transform='scale(1)',180);}
+
+/* ============ 航线渲染 ============ */
+const routePlanets=[...PLANETS,{name:'奥秘星',color:'#ffd54a',icon:'⭐'}];
+function renderPlanets(){
+  const pn=$('planets');pn.innerHTML='';
+  routePlanets.forEach((p,i)=>{
+    const d=document.createElement('div');
+    const st=i<qi?'done':(i===qi?'current':'todo');
+    d.className='planet '+st;
+    d.style.setProperty('--c',p.color);
+    d.innerHTML=`<div class="p-dot"></div><div class="p-name">${p.name}</div>`;
+    pn.appendChild(d);
+  });
+  moveShip();
+}
+function moveShip(){
+  const max=routePlanets.length-1;
+  const left=qi/max*100;
+  const s=$('ship');s.style.left='calc('+left+'% )';
+}
+function shipPulse(){const s=$('ship');s.style.transform='translateX(-50%) scale(1.3) rotate(-12deg)';
+  setTimeout(()=>s.style.transform='translateX(-50%)',250);}
+
+/* ============ 题目渲染 ============ */
+function renderQ(){
+  const cur=PLANETS[qi];
+  const q=variant?cur.vq:cur.q;
+  $('qSubject').className='q-subject '+q.subj;
+  $('qSubject').textContent=(variant?'🛠 轨道修正 · ':'')+(q.subject);
+  $('qText').textContent=q.text;
+  $('opts').innerHTML=q.opts.map((o,i)=>
+    `<button class="q-opt" data-i="${i}"><span class="lk">${'ABC'[i]}</span><span>${o}</span></button>`).join('');
+  $('feedback').classList.remove('on');
+  $('teacherMini').style.display='none';
+  locked=false;
+  $('qSubject').style.display='inline-flex';
+  if(variant){ $('teacherMini').style.display='flex';$('miniBubble').textContent='航道受扰!别担心,我来帮你校准,再试一道变式题 →'; }
+}
+
+/* ============ 答题 ============ */
+function choose(i){
+  if(locked)return;locked=true;
+  const cur=PLANETS[qi];const q=variant?cur.vq:cur.q;
+  const list=variant?$('opts'):$('opts');
+  const btns=[...list.querySelectorAll('.q-opt')];
+  btns.forEach((b,j)=>{if(j!==i)b.classList.add('dim');});
+  if(i===q.ans){ btns[i].classList.add('sel-ok'); correctFlow(q,btns[i]); }
+  else{ btns[i].classList.add('sel-bad'); wrongFlow(q,btns[i]); }
+}
+
+function correctFlow(q,btnEl){
+  combo++;
+  const cur=PLANETS[qi];
+  const center=getC(btnEl);
+  spark(center.x,center.y,combo>=2?'#ffd54a':'#5ee7ff',16);
+  // 金币
+  coins+=COIN_MAIN; refreshCoin();
+  flyCoins(6,btnEl,$('coinCount'),0);
+  sOk();setTimeout(sCoin,400);
+  // 星球:变式正确=补齐半格;主线正确=点亮当前
+  const pls=$('planets').children;
+  if(variant){
+    pls[qi].classList.remove('half');pls[qi].classList.remove('current');pls[qi].classList.add('done');
+    qi++; shipPulse(); renderPlanets();
+    showFeedback(`<span class="tag ok">✅ 修正成功</span>${q.explain}`,`继续远征 →`,()=>nextMain());
+  }else{
+    pls[qi].classList.remove('current');pls[qi].classList.add('done');
+    qi++; shipPulse(); renderPlanets();
+    if(qi>=routePlanets.length-1){
+      showFeedback(`<span class="tag ok">🌟 抵达奥秘星!</span>你连续答对 ${combo} 题,触发了隐藏的<b>未知星域</b>!`,`探索未知星域 ✦`,()=>bonusStart());
+    }else{
+      showFeedback(`<span class="tag ok">✅ 答对</span>${q.explain}${combo>=2?`<br>🔥 连击 ×${combo},能量爆棚!`:''}`,`继续远征 →`,()=>nextMain());
+    }
+  }
+  comboBadge();
+}
+
+function wrongFlow(q,btnEl){
+  perfect=false;combo=0;comboBadge();
+  const cur=PLANETS[qi];
+  sNo();
+  const pls=$('planets').children;
+  if(variant){
+    // 变式也错了:看讲解,回主路径下一题(补齐半格)
+    pls[qi].classList.remove('half');pls[qi].classList.remove('current');pls[qi].classList.add('done');
+    qi++;shipPulse();renderPlanets();
+    showFeedback(`<span class="tag fix">🛠 再看一次</span>${q.explain}`,`继续远征 →`,()=>nextMain());
+  }else{
+    // 主路径错了:半格 + 进变式题
+    pls[qi].classList.add('half');
+    showFeedback(`<span class="tag fix">🛠 轨道修正</span>没关系,星语老师带你校准航线!${q.explain}`,`进入轨道修正 →`,()=>{variant=true;renderQ();sWhoosh();});
+  }
+}
+
+function nextMain(){variant=false;renderQ();sWhoosh();}
+
+function showFeedback(html,btnTxt,fn){
+  $('fbMsg').innerHTML=html;
+  $('feedback').classList.add('on');
+  const b=$('fbBtn');b.textContent=btnTxt;
+  b.onclick=fn;
+  $('qCard_placeholder','');
+}
+
+function comboBadge(){
+  const c=$('comboBadge');
+  if(combo>=2){c.classList.add('show');c.textContent='🔥 连击 ×'+combo;}
+  else c.classList.remove('show');
+}
+function getC(el){const r=el.getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2};}
+
+/* ============ 宝藏题 ============ */
+function bonusStart(){
+  phase='bonus';variant=false;locked=false;
+  showLayer('bonusLayer');
+  $('bonusLayer').classList.add('dimming');
+  setTimeout(()=>$('bonusLayer').classList.add('reveal'),120);
+  setTimeout(()=>sWhoosh(),160);
+  $('bqText').textContent=BONUS.text;
+  $('bopts').innerHTML=BONUS.opts.map((o,i)=>
+    `<button class="q-opt" data-i="${i}"><span class="lk">${'ABC'[i]}</span><span>${o}</span></button>`).join('');
+  $('bfeedback').classList.remove('on');
+}
+function bChoose(i){
+  if(locked)return;locked=true;
+  const btns=[...$('bopts').querySelectorAll('.q-opt')];
+  btns.forEach((b,j)=>{if(j!==i)b.classList.add('dim');});
+  if(i===BONUS.ans){
+    btns[i].classList.add('sel-ok');
+    bonusOk=true;perfect=perfect&&true;
+    coins+=COIN_BONUS;
+    const c=getC(btns[i]);
+    spark(c.x,c.y,'#ffd54a',30);bigFlash();sGold();
+    setTimeout(()=>{sCoin();sCoin();},300);
+    $('bonusCoinLabel').textContent='✦ 获得 15 星尘!';
+    $('bfbMsg').innerHTML=`<span class="tag ok">🌠 发现新星球!</span>${BONUS.explain}<br>这颗星已经点亮了你的星图,带着星尘驶向<b>奥秘星</b>吧!`;
+    $('bfeedback').classList.add('on');
+    $('bfbBtn').textContent='抵达奥秘星 ✦';
+    $('bfbBtn').onclick=()=>showEnd();
+  }else{
+    btns[i].classList.add('sel-bad');
+    perfect=false;sNo();
+    $('bfbMsg').innerHTML=`<span class="tag fix">🛠 差一点!</span>${BONUS.explain}<br>没关系,宝藏已经记住你的勇气,一起前往<b>奥秘星</b>收尾吧。`;
+    $('bfeedback').classList.add('on');
+    $('bfbBtn').textContent='抵达奥秘星 ✦';
+    $('bfbBtn').onclick=()=>showEnd();
+  }
+}
+
+/* ============ 战绩页 ============ */
+function showEnd(){
+  phase='end';
+  $('bonusLayer').classList.remove('dimming','reveal');
+  showLayer('endLayer');
+  // 称号
+  const t=$('endTitle'),s=$('endSub');
+  if(perfect&&bonusOk){t.textContent='星域领航员';s.textContent='完美远征 · 一路通关无失手';}
+  else{t.textContent='星域探险家';s.textContent='穿越星际 · 你的勇气值得收藏';}
+  // 星图点亮
+  [0,1,2,3].forEach(i=>setTimeout(()=>$('sd'+i).classList.remove('off'),300+i*260));
+  setTimeout(()=>{ if(bonusOk)$('sd4').classList.remove('off'); else $('sd4').classList.add('off'); },300+4*260+400);
+  // 徽章
+  $('mb1').classList.add('show');
+  if(perfect)$('mb2').classList.add('show');
+  if(!perfect)$('mb3').classList.add('show');
+  // 星尘滚动
+  const target=coins;
+  let n=0;const step=Math.max(1,Math.ceil(target/28));
+  const iv=setInterval(()=>{n+=step;if(n>=target){n=target;clearInterval(iv);sGold();}
+    $('csNum').textContent=n;},40);
+}
+$('endBtn').onclick=()=>{
+  phase='intro';qi=0;variant=false;locked=false;combo=0;coins=0;perfect=true;bonusOk=false;
+  refreshCoin();comboBadge();
+  ['mb1','mb2','mb3'].forEach(id=>$(id).classList.remove('show'));
+  ['sd0','sd1','sd2','sd3','sd4'].forEach(id=>$(id).classList.add('off'));
+  $('bonusCoinLabel').textContent='答对 +15 星尘';
+  showLayer('introLayer');
+};
+
+/* ============ 事件绑定 ============ */
+$('btnStart').onclick=()=>{phase='quiz';qi=0;variant=false;combo=0;coins=0;perfect=true;bonusOk=false;
+  refreshCoin();comboBadge();renderPlanets();renderQ();showLayer('quizLayer');sWhoosh();};
+$('opts').addEventListener('click',e=>{const b=e.target.closest('.q-opt');if(b&&!locked)choose(+b.dataset.i);});
+$('bopts').addEventListener('click',e=>{const b=e.target.closest('.q-opt');if(b&&!locked)bChoose(+b.dataset.i);});
+
+/* ============ 版本条 ============ */
+(function(){
+  const V=[{v:1,date:'2026-10-30',desc:'星际远征·少年宇航员学院 首版:开场/星际航线/答对答错/轨道修正变式/宝藏题未知星域/战绩星图 全流程高保真'}];
+  const badge=$('verBadge'),panel=$('verPanel');
+  badge.textContent='版本 v'+V[V.length-1].v;
+  panel.innerHTML='<h4>版本历史</h4>'+[...V].reverse().map(x=>
+    `<div class="vitem"><b>v${x.v}</b><span class="d">${x.date}</span><p>${x.desc}</p></div>`).join('');
+  badge.onclick=()=>panel.style.display=panel.style.display==='block'?'none':'block';
+})();
+
+/* ============ 批注层 ============ */
+(function(){
+  const toggle=$('annToggle'),editor=$('annEditor'),textEl=$('annText');
+  const panel=$('annPanel'),list=$('annList'),toast=$('annToast');
+  let anns=[],mode=false,pending=null,editingIdx=-1;
+  const skipSel='.q-opt,.btn,.ship,.planet,.ann-mark,#verBadge,#verPanel,#annToggle,#annPanel,#annEditor,#annToast,#annExport,#comboBadge';
+  toggle.onclick=()=>{
+    mode=!mode;
+    toggle.classList.toggle('on',mode);
+    toggle.textContent=mode?'✅ 批注中(点元素)':'✏️ 批注模式';
+    panel.style.display=mode?'block':(anns.length?'block':'none');
+  };
+  document.addEventListener('click',(e)=>{
+    if(!mode)return;
+    const t=e.target;
+    if(editor.contains(t)||panel.contains(t)||t===toggle||t.closest('.ann-mark')
+      ||t===document.getElementById('verBadge')||document.getElementById('verPanel').contains(t)
+      ||t.closest(skipSel))return;
+    const host=t.closest('[data-name]');
+    if(!host)return;
+    e.preventDefault();e.stopPropagation();
+    pending=host;editingIdx=-1;textEl.value='';
+    openAt(host);
+  },true);
+  function openAt(el){
+    const r=el.getBoundingClientRect();
+    editor.style.display='block';
+    let left=Math.max(10,Math.min(r.left,window.innerWidth-280));
+    let top=Math.max(10,Math.min(r.bottom+6,window.innerHeight-160));
+    editor.style.left=left+'px';editor.style.top=top+'px';
+    setTimeout(()=>textEl.focus(),30);
+  }
+  textEl.addEventListener('keydown',(e)=>{
+    if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();save();}
+    else if(e.key==='Escape'){editor.style.display='none';pending=null;editingIdx=-1;}
+  });
+  function save(){
+    const txt=textEl.value.trim();
+    if(!txt){editor.style.display='none';pending=null;editingIdx=-1;return;}
+    if(editingIdx>=0)anns[editingIdx].txt=txt;
+    else anns.push({name:pending.getAttribute('data-name'),txt,target:pending});
+    editor.style.display='none';pending=null;editingIdx=-1;
+    renderAll();panel.style.display='block';
+  }
+  function renderAll(){
+    document.querySelectorAll('.ann-mark').forEach(m=>m.remove());
+    anns.forEach((a,i)=>{
+      const r=a.target.getBoundingClientRect();
+      const mk=document.createElement('div');
+      mk.className='ann-mark';mk.textContent=i+1;
+      mk.style.left=(window.scrollX+r.left+r.width-6)+'px';
+      mk.style.top=(window.scrollY+r.top+10)+'px';
+      mk.onclick=(ev)=>{ev.stopPropagation();focusAnn(i);};
+      document.body.appendChild(mk);
+    });
+    list.innerHTML=anns.map((a,i)=>
+      `<div class="annrow" data-i="${i}"><span class="no">${i+1}</span>
+       <span class="tx">${esc(a.txt)}<div class="nm">@${esc(a.name)}</div></span>
+       <span class="del" data-del="${i}">✕</span></div>`).join('')
+      ||'<p>还没有批注,开启批注模式后点任意区块</p>';
+    list.querySelectorAll('.annrow').forEach(row=>{
+      row.onclick=(e)=>{if(e.target.dataset.del!==undefined)return;focusAnn(+row.dataset.i);};
+    });
+    list.querySelectorAll('[data-del]').forEach(b=>{
+      b.onclick=(e)=>{e.stopPropagation();anns.splice(+b.dataset.del,1);renderAll();};
+    });
+  }
+  function focusAnn(i){
+    const el=anns[i].target;
+    el.scrollIntoView({block:'center',behavior:'smooth'});
+    el.classList.remove('annflash');void el.offsetWidth;el.classList.add('annflash');
+    list.querySelectorAll('.annrow').forEach(r=>r.classList.toggle('active',+r.dataset.i===i));
+  }
+  window.addEventListener('scroll',repos,{passive:true});
+  window.addEventListener('resize',()=>setTimeout(repos,160));
+  function repos(){
+    document.querySelectorAll('.ann-mark').forEach((m,i)=>{
+      if(!anns[i])return;
+      const r=anns[i].target.getBoundingClientRect();
+      m.style.left=(window.scrollX+r.left+r.width-6)+'px';
+      m.style.top=(window.scrollY+r.top+10)+'px';
+    });
+  }
+  $('annExport').onclick=()=>{
+    if(!anns.length){showToast('还没有批注',true);return;}
+    const md='请根据以下批注修改「星际远征 · 个性化练习课」原型:\n\n'+anns.map((a,i)=>`${i+1}. 【${a.name}】${a.txt}`).join('\n');
+    copyText(md);
+  };
+  function copyText(t){
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(()=>showToast('✅ 已复制,回对话框 Cmd/Ctrl+V 粘贴'))
+        .catch(()=>fallback(t));
+    }else fallback(t);
+  }
+  function fallback(t){
+    const ta=document.createElement('textarea');ta.value=t;
+    ta.style.cssText='position:fixed;left:-9999px';document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');showToast('✅ 已复制,回对话框 Cmd/Ctrl+V 粘贴');}
+    catch(e){showToast('复制失败,请重试',true);}
+    document.body.removeChild(ta);
+  }
+  function showToast(msg,err){
+    toast.textContent=msg;toast.style.background=err?'#c0392b':'rgba(10,18,48,.95)';
+    toast.style.display='block';setTimeout(()=>toast.style.display='none',2200);
+  }
+  function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+})();
+</script>
+</body>
+</html>
